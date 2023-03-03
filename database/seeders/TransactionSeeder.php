@@ -16,6 +16,10 @@ class TransactionSeeder extends Seeder
     public function run()
     {
         $user = User::all();
+
+        foreach ($user as $item) {
+            
+        }
         
         $this->command->info(json_encode($user, JSON_PRETTY_PRINT));
 

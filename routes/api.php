@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::post('login', [AuthController::class, 'login']);
+Route::post('register', [AuthController::class, 'register']);
+
 
 Route::resource('invoice', InvoiceController::class);
 Route::resource('category', CategoriesController::class);

@@ -7,7 +7,7 @@
     $page_subtitle = true;
 @endphp
 
-@section('page_title', 'DATA AKUN MASYARAKAT')
+@section('page_title', 'DATA AKUN PETUGAS PEMUNGUT')
 @section('page_subtitle', 'Anda dapat menambah, menghapus, dan menambahkan akun masyarakat baru')
 @section('breadcrumb_title', 'User')
 

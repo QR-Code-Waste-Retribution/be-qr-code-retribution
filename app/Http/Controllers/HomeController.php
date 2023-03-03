@@ -15,6 +15,10 @@ class HomeController extends Controller
     {
         return view('pages.home');
     }
+    
+    public function income(){
+        return view('pages.dashboard.income');
+    }
 
     /**
      * Show the form for creating a new resource.

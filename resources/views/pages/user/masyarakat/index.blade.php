@@ -3,7 +3,7 @@
 @section('css')
 @endsection
 @php
-    $button = true;
+    $button = false;
     $page_subtitle = true;
 @endphp
 

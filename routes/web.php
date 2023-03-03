@@ -20,7 +20,12 @@ Route::get('/', [AuthController::class, 'index']);
 Route::get('/login', [AuthController::class, 'index']);
 
 // Dashboard
-Route::get('/dashboard', [HomeController::class, 'index']);
+Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
+Route::get('/dashboard/pemasukan', [HomeController::class, 'income'])->name('dashboard.income');
 
 // User Management
+Route::prefix('user')->group(function () {
+    Route::get('/masyarakat', [UserController::class, 'getAllMasyarakat'])->name('user.masyarakat');
+    Route::get('/pemungut', [UserController::class, 'getAllPemungut'])->name('user.pemungut');
+});
 Route::resource('user', UserController::class);

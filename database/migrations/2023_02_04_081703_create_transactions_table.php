@@ -21,9 +21,14 @@ return new class extends Migration
             $table->string('reference_number')->nullable();
             $table->string('transaction_number')->nullable();
             $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('pemungut_id');
             $table->timestamps();
 
             $table->foreign('user_id')
+                ->references('id')
+                ->on('users');
+
+            $table->foreign('pemungut_id')
                 ->references('id')
                 ->on('users');
         });
