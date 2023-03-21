@@ -7,7 +7,7 @@
     $page_subtitle = false;
 @endphp
 
-@section('page_title', 'Dashboard')
+@section('page_title', 'Dashboard' . fake()->date())
 @section('breadcrumb_title', 'Dashboard')
 
 @section('body')
@@ -28,7 +28,7 @@
                                     <i class="bi bi-currency-dollar"></i>
                                 </div>
                                 <div class="ps-3">
-                                    <h6 class="fs-4">Rp. 10.000.000 -,</h6>
+                                    <h6 class="fs-4">Rp. {{ number_format($income, 2) }} -,</h6>
                                     <span class="text-success small pt-1 fw-bold"></span><span
                                         class="text-muted small pt-2 ps-1">21 Februari 2023</span>
 
@@ -46,8 +46,8 @@
                 <div class="card info-card sales-card pt-4 card-dashboard">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
-                            <div class="ps-3">
-                                <h6 class="fs-5">Rp. 3.000.000 -,</h6>
+                            <div class="p-0">
+                                <h6 class="fs-5">Rp. {{ number_format($income, 2) }} -,</h6>
                                 <span class="text-success small pt-1 fw-bold"></span> <span
                                     class="text-muted small pt-2 ps-1">21 Februari 2023</span>
 
@@ -62,8 +62,8 @@
                 <div class="card info-card sales-card pt-4 card-dashboard">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
-                            <div class="ps-3">
-                                <h6 class="fs-5">Rp. 7.000.000 -,</h6>
+                            <div class="p-0">
+                                <h6 class="fs-5">Rp. {{ number_format(7000000, 2) }} -,</h6>
                                 <span class="text-success small pt-1 fw-bold"></span> <span
                                     class="text-muted small pt-2 ps-1">21 Februari 2023</span>
 
@@ -127,7 +127,7 @@
                         </div>
                         <div class="icon-title p-2 px-3">
                             <p class="fw-bold">Masyarakat</p>
-                            <p class="fs-5">3672</p>
+                            <p class="fs-5">{{ $users[0]->total }}</p>
                             <small>Update: Februari 2023</small>
                         </div>
                     </div>
@@ -140,7 +140,7 @@
                         </div>
                         <div class="icon-title p-2 px-3">
                             <p class="fw-bold">Petugas Pemungut</p>
-                            <p class="fs-5">3672</p>
+                            <p class="fs-5">{{ $users[1]->total }}</p>
                             <small>Update: Februari 2023</small>
                         </div>
                     </div>

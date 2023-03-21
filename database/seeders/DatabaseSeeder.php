@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         UrbanVillage::factory(100)->create();
-        User::factory(50)->create();
+        User::factory(300)->create();
         Transaction::factory(50)->create();
 
         $this->call([

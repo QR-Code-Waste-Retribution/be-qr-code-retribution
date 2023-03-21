@@ -40,6 +40,11 @@ h6 {
 .fs-7{
   font-size: 14px;
 }
+
+.fw-medium{
+  font-weight: 600;
+}
+
 /*--------------------------------------------------------------
 # Main
 --------------------------------------------------------------*/
@@ -1288,6 +1293,23 @@ h6 {
   background: #3e7923;
 }
 
+.button-search{
+  width: 120px;
+  font-size: 14px;
+  padding: 10px 10px;
+  border-radius: 5px;
+  color: white;
+  background: #55A630;
+  outline: none;
+  border: none;
+  cursor: pointer;
+}
+
+.button-search:hover{
+  color: #fff;
+  background: #3e7923;
+}
+
 .button{
   width: 75px;
   font-size: 14px;
@@ -1379,4 +1401,14 @@ h6 {
 
 .icon-title{
   background-color: #D3E6BA;
+}
+
+.switch-activated{
+  padding: 10px 40px 15px 10px;
+  border-color: red;
+}
+
+.switch-activated:checked{
+  background-color: #55A630;
+  border-color: #55A630;
 }

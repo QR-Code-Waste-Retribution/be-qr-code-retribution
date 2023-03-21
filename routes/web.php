@@ -1,7 +1,12 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Transaction\CashPaymentController;
+use App\Http\Controllers\Transaction\NonCashPaymentController;
+use App\Http\Controllers\User\MasyarakatController;
+use App\Http\Controllers\User\PemungutController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,7 +30,14 @@ Route::get('/dashboard/pemasukan', [HomeController::class, 'income'])->name('das
 
 // User Management
 Route::prefix('user')->group(function () {
-    Route::get('/masyarakat', [UserController::class, 'getAllMasyarakat'])->name('user.masyarakat');
-    Route::get('/pemungut', [UserController::class, 'getAllPemungut'])->name('user.pemungut');
+    
+    // Masyarakat
+    Route::resource('masyarakat', MasyarakatController::class);
+    
+    // Pemungut
+    Route::resource('pemungut', PemungutController::class);
 });
 Route::resource('user', UserController::class);
+Route::resource('category', CategoryController::class);
+Route::resource('transaction-cash', CashPaymentController::class);
+Route::resource('transaction-noncash', NonCashPaymentController::class);

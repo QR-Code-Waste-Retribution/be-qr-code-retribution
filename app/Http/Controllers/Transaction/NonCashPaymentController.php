@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Transaction;
 
-use App\Models\User;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
-class HomeController extends Controller
+class NonCashPaymentController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,13 +14,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $income = DB::table('transactions')->sum('price');
-        $users = DB::table('users')->select('role_id', DB::raw('count(*) as total'))->whereIn('role_id', [1, 2])->groupBy('role_id')->get()->toArray();
-        return view('pages.home', compact('income', 'users'));
-    }
-    
-    public function income(){
-        return view('pages.dashboard.income');
+        return view('pages.transaction.noncash-payment');
     }
 
     /**

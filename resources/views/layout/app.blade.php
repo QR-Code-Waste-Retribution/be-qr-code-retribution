@@ -18,13 +18,22 @@
             </div>
             @if ($button ?? false)
                 <div class="col-4 d-flex justify-content-end align-items-center">
-                    <a class="button-primary text-center"><i class="bi bi-plus-circle-fill"></i>&nbsp; Tambah Akun Baru</a>
+                    <a class="button-primary text-center" href="{{ url()->current() }}/create"><i
+                            class="bi bi-plus-circle-fill"></i>&nbsp; @yield('button_text', 'Tambah Akun Baru') </a>
                 </div>
             @endif
         </div>
     </div>
     <hr>
     <section class="section dashboard">
+        @if (session('status'))
+            <div class="alert alert-{{ session('type') }} alert-dismissible fade show" role="alert">
+                <h4 class="alert-heading text-capitalize">{{ session('type') }}</h4>
+                <p class="fs-7">{{ session('status') }}</p>
+                <hr>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
         <div class="row">
             @yield('body')
         </div>
