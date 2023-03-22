@@ -15,7 +15,9 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::where('district_id', 1)->where('price', '!=', 0)->paginate(10);
+        $categories = Category::where('district_id', auth()->user()->district_id)
+            ->where('parent_id', '!=', null)
+            ->paginate(10);
         return view('pages.category.index', compact('categories'));
     }
 
@@ -53,7 +55,7 @@ class CategoryController extends Controller
 
         Category::create([
             'name' => $request->nama_kategori,
-            'description' => 'example test',
+            'description' => fake()->text(),
             'price' => $request->harga_tarif,
             'type' => 'month',
             'parent_id' => null,
@@ -85,7 +87,7 @@ class CategoryController extends Controller
      */
     public function edit($id)
     {
-        //
+        return view('pages.category.edit');
     }
 
     /**

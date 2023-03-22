@@ -60,10 +60,12 @@
                                 <td>Kec. {{ $item->sub_district->name }}</td>
                                 <td>
                                     <div class="d-flex gap-2">
-                                        <button class="btn button btn-warning">Edit</button>
+                                        <button class="btn button btn-warning fs-7">Edit</button>
                                         <div class="form-check form-switch">
-                                            <input class="form-check-input switch-activated statusCheckChecked" type="checkbox"
-                                                id="statusCheckChecked" checked data-user-id="{{ $item->id }}">
+                                            <input class="form-check-input switch-activated statusCheckChecked"
+                                                type="checkbox" id="statusCheckChecked"
+                                                @if ($item->status) checked @endif
+                                                data-user-id="{{ $item->id }}">
                                         </div>
                                     </div>
                                 </td>

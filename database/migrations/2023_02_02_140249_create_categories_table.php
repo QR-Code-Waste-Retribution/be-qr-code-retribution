@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->longText('description');
             $table->bigInteger('price');
+            $table->integer('status')->default(1);
             $table->string('type');
             $table->unsignedBigInteger('parent_id')->nullable();
             $table->unsignedBigInteger('district_id');

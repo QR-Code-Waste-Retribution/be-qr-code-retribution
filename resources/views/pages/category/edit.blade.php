@@ -7,7 +7,7 @@
     $page_subtitle = false;
 @endphp
 
-@section('page_title', 'TAMBAH KATEGORI BARU')
+@section('page_title', 'EDIT KATEGORI')
 {{-- @section('page_subtitle', 'Anda dapat menambah, menghapus, dan menambahkan akun masyarakat baru') --}}
 @section('breadcrumb_title', 'Management Category')
 

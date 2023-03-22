@@ -26,6 +26,7 @@ class TransactionFactory extends Factory
             'price' => fake()->randomElement([10000, 20000, 30000, 40000, 50000]),
             'status' => '0',
             'date' => now(),
+            'type' => fake()->randomElement(['CASH', 'NONCASH']),
             'reference_number' => $reference_number,
             'transaction_number' => $transaction_number,
             'user_id' => User::inRandomOrder()->first(),

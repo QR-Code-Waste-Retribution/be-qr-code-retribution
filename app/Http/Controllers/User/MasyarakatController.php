@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\SubDistrict;
 use App\Models\User;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
@@ -98,6 +99,19 @@ class MasyarakatController extends Controller
     public function update(Request $request, $id)
     {
         //
+    }
+
+    public function changeStatusUser(Request $request)
+    {
+        try {
+            $user = User::find($request->user_id);
+            $user->status = !$user->status;
+            $user->save();
+
+            return $this->successResponse($user, 'Success to change user status');
+        } catch (Exception $err) {
+            return $this->errorResponse([], 'Something went wrong');
+        }
     }
 
     /**

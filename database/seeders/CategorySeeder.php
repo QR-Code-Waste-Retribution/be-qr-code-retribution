@@ -127,7 +127,7 @@ class CategorySeeder extends Seeder
             array('id' => '109', 'name' => 'SPBU/Doorsmeer', 'description' => 'lorem ipsum', 'price' => '50000', 'type' => 'month', 'parent_id' => '94', 'district_id' => '1', 'created_at' => '2023-02-17 08:26:52', 'updated_at' => '2023-02-17 08:26:52'),
             array('id' => '110', 'name' => 'Super Market/Mini Market', 'description' => 'lorem ipsum', 'price' => '100000', 'type' => 'month', 'parent_id' => '94', 'district_id' => '1', 'created_at' => '2023-02-17 08:26:52', 'updated_at' => '2023-02-17 08:26:52'),
             array('id' => '111', 'name' => 'Klinik/Balai Pengobatan/ Praktek Dokter', 'description' => 'lorem ipsum', 'price' => '60000', 'type' => 'month', 'parent_id' => '94', 'district_id' => '1', 'created_at' => '2023-02-17 08:26:52', 'updated_at' => '2023-02-17 08:26:52'),
-            array('id' => '112', 'name' => 'Asrama yang penghuninya', 'description' => 'lorem ipsum', 'price' => '0', 'type' => 'month', 'parent_id' => '94', 'district_id' => '1', 'created_at' => '2023-02-17 08:26:52', 'updated_at' => '2023-02-17 08:26:52'),
+            array('id' => '112', 'name' => 'Asrama yang penghuninya', 'description' => 'lorem ipsum', 'price' => '0', 'type' => 'month', 'parent_id' => null, 'district_id' => '1', 'created_at' => '2023-02-17 08:26:52', 'updated_at' => '2023-02-17 08:26:52'),
             array('id' => '113', 'name' => 'Asrama Pendidikan (Kapasitas < 10 orang)', 'description' => 'lorem ipsum', 'price' => '20000', 'type' => 'month', 'parent_id' => '112', 'district_id' => '1', 'created_at' => '2023-02-17 08:26:52', 'updated_at' => '2023-02-17 08:26:52'),
             array('id' => '114', 'name' => 'Asrama Pendidikan (Kapasitas 11 s/d 20 orang)', 'description' => 'lorem ipsum', 'price' => '30000', 'type' => 'month', 'parent_id' => '112', 'district_id' => '1', 'created_at' => '2023-02-17 08:26:52', 'updated_at' => '2023-02-17 08:26:52'),
             array('id' => '115', 'name' => 'Asrama (Kapasitas > 20 orang)', 'description' => 'lorem ipsum', 'price' => '100000', 'type' => 'month', 'parent_id' => '112', 'district_id' => '1', 'created_at' => '2023-02-17 08:26:52', 'updated_at' => '2023-02-17 08:26:52'),
@@ -144,6 +144,7 @@ class CategorySeeder extends Seeder
                 'price' => $category['price'],
                 'type' => $category['type'],
                 'parent_id' => $category['parent_id'],
+                'status' => 1,
                 'district_id' => $category['district_id'],
             ]);
         }

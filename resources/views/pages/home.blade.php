@@ -7,7 +7,7 @@
     $page_subtitle = false;
 @endphp
 
-@section('page_title', 'Dashboard' . fake()->date())
+@section('page_title', 'Dashboard')
 @section('breadcrumb_title', 'Dashboard')
 
 @section('body')

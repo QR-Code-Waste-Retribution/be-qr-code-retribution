@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('category_id');
             $table->unsignedBigInteger('sub_district_id');
+            $table->text('address');
             $table->timestamps();
 
             $table->foreign('user_id')

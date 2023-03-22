@@ -44,6 +44,7 @@
                 <table class="table fs-7 table-hover">
                     <thead>
                         <tr>
+                            {{-- <th scope="col"></th> --}}
                             <th scope="col">#</th>
                             <th scope="col" class="w-75">Name</th>
                             <th scope="col">Action</th>
@@ -52,15 +53,37 @@
                     <tbody>
                         @foreach ($pemungut as $item)
                             <tr>
-                                <th scope="row">{{ (request()->input('page', 1) - 1) * 10 + $loop->iteration  }}</th>
+                                {{-- <td><input type="checkbox" class="form-check-input" name="" id=""></td> --}}
+                                <td scope="row">{{ (request()->input('page', 1) - 1) * 10 + $loop->iteration }}</td>
                                 <td><span class="fw-semibold">{{ $item->name }}</span><br> {{ $item->phoneNumber }}
                                 </td>
                                 <td>
                                     <div class="d-flex gap-2">
-                                        <button class="btn button btn-warning">Edit</button>
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input switch-activated" type="checkbox"
-                                                id="flexSwitchCheckChecked" checked>
+                                        <div>
+                                            <a class="btn button btn-warning fs-7"
+                                                href="{{ route('pemungut.edit', $item->id) }}">Edit</a>
+                                        </div>
+                                        <div class="d-flex flex-column align-items-center justify-content-center" style="width: 60px;">
+                                            <div class="text-center">
+                                                <div class="form-check form-switch">
+                                                    <input
+                                                        class="form-check-input d-flex flex-column switch-activated statusCheckChecked"
+                                                        type="checkbox" id="statusCheckChecked"
+                                                        @if ($item->status) checked @endif
+                                                        data-user-id="{{ $item->id }}">
+                                                </div>
+                                                <p class="fs-9 m-0" id="text-status-{{ $item->id }}">
+                                                    @if ($item->status)
+                                                        Active
+                                                    @else
+                                                        Inactive
+                                                    @endif
+                                                </p>
+                                            </div>
+                                            <div class="spinner-border d-none" id="spinnder-border-{{ $item->id }}"
+                                                style="width: 1.5rem; height: 1.5rem;" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </td>
@@ -73,4 +96,5 @@
     </div>
 @endsection
 @section('javascript')
+    <script src="{{ asset('assets/js/pemungut.js') }}"></script>
 @endsection

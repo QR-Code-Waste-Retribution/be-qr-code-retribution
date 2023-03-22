@@ -23,7 +23,13 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'username',
+        'phoneNumber',
         'password',
+        'sub_district_id',
+        'district_id',
+        'role_id',
+        'address'
     ];
 
     /**
@@ -88,6 +94,11 @@ class User extends Authenticatable
     public function transactions()
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    public function pemungut_transactions()
+    {
+        return $this->hasMany(PemungutTransaction::class, 'pemungut_id', 'id');
     }
 
 }

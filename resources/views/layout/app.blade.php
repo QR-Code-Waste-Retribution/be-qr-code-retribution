@@ -30,7 +30,6 @@
             <div class="alert alert-{{ session('type') }} alert-dismissible fade show" role="alert">
                 <h4 class="alert-heading text-capitalize">{{ session('type') }}</h4>
                 <p class="fs-7">{{ session('status') }}</p>
-                <hr>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif

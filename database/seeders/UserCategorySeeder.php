@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
+use App\Models\SubDistrict;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -20,12 +21,13 @@ class UserCategorySeeder extends Seeder
         $users = User::all();
 
         foreach ($users as $user) {
-            $categories = Category::select("id")->inRandomOrder()->limit(3)->pluck('id')->toArray();
+            $categories = Category::select("id")->where('parent_id', '!=', 0)->inRandomOrder()->limit(3)->pluck('id')->toArray();
+            $sub_district = SubDistrict::select("id")->inRandomOrder()->limit(1)->pluck('id')->toArray();
             $this->command->info(sprintf('%s', json_encode($categories)));
             DB::table('users_categories')->insert([
-                ['user_id' => $user->id, 'category_id' => $categories[0]],
-                ['user_id' => $user->id, 'category_id' => $categories[1]],
-                ['user_id' => $user->id, 'category_id' => $categories[2]]
+                ['user_id' => $user->id, 'category_id' => $categories[0], 'sub_district_id' => $sub_district[0], 'address' => fake()->address() . " " . $sub_district[0]],
+                ['user_id' => $user->id, 'category_id' => $categories[1], 'sub_district_id' => $sub_district[0], 'address' => fake()->address() . " " . $sub_district[0]],
+                ['user_id' => $user->id, 'category_id' => $categories[2], 'sub_district_id' => $sub_district[0], 'address' => fake()->address() . " " . $sub_district[0]]
             ]);
         }
         $this->command->info(sprintf("Success to add dummy in users_categories table"));

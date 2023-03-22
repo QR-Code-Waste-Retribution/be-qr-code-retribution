@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [AuthController::class, 'index']);
 Route::get('/login', [AuthController::class, 'index']);
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 
 // Dashboard
 Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
@@ -33,9 +34,11 @@ Route::prefix('user')->group(function () {
     
     // Masyarakat
     Route::resource('masyarakat', MasyarakatController::class);
+    Route::post('masyarakat/status', [MasyarakatController::class, 'changeStatusUser'])->name('masyarakat.status');
     
     // Pemungut
     Route::resource('pemungut', PemungutController::class);
+    Route::post('pemungut/status', [PemungutController::class, 'changeStatusUser'])->name('pemungut.status');
 });
 Route::resource('user', UserController::class);
 Route::resource('category', CategoryController::class);

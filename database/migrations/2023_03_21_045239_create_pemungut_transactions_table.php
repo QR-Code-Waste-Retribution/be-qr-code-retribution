@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('pemungut_transactions', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('status');
+            $table->bigInteger('status')->default(1);
             $table->unsignedBigInteger('pemungut_id');
             $table->bigInteger('total');
             $table->timestamps();

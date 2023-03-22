@@ -51,10 +51,32 @@
                                 <td>Rp. {{ number_format($item->price, 2) }}</td>
                                 <td>
                                     <div class="d-flex gap-2">
-                                        <a class="btn button btn-warning"
-                                            href="{{ route('category.edit', $item->id) }}">Edit</a>
-                                        <a class="btn button btn-danger"
-                                            href="{{ route('category.destroy', $item->id) }}">Delete</a>
+                                        <div>
+                                            <a class="btn button btn-warning fs-7"
+                                                href="{{ route('category.edit', $item->id) }}">Edit</a>
+                                        </div>
+                                        <div class="d-flex flex-column align-items-center justify-content-center" style="width: 60px;">
+                                            <div class="text-center">
+                                                <div class="form-check form-switch">
+                                                    <input
+                                                        class="form-check-input d-flex flex-column switch-activated statusCheckChecked"
+                                                        type="checkbox" id="statusCheckChecked"
+                                                        @if ($item->status) checked @endif
+                                                        data-user-id="{{ $item->id }}">
+                                                </div>
+                                                <p class="fs-9 m-0" id="text-status-{{ $item->id }}">
+                                                    @if ($item->status)
+                                                        Active
+                                                    @else
+                                                        Inactive
+                                                    @endif
+                                                </p>
+                                            </div>
+                                            <div class="spinner-border d-none" id="spinnder-border-{{ $item->id }}"
+                                                style="width: 1.5rem; height: 1.5rem;" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </td>
                             </tr>

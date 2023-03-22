@@ -33,7 +33,7 @@ class UserFactory extends Factory
             // 'uuid' => fake()->uuid(),
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
-            'username' => fake()->userName(),
+            'username' => fake()->unique()->userName(),
             'nik' => fake()->unique()->numerify(),
             'gender' => fake()->randomElement(['Laki-Laki', 'Perempuan']),
             'address' => fake()->city(),

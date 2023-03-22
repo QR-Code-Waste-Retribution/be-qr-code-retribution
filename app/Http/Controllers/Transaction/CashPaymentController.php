@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Transaction;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\User\PemungutController;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class CashPaymentController extends Controller
@@ -14,7 +16,8 @@ class CashPaymentController extends Controller
      */
     public function index()
     {
-        return view('pages.transaction.cash-payment');
+        $pemungut_transactions = User::where('role_id', 2)->with(['pemungut_transactions', 'sub_district'])->paginate(10);
+        return view('pages.transaction.cash-payment', compact('pemungut_transactions'));
     }
 
     /**

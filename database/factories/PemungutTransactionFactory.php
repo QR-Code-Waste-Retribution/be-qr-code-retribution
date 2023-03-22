@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,9 @@ class PemungutTransactionFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'status' => random_int(0, 1),
+            'pemungut_id' => User::inRandomOrder()->where('role_id', 2)->first(),
+            'total' => 200000,
         ];
     }
 }
