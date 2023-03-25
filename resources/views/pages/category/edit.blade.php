@@ -18,7 +18,7 @@
             <div class="col-12">
                 <label for="inputNanme4" class="form-label fs-7">Nama Kategori</label>
                 <input type="text" class="form-control fs-7 @error('nama_kategori') is-invalid @enderror"
-                    name="nama_kategori" id="inputNanme4" placeholder="Nama Kategori">
+                    name="nama_kategori" id="inputNanme4" placeholder="Nama Kategori" value="{{ $category->name }}">
                 @error('nama_kategori')
                     <div class="invalid-feedback fs-7">{{ $message }}</div>
                 @enderror
@@ -26,7 +26,7 @@
             <div class="col-12">
                 <label for="inputEmail4" class="form-label fs-7">Harga Tarif</label>
                 <input type="number" class="form-control fs-7 @error('harga_tarif') is-invalid @enderror"
-                    name="harga_tarif" id="inputEmail4" placeholder="Harga Tarif">
+                    name="harga_tarif" id="inputEmail4" placeholder="Harga Tarif" value="{{ $category->price }}">
                 @error('harga_tarif')
                     <div class="invalid-feedback fs-7">{{ $message }}</div>
                 @enderror
@@ -34,7 +34,7 @@
             <div class="col-12">
                 <label for="inputEmail4" class="form-label fs-7">Tipe Pembayaran Kategori</label>
                 <select class="form-select fs-7 @error('tipe_pembayaran_kategori') is-invalid @enderror" name="tipe_pembayaran_kategori" aria-label="Default select example">
-                    <option disabled selected>Open this select menu</option>
+                    <option disabled selected>Tipe Pembayaran Kategori</option>
                     <option value="1">Bulan</option>
                     <option value="2">Hari</option>
                     <option value="3">Unit</option>

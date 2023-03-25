@@ -1,12 +1,12 @@
 var statusCheckChecked = document.querySelectorAll(".statusCheckChecked");
 let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-let url = '/user/masyarakat/status';
+let url = '/category/status';
 
 statusCheckChecked.forEach((el) => {
     el.addEventListener('change', function (e) {
-        const userId = e.target.getAttribute('data-user-id');
-        const spinner = document.getElementById(`spinnder-border-${userId}`);
-        const text = document.getElementById(`text-status-${userId}`);
+        const categoryId = e.target.getAttribute('data-category-id');
+        const spinner = document.getElementById(`spinnder-border-${categoryId}`);
+        const text = document.getElementById(`text-status-${categoryId}`);
         el.parentElement.classList.add('d-none');
         text.classList.add('d-none');
         spinner.classList.remove('d-none');
@@ -20,7 +20,7 @@ statusCheckChecked.forEach((el) => {
                 method: 'post',
                 credentials: "same-origin",
                 body: JSON.stringify({
-                    user_id: userId
+                    category_id: categoryId
                 })
             })
             .then((data) => {

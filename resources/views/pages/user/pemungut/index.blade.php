@@ -55,7 +55,7 @@
                             <tr>
                                 {{-- <td><input type="checkbox" class="form-check-input" name="" id=""></td> --}}
                                 <td scope="row">{{ (request()->input('page', 1) - 1) * 10 + $loop->iteration }}</td>
-                                <td><span class="fw-semibold">{{ $item->name }}</span><br> {{ $item->phoneNumber }}
+                                <td><span class="fw-semibold">{{ $item->name }}</span><br>Kec. {{ $item->sub_district->name }}
                                 </td>
                                 <td>
                                     <div class="d-flex gap-2">
@@ -91,6 +91,7 @@
                         @endforeach
                     </tbody>
                 </table>
+                {{ $pemungut->links() }}
             </div>
         </div>
     </div>

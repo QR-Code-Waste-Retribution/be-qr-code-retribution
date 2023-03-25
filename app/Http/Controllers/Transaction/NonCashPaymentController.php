@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Transaction;
 
 use App\Http\Controllers\Controller;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 
 class NonCashPaymentController extends Controller
@@ -14,6 +15,7 @@ class NonCashPaymentController extends Controller
      */
     public function index()
     {
+        // $non_cash_transaction = Transaction::all()->where();
         return view('pages.transaction.noncash-payment');
     }
 

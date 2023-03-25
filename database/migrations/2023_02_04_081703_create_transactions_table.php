@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('transaction_number')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('pemungut_id');
+            $table->unsignedBigInteger('category_id');
             $table->timestamps();
 
             $table->foreign('user_id')
@@ -32,6 +33,10 @@ return new class extends Migration
             $table->foreign('pemungut_id')
                 ->references('id')
                 ->on('users');
+
+            $table->foreign('category_id')
+                ->references('id')
+                ->on('categories');
         });
     }
 

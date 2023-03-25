@@ -34,7 +34,7 @@
             <div class="col-12">
                 <label for="inputEmail4" class="form-label fs-7">Tipe Pembayaran Kategori</label>
                 <select class="form-select fs-7 @error('tipe_pembayaran_kategori') is-invalid @enderror" name="tipe_pembayaran_kategori" aria-label="Default select example">
-                    <option disabled selected>Open this select menu</option>
+                    <option disabled selected>Tipe Pembayaran Kategori</option>
                     <option value="1">Bulan</option>
                     <option value="2">Hari</option>
                     <option value="3">Unit</option>

@@ -17,7 +17,7 @@
             <div class="col-md-12">
                 <div class="row">
                     <div class="col-12">
-                        <form method="GET" action="{{ route('masyarakat.index') }}">
+                        <form method="GET" action="{{ route('transaction-cash.index') }}">
                             <div class="d-flex justify-content-between gap-5 align-items-center">
                                 <div class="search-bar">
                                     <div class="search-form d-flex align-items-center mt-4">
@@ -26,8 +26,8 @@
                                         <button type="button" title="Search"><i class="bi bi-search"></i></button>
                                     </div>
                                 </div>
-                                <x-month-select col="3"/>
-                                <x-sub-district-dropdown col="3"/>
+                                <x-month-select col="3" />
+                                <x-sub-district-dropdown col="3" />
                             </div>
                             <div class="w-100 d-flex justify-content-end">
                                 <button type="submit" title="Search"
@@ -47,17 +47,18 @@
                         <th scope="col">#</th>
                         <th scope="col">Nama Petugas</th>
                         <th scope="col">Jumlah</th>
+                        <th scope="col">Waktu</th>
                         <th scope="col">Status</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($pemungut_transactions as $item)
+                    @forelse ($pemungut_transactions as $item)
                         <tr>
                             <th scope="row">{{ (request()->input('page', 1) - 1) * 10 + $loop->iteration }}</th>
                             <td><span class=""><span class="fw-semibold">{{ $item->name }}</span><br>
                                     Kec. {{ $item->sub_district->name }}</span></td>
                             <td>Rp. {{ number_format($item->pemungut_transactions[0]->total) }}</td>
-
+                            <td>{{ date('F Y', strtotime($item->created_at)) }}</td>
                             <td class="">
                                 @if (!$item->pemungut_transactions[0]->status)
                                     <span class="badge text-bg-danger">Belum Disetor</span>
@@ -66,7 +67,11 @@
                                 @endif
                             </td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="5"><p class="text-danger fs-6">No Item</p></td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
             {{ $pemungut_transactions->onEachSide(5)->links() }}

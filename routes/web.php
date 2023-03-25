@@ -42,5 +42,7 @@ Route::prefix('user')->group(function () {
 });
 Route::resource('user', UserController::class);
 Route::resource('category', CategoryController::class);
+Route::post('category/status', [CategoryController::class, 'changeStatusCategory']);
 Route::resource('transaction-cash', CashPaymentController::class);
 Route::resource('transaction-noncash', NonCashPaymentController::class);
+

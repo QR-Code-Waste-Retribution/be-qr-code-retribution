@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\InvoiceCollection;
+use App\Http\Resources\InvoiceResource;
 use App\Models\Invoice;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class InvoiceController extends Controller
 {
@@ -46,11 +48,41 @@ class InvoiceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show()
     {
-        $invoice_user = Invoice::where('user_id', $id)->get();
+    }
 
-        return $this->successResponse(new InvoiceCollection($invoice_user));
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function getInvoiceOfUser(Request $request, $uuid)
+    {
+        $validator = Validator::make($request->all(), [
+            "sub_district_id" => "required",
+        ], [
+            'required' => 'The :attribute is required.',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errorResponse($validator->errors(), 'Missing id of sub district id', 422);
+        }
+
+        
+        $sub_district_id = $request->sub_district_id;
+        
+        $invoice_user = Invoice::where('uuid_user', $uuid)
+            ->where('category_id', function ($query) use ($sub_district_id) {
+                $query->select("category_id")
+                    ->from('users_categories')
+                    ->where('users_categories.sub_district_id', $sub_district_id)
+                    ->where('users_categories.user_id', DB::raw('invoice.user_id'));
+            })
+            ->get();
+
+        return $this->successResponse(InvoiceResource::collection($invoice_user), "Successfully to get invoice category");
     }
 
     /**

@@ -3,6 +3,8 @@
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CategoriesController;
 use App\Http\Controllers\API\InvoiceController;
+use App\Http\Controllers\API\TransactionController;
+use App\Http\Controllers\API\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,10 +19,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::post('login', [AuthController::class, 'login']);
-Route::post('register', [AuthController::class, 'register']);
 
+Route::put('user/change/{id}/password', [UserController::class, 'changePassword']);
+Route::put('user/edit/{id}/profile', [UserController::class, 'editProfile']);
+Route::post('user/add', [AuthController::class, 'register']);
 
+Route::post('people/{uuid}/invoice', [InvoiceController::class, 'getInvoiceOfUser']);
 Route::resource('invoice', InvoiceController::class);
+Route::resource('transaction', TransactionController::class);
 Route::resource('category', CategoriesController::class);
 
 

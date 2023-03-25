@@ -24,7 +24,7 @@ class InvoiceResource extends JsonResource
             "user_id" =>  1,
             "type" =>  0,
             "created_at" =>  date('Y-m-d H:i:s', strtotime($this->created_at)),
-            "category" => $this->category
+            "category" => new CategoryResource($this->category)
         ];
     }
 }

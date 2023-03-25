@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -17,25 +18,29 @@ class AuthController extends Controller
 
   public function login(Request $request)
   {
-    $validator = Validator::make($request->all(), [
-      'username' => 'required',
-      'password' => 'required|min:6',
-    ], [
-      'required' => 'Input :attribute tidak boleh kosong',
-      'min' => 'Input :attribute harus minimal 6 karakter.',
-    ]);
+    try {
+      $validator = Validator::make($request->all(), [
+        'username' => 'required',
+        'password' => 'required|min:6',
+      ], [
+        'required' => 'Input :attribute tidak boleh kosong',
+        'min' => 'Input :attribute harus minimal 6 karakter.',
+      ]);
 
-    if ($validator->fails()) {
-      return $this->errorResponse($validator->errors(), 'Input tidak boleh ada yang kosong', 422);
+      if ($validator->fails()) {
+        return $this->errorResponse($validator->errors(), 'Input tidak boleh ada yang kosong', 422);
+      }
+
+      if (!auth()->attempt($validator->validated())) {
+        return $this->errorResponse('', 'Username atau password anda salah', 401);
+      }
+
+      $token = Auth::user();
+
+      return $this->createNewToken($token);
+    } catch (Exception $err) {
+      return $this->errorResponse('', $err->getMessage(), 401);
     }
-
-    if (!auth()->attempt($validator->validated())) {
-      return $this->errorResponse('', 'Username atau password anda salah', 401);
-    }
-
-    $token = Auth::user();
-
-    return $this->createNewToken($token);
   }
 
   public function register(Request $request)
@@ -47,7 +52,7 @@ class AuthController extends Controller
       "phoneNumber" => "required",
       "district_id" => "required",
       "sub_district_id" => "required",
-      "urban_village_id" => "requried"
+      "urban_village_id" => "required"
     ], [
       'required' => 'Input :attribute tidak boleh kosong',
     ]);
@@ -58,7 +63,7 @@ class AuthController extends Controller
 
     $user = User::create(array_merge(
       $validator->validated(),
-      ['password' => bcrypt($request->password)]
+      ['password' => bcrypt('password')]
     ));
 
     return response()->json([
@@ -74,7 +79,6 @@ class AuthController extends Controller
     $user['role'] = $auth->role->name;
     $user['district'] = $auth->district->name;
     $user['sub_district'] = $auth->sub_district->name;
-    $user['urban_village'] = $auth->urban_village->name;
 
     return $this->successResponse([
       'access_token' => $_token->createToken('qr_code_retribution')->accessToken,
