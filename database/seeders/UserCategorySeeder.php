@@ -27,10 +27,15 @@ class UserCategorySeeder extends Seeder
                 $categories = Category::select("id")
                     ->where('price', '!=', 0)
                     ->whereNotNull('parent_id')
+                    ->where('district_id', $user->district_id)
                     ->inRandomOrder()
                     ->limit(1)
                     ->pluck('id')->toArray();
-                $sub_district = SubDistrict::select("id")->inRandomOrder()->limit(1)->pluck('id')->toArray();
+                $sub_district = SubDistrict::select("id")
+                    ->where('district_id', $user->district_id)
+                    ->inRandomOrder()
+                    ->limit(1)
+                    ->pluck('id')->toArray();
                 if (in_array($sub_district[0], $sub_district_user)) {
                     $this->command->info("Category with sub district provided already exist [$i]");
                     $i--;

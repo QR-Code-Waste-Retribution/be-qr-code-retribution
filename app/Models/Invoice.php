@@ -11,6 +11,8 @@ class Invoice extends Model
 
     protected $table = 'invoice';
 
+    private static $invoices_formatted = array();
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -20,4 +22,42 @@ class Invoice extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
+    public static function formatUserInvoice($invoices){
+        // $result = array();
+        foreach ($invoices as $item) {
+            $check = self::checkStatusInvoice($item);
+            
+            // if(!$check['status']){
+            //     array_push($result, $item);
+            // } else {
+            //     $result[$check['index']]['price'] += $item['price'];
+            // }
+        }
+        return self::$invoices_formatted;
+    }
+    
+    public static function checkStatusInvoice($invoice){
+        $index = 0;
+        foreach (self::$invoices_formatted as $item) {
+            if($invoice['category_id'] == $item['category_id']){
+                $item['price'] += $invoice['price'];
+                return [
+                    'status' => true,
+                    'index' => $index,
+                ];
+                break;
+            }
+            $index++;
+        }
+
+        array_push(self::$invoices_formatted, $invoice);
+
+        return [
+            'status' => false,
+            'index' => $index,
+        ];
+    }
+
+
 }

@@ -18,7 +18,6 @@ class CategoryResource extends JsonResource
             "id" => $this->id,
             "name" => $this->name,
             "description" => $this->description,
-            "address" => $this->address,
             "price" => $this->price,
             "status" => $this->status ? 'active' : 'non-active',
             "type" => "MONTH",

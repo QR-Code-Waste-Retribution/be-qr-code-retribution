@@ -70,19 +70,23 @@ class InvoiceController extends Controller
             return $this->errorResponse($validator->errors(), 'Missing id of sub district id', 422);
         }
 
-        
         $sub_district_id = $request->sub_district_id;
-        
-        $invoice_user = Invoice::where('uuid_user', $uuid)
-            ->where('category_id', function ($query) use ($sub_district_id) {
-                $query->select("category_id")
-                    ->from('users_categories')
-                    ->where('users_categories.sub_district_id', $sub_district_id)
-                    ->where('users_categories.user_id', DB::raw('invoice.user_id'));
+        $invoice_user = Invoice::select('invoice.*', 'users_categories.user_id', 'users_categories.address', 'sub_districts.name as sub_district_name')
+            ->join('users_categories', function ($join) use ($sub_district_id) {
+                $join->on('invoice.user_id', '=', 'users_categories.user_id')
+                    ->where('users_categories.sub_district_id', '=', $sub_district_id);
             })
+            ->join('sub_districts', function ($join) {
+                $join->on('users_categories.sub_district_id', '=', 'sub_districts.id');
+            })
+            ->where('invoice.uuid_user', '=', $uuid)
+            ->where('invoice.created_at', '<', DB::raw('DATE_SUB(NOW(), INTERVAL 30 DAY)'))
+            ->whereColumn('invoice.category_id', '=', 'users_categories.category_id')
             ->get();
 
-        return $this->successResponse(InvoiceResource::collection($invoice_user), "Successfully to get invoice category");
+        $result = Invoice::formatUserInvoice(InvoiceResource::collection($invoice_user));
+
+        return $this->successResponse($result, "Successfully to get invoice category");
     }
 
     /**
