@@ -21,13 +21,14 @@ return new class extends Migration
             $table->string('password');
             $table->string('nik')->unique()->nullable();
             $table->enum('gender', ['Laki-Laki', 'Perempuan']);
-            $table->text('address');
-            $table->string('phoneNumber');
+            $table->text('address')->nullable();
+            $table->string('phoneNumber')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->unsignedBigInteger('urban_village_id')->nullable();
             $table->unsignedBigInteger('sub_district_id');
             $table->unsignedBigInteger('district_id');
             $table->unsignedBigInteger('role_id')->default(1);
+            $table->integer('status')->default(1);
             $table->rememberToken();
             $table->timestamps();
 

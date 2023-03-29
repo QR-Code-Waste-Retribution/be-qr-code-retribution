@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -13,7 +15,13 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('pages.home');
+        $income = DB::table('transactions')->sum('price');
+        $users = DB::table('users')->select('role_id', DB::raw('count(*) as total'))->whereIn('role_id', [1, 2])->groupBy('role_id')->get()->toArray();
+        return view('pages.home', compact('income', 'users'));
+    }
+    
+    public function income(){
+        return view('pages.dashboard.income');
     }
 
     /**

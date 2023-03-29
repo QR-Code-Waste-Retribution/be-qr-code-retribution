@@ -5,6 +5,8 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\Category;
+use App\Models\PemungutTransaction;
+use App\Models\Transaction;
 use App\Models\UrbanVillage;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -26,10 +28,16 @@ class DatabaseSeeder extends Seeder
         ]);
 
         UrbanVillage::factory(100)->create();
-        Category::factory(100)->create();
-        User::factory(30)->create();
+        User::factory(300)->create();
+        $this->call([
+            UserSeeder::class,
+        ]);
+        Transaction::factory(50)->create();
+        // PemungutTransaction::factory(50)->create();
 
         $this->call([
+            PemungutTransactionsSeeder::class,
+            CategorySeeder::class,
             UserCategorySeeder::class,
             InvoiceSeeder::class,
         ]);

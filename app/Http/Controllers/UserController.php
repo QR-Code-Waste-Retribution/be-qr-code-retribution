@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -13,7 +14,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        return view('pages.user.index');
+        $user = User::with('role')->get();
+        return view('pages.user.index', compact('user'));
     }
 
     /**
@@ -24,6 +26,26 @@ class UserController extends Controller
     public function create()
     {
         //
+    }
+
+    /**
+     * Display a listing of Masyarakat data.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getAllMasyarakat()
+    {
+        return view('pages.user.masyarakat.index');
+    }
+
+    /**
+     * Display a listing of Masyarakat data.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getAllPemungut()
+    {
+        return view('pages.user.pemungut.index');
     }
 
     /**

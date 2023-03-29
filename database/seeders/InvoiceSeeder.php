@@ -19,18 +19,18 @@ class InvoiceSeeder extends Seeder
     public function run()
     {
         $users = User::with('category')->get();
-
-        foreach ($users as $user) {
-            foreach ($user->category as $category) {
-                $invoice = Invoice::create([
-                    'category_id' => $category->id,
-                    'price' => $category->price,
-                    'user_id' => $user->id,
-                    'type' => 0,
-                ]);
-                $this->command->info(json_encode($invoice, JSON_PRETTY_PRINT));
-            }   
-        }
+        $this->command->info(json_encode($users, JSON_PRETTY_PRINT));
+        // foreach ($users as $user) {
+        //     foreach ($user->category as $category) {
+        //         $invoice = Invoice::create([
+        //             'category_id' => $category->id,
+        //             'price' => $category->price,
+        //             'user_id' => $user->id,
+        //             'type' => 0,
+        //         ]);
+        //         $this->command->info(json_encode($invoice, JSON_PRETTY_PRINT));
+        //     }   
+        // }
     }
 }
 

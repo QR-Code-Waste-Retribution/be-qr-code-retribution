@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\District;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -19,18 +20,27 @@ class UserFactory extends Factory
 
     public function definition()
     {
+        $district = District::inRandomOrder()->first();
+        $sub_district = 1;
+
+        foreach ($district->sub_district_rand as $item){
+            $sub_district = $item->id;
+
+            break;
+        }
+
         return [
             // 'uuid' => fake()->uuid(),
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
-            'username' => fake()->userName(),
+            'username' => fake()->unique()->userName(),
             'nik' => fake()->unique()->numerify(),
             'gender' => fake()->randomElement(['Laki-Laki', 'Perempuan']),
             'address' => fake()->city(),
             'phoneNumber' => fake()->phoneNumber(),
             'urban_village_id' => random_int(1, 100),
-            'sub_district_id' => random_int(1, 73),
-            'district_id' => random_int(1, 3),
+            'district_id' => $district->id,
+            'sub_district_id' => $sub_district,
             'role_id' => fake()->randomElement([1, 2, 3]),
             'email_verified_at' => now(),
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password

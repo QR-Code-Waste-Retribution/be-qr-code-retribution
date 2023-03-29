@@ -2,14 +2,15 @@
 
 @section('css')
 @endsection
+@php
+    $button = true;
+    $page_subtitle = true;
+@endphp
 
 @section('page_title', 'DATA AKUN MASYARAKAT')
 @section('page_subtitle', 'Anda dapat menambah, menghapus, dan menambahkan akun masyarakat baru')
 @section('breadcrumb_title', 'User')
 
-@php
-    $button = true;
-@endphp
 
 @section('body')
     <div class="col-lg-12">
@@ -24,10 +25,10 @@
                 <div class="">
                     <select class="form-select  fs-7" aria-label="Default select example">
                         <option selected disabled>Pilih kategori user</option>
-                        <option value="1">Semua</option>
-                        <option value="1">Masyarakat</option>
-                        <option value="1">Pemungut</option>
-                        <option value="1">Petugas Kabupaten</option>
+                        <option value="all">Semua</option>
+                        <option value="1">Kec. Ajibata</option>
+                        <option value="1">Kec. Balige</option>
+                        <option value="1">Kec. Bonatua Lunasi</option>
                     </select>
                 </div>
             </div>

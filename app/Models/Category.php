@@ -10,6 +10,7 @@ class Category extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
     protected $casts = [
         'email_verified_at' => 'datetime',
         'user_uuid' => 'string',

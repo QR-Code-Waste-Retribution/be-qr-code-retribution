@@ -50,7 +50,7 @@ class InvoiceController extends Controller
     {
         $invoice_user = Invoice::where('user_id', $id)->get();
 
-        return $this->customResponse(new InvoiceCollection($invoice_user));
+        return $this->successResponse(new InvoiceCollection($invoice_user));
     }
 
     /**
