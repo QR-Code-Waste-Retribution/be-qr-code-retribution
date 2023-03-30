@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -48,9 +49,9 @@ class CategoryController extends Controller
 
         if ($validator->fails()) {
             return redirect()
-                        ->back()
-                        ->withErrors($validator)
-                        ->withInput();
+                ->back()
+                ->withErrors($validator)
+                ->withInput();
         }
 
         Category::create([
@@ -63,7 +64,7 @@ class CategoryController extends Controller
         ]);
 
         return redirect()->route('category.index')->with([
-            'type' => 'success',
+            'type' => 'Successfully to create category',
             'status' => 'Yeyyyy, Anda berhasil menambahkan Kategori Baru',
         ]);
     }
@@ -87,7 +88,8 @@ class CategoryController extends Controller
      */
     public function edit($id)
     {
-        return view('pages.category.edit');
+        $category = Category::find($id);
+        return view('pages.category.edit', compact('category'));
     }
 
     /**
@@ -102,6 +104,19 @@ class CategoryController extends Controller
         //
     }
 
+
+    public function changeStatusCategory(Request $request)
+    {
+        try {
+            $category = Category::find($request->category_id);
+            $category->status = !$category->status;
+            $category->save();
+
+            return $this->successResponse($category, 'Success to change category status');
+        } catch (Exception $err) {
+            return $this->errorResponse([], 'Something went wrong');
+        }
+    }
     /**
      * Remove the specified resource from storage.
      *

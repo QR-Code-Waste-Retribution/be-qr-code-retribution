@@ -78,6 +78,7 @@ class PemungutController extends Controller
         try {
             User::create([
                 'name' => $validated['name'],
+                'uuid' => fake()->unique()->uuid(),
                 'username' => $validated['username'],
                 'sub_district_id' => $validated['kecamatan'],
                 'district_id' => auth()->user()->district_id,
@@ -120,7 +121,9 @@ class PemungutController extends Controller
     public function edit($id)
     {
         $pemungut = User::find($id);
-        return view('pages.user.pemungut.edit', compact('pemungut'));
+        $sub_districts = SubDistrict::all()->where('district_id', auth()->user()->district_id);
+
+        return view('pages.user.pemungut.edit', compact('pemungut', 'sub_districts'));
     }
 
     /**

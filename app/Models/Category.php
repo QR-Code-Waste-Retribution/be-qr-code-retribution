@@ -16,13 +16,23 @@ class Category extends Model
         'user_uuid' => 'string',
     ];
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsToMany(User::class, 'users_categories');
     }
 
-    public function invoice(){
+    public function invoice()
+    {
         return $this->hasMany(Invoice::class);
     }
 
+    public function transaction()
+    {
+        return $this->hasMany(Transaction::class);
+    }
 
+    public function district()
+    {
+        return $this->belongsTo(District::class);
+    }
 }

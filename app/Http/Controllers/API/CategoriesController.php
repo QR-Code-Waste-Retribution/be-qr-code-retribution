@@ -48,7 +48,7 @@ class CategoriesController extends Controller
     public function show($id)
     {
         $category_user = User::where('id', $id)->with('category')->get();
-        return $this->successResponse($category_user, "Success to get data");
+        return $this->successResponse($category_user, "Successfully to get category");
     }
 
     /**

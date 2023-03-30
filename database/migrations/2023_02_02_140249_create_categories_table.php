@@ -19,7 +19,7 @@ return new class extends Migration
             $table->longText('description');
             $table->bigInteger('price');
             $table->integer('status')->default(1);
-            $table->string('type');
+            $table->enum('type', ["MONTH", "DAY", "UNIT", "PACKET"]);
             $table->unsignedBigInteger('parent_id')->nullable();
             $table->unsignedBigInteger('district_id');
             $table->timestamps();

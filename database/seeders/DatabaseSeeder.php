@@ -31,13 +31,13 @@ class DatabaseSeeder extends Seeder
         User::factory(300)->create();
         $this->call([
             UserSeeder::class,
+            CategorySeeder::class,
         ]);
         Transaction::factory(100)->create();
         PemungutTransaction::factory(100)->create();
 
         $this->call([
             PemungutTransactionsSeeder::class,
-            CategorySeeder::class,
             UserCategorySeeder::class,
             InvoiceSeeder::class,
         ]);

@@ -25,9 +25,16 @@ class InvoiceSeeder extends Seeder
                     'category_id' => $category->id,
                     'price' => $category->price,
                     'user_id' => $user->id,
+<<<<<<< HEAD
                     'type' => 0,
                 ]);
                 $this->command->info(json_encode($invoice, JSON_PRETTY_PRINT));
+=======
+                    'uuid_user' => $user->uuid,
+                    'status' => 0,
+                ]);
+                // $this->command->info(json_encode($invoice, JSON_PRETTY_PRINT));
+>>>>>>> 01bfd2ac2cf14e38b1783403b04502601050fd36
             }   
         }
     }
