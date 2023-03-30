@@ -16,6 +16,7 @@ class UserSeeder extends Seeder
     public function run()
     {
         $petugas = [
+            'uuid' => fake()->uuid(), 
             'name' => 'Zico Andreas Aritonang',
             'username' => 'petugas',
             'password' => bcrypt('password'),

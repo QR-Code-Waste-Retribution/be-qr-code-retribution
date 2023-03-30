@@ -30,7 +30,7 @@ class UserFactory extends Factory
         }
 
         return [
-            // 'uuid' => fake()->uuid(),
+            'uuid' => fake()->uuid(),
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'username' => fake()->unique()->userName(),

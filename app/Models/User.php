@@ -21,6 +21,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'uuid',
         'name',
         'email',
         'username',
@@ -83,7 +84,7 @@ class User extends Authenticatable
 
     public function category()
     {
-        return $this->belongsToMany(Category::class, 'users_categories');
+        return $this->belongsToMany(Category::class, 'users_categories')->withPivot('address');
     }
 
     public function invoices()

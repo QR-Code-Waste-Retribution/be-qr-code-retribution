@@ -15,10 +15,11 @@ return new class extends Migration
     {
         Schema::create('invoice', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid_user');
             $table->unsignedBigInteger('category_id');
             $table->bigInteger('price');
             $table->unsignedBigInteger('user_id');
-            $table->integer('type')->default(0);
+            $table->integer('status')->default(0);
             $table->timestamps();
 
             $table->foreign('category_id')
@@ -27,6 +28,10 @@ return new class extends Migration
 
             $table->foreign('user_id')
                 ->references('id')
+                ->on('users');
+                
+            $table->foreign('uuid_user')
+                ->references('uuid')
                 ->on('users');
         });
     }

@@ -21,14 +21,34 @@ class UserCategorySeeder extends Seeder
         $users = User::all();
 
         foreach ($users as $user) {
-            $categories = Category::select("id")->where('parent_id', '!=', 0)->inRandomOrder()->limit(3)->pluck('id')->toArray();
-            $sub_district = SubDistrict::select("id")->inRandomOrder()->limit(1)->pluck('id')->toArray();
-            $this->command->info(sprintf('%s', json_encode($categories)));
-            DB::table('users_categories')->insert([
-                ['user_id' => $user->id, 'category_id' => $categories[0], 'sub_district_id' => $sub_district[0], 'address' => fake()->address() . " " . $sub_district[0]],
-                ['user_id' => $user->id, 'category_id' => $categories[1], 'sub_district_id' => $sub_district[0], 'address' => fake()->address() . " " . $sub_district[0]],
-                ['user_id' => $user->id, 'category_id' => $categories[2], 'sub_district_id' => $sub_district[0], 'address' => fake()->address() . " " . $sub_district[0]]
-            ]);
+            $sub_district_user = array();
+            $i = 0;
+            while ($i < 3) {
+                $categories = Category::select("id")
+                    ->where('price', '!=', 0)
+                    ->whereNotNull('parent_id')
+                    ->where('district_id', $user->district_id)
+                    ->inRandomOrder()
+                    ->limit(1)
+                    ->pluck('id')->toArray();
+                $sub_district = SubDistrict::select("id")
+                    ->where('district_id', $user->district_id)
+                    ->inRandomOrder()
+                    ->limit(1)
+                    ->pluck('id')->toArray();
+                if (in_array($sub_district[0], $sub_district_user)) {
+                    $this->command->info("Category with sub district provided already exist [$i]");
+                    $i--;
+                    continue;
+                }
+                array_push($sub_district_user, $sub_district);
+                // $this->command->info(sprintf('%s', json_encode($categories)));
+                DB::table('users_categories')->insert([
+                    ['user_id' => $user->id, 'category_id' => $categories[0], 'sub_district_id' => $sub_district[0], 'address' => fake()->address() . " " . $sub_district[0]],
+                ]);
+                $i++;
+            }
+            unset($sub_district_user);
         }
         $this->command->info(sprintf("Success to add dummy in users_categories table"));
     }

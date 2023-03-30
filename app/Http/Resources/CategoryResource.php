@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class InvoiceResource extends JsonResource
+class CategoryResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,18 +15,14 @@ class InvoiceResource extends JsonResource
     public function toArray($request)
     {
         return [
-            "id" =>  $this->id,
-            "category_id" =>  $this->category_id,
-            "price" => [
-                "normal_price" => $this->price,
-                "formated_price" => number_format($this->price, 2)
-            ],
-            "user_id" =>  $this->user_id,
-            "status" =>  $this->status,
-            "category" => new CategoryResource($this->category),
-            "address" => $this->address,
-            "sub_district_name" => $this->sub_district_name,
-            "date" => $this->date,
+            "id" => $this->id,
+            "name" => $this->name,
+            "description" => $this->description,
+            "price" => $this->price,
+            "status" => $this->status ? 'active' : 'non-active',
+            "type" => "MONTH",
+            "parent_id" => 43,
+            "district" => new DistrictResource($this->district),
             "created_at" => [
                 'date' => $this->created_at,
                 'formated_date' => date('d F Y', strtotime($this->created_at)),
