@@ -19,14 +19,14 @@ class InvoiceResource extends JsonResource
             "category_id" =>  $this->category_id,
             "price" => [
                 "normal_price" => $this->price,
-                "formated_price" => number_format($this->price, 2),
+                "formated_price" => number_format($this->price, 2)
             ],
             "user_id" =>  $this->user_id,
             "status" =>  $this->status,
             "category" => new CategoryResource($this->category),
             "address" => $this->address,
             "sub_district_name" => $this->sub_district_name,
-            "arreas" => 1,
+            "date" => $this->date,
             "created_at" => [
                 'date' => $this->created_at,
                 'formated_date' => date('d F Y', strtotime($this->created_at)),

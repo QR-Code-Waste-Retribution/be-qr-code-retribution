@@ -11,7 +11,7 @@ class Invoice extends Model
 
     protected $table = 'invoice';
 
-    private static $invoices_formatted = array();
+    public static $invoices_formatted = array();
 
     public function user()
     {
@@ -23,41 +23,30 @@ class Invoice extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public static function formatUserInvoice($invoices){
-        // $result = array();
+    public static function formatUserInvoice($invoices)
+    {
         foreach ($invoices as $item) {
-            $check = self::checkStatusInvoice($item);
-            
-            // if(!$check['status']){
-            //     array_push($result, $item);
-            // } else {
-            //     $result[$check['index']]['price'] += $item['price'];
-            // }
+            self::checkStatusInvoice($item);
         }
         return self::$invoices_formatted;
     }
-    
-    public static function checkStatusInvoice($invoice){
-        $index = 0;
-        foreach (self::$invoices_formatted as $item) {
-            if($invoice['category_id'] == $item['category_id']){
-                $item['price'] += $invoice['price'];
-                return [
-                    'status' => true,
-                    'index' => $index,
-                ];
-                break;
+
+    public static function checkStatusInvoice($invoice)
+    {
+        if(count(self::$invoices_formatted) > 0){
+            foreach (self::$invoices_formatted as $item) {
+                if ($invoice['category_id'] == $item['category_id'] && $invoice['status'] == $item['status']) {
+                    $item['price'] += $invoice['price'];
+                    $item['date'] =  $item['date'] . ' - ' . date('d F Y', strtotime($invoice['created_at']));
+                    return;
+                    break;
+                } else {
+                    $invoice['date'] = date('d F Y', strtotime($invoice['created_at']));
+                }
             }
-            $index++;
+        } else {
+            $invoice['date'] = date('d F Y', strtotime($invoice['created_at']));
         }
-
         array_push(self::$invoices_formatted, $invoice);
-
-        return [
-            'status' => false,
-            'index' => $index,
-        ];
     }
-
-
 }
