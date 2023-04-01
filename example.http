@@ -6,10 +6,10 @@ Content-Type: application/json
     "password": "password"
 }
 
-POST http://localhost:8000/api/invoice
+######
+POST http://localhost:8000/api/people/223bc92a-7130-3288-a028-44292137576b/invoice
 Content-Type: application/json
 
 {
-    "username": "abe55",
-    "password": "password"
+    "sub_district_id": 4,
 }

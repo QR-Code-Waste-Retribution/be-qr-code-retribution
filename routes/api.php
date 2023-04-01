@@ -5,7 +5,9 @@ use App\Http\Controllers\API\CategoriesController;
 use App\Http\Controllers\API\InvoiceController;
 use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\UserController;
+use App\Utils\DokuGenerateToken;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,6 +20,19 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+Route::get('/test', function (Request $request) {
+    $token = DokuGenerateToken::generateToken();
+
+    // $response = Http::withHeaders([
+    //     'Client-Id' => $token['client_id'],
+    //     'Request-Id' => $token['request_id'],
+    //     'Request-Timestamp' => $token['request_timestamp'],
+    //     'Signature' => $token['signature'],
+    // ])->post('https://api-sandbox.doku.com/checkout/v1/payment', $request->toArray());
+
+    // return $response;
+});
 Route::post('login', [AuthController::class, 'login']);
 
 Route::put('user/change/{id}/password', [UserController::class, 'changePassword']);
@@ -28,6 +43,8 @@ Route::post('people/{uuid}/invoice', [InvoiceController::class, 'getInvoiceOfUse
 Route::resource('invoice', InvoiceController::class);
 Route::resource('transaction', TransactionController::class);
 Route::resource('category', CategoriesController::class);
+
+
 
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
