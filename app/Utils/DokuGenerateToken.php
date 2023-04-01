@@ -2,19 +2,21 @@
 
 namespace App\Utils;
 
+use Illuminate\Support\Facades\Http;
+
 class DokuGenerateToken
 {
 
     public static function generateToken()
     {
-        $clientId = "BRN-0215-1665721005141";
+        $clientId = env("DOKU_CLIENT_ID");
         $requestId = '93626957-8ebe-4e0e-9778-3a1a623ea18b';
         $dateTime = gmdate("Y-m-d H:i:s");
         $isoDateTime = date(DATE_ISO8601, strtotime($dateTime));
         $dateTimeFinal = substr($isoDateTime, 0, 19) . "Z";
         $requestDate =  $dateTimeFinal;
-        $targetPath = "/checkout/v1/payment"; // For merchant request to Jokul, use Jokul path here. For HTTP Notification, use merchant path here
-        $secretKey = "SK-3ut5p5VDAKku2Dqd541q";
+        $targetPath = "/checkout/v1/payment"; 
+        $secretKey = env("DOKU_SECRET_KEY");
 
         $requestBody = [
             "order" => [
@@ -123,33 +125,23 @@ class DokuGenerateToken
             "Request-Timestamp:" . $requestDate . "\n" .
             "Request-Target:" . $targetPath . "\n" .
             "Digest:" . $digestValue;
-            
+
         $signature = base64_encode(hash_hmac('sha256', $componentSignature, $secretKey, true));
 
-        $ch = curl_init('https://api-sandbox.doku.com/checkout/v1/payment');
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($requestBody));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
+            'Client-Id' => $clientId,
+            'Request-Id' => $requestId,
+            'Request-Timestamp' => $dateTimeFinal,
+            'Signature' => 'HMACSHA256=' . $signature,
+        ])->post('https://api-sandbox.doku.com/checkout/v1/payment', $requestBody);
 
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            'Content-Type: application/json',
-            'Client-Id:' . $clientId,
-            'Request-Id:' . $requestId,
-            'Request-Timestamp:' . $dateTimeFinal,
-            'Signature:' . "HMACSHA256=" . $signature,
-        ));
+        $responseJson = json_decode($response->body());
+        $httpCode = $response->status();
 
-        $responseJson = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        
-        curl_close($ch);
-
-        if (is_string($responseJson) && $httpCode == 200) {
-            echo $responseJson;
-            return json_decode($responseJson, true);
-        } else {
-            echo $responseJson;
-            return null;
-        }
+        return [
+            'data' => $responseJson,
+            'code' => $httpCode,
+        ];
     }
 }

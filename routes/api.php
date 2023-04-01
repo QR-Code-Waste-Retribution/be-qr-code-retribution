@@ -31,7 +31,7 @@ Route::get('/test', function (Request $request) {
     //     'Signature' => $token['signature'],
     // ])->post('https://api-sandbox.doku.com/checkout/v1/payment', $request->toArray());
 
-    // return $response;
+    return response()->json($token);
 });
 Route::post('login', [AuthController::class, 'login']);
 
