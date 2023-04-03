@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CategoryResource;
+use App\Models\Category;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -13,9 +15,16 @@ class CategoriesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        try {
+            $district_id = $request->district_id ?? 1;
+            $categories = Category::getAllByDistrict($district_id);
+
+            return $this->successResponse(CategoryResource::collection($categories), 'Successfully to get all categories');
+        } catch (\Throwable $th) {
+            return $this->errorResponse([], $th->getMessage(), 500);
+        }
     }
 
     /**

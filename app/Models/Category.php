@@ -35,4 +35,11 @@ class Category extends Model
     {
         return $this->belongsTo(District::class);
     }
+
+    public static function getAllByDistrict($district_id){
+        return self::all()->where('district_id', $district_id);
+    }
+
+    
+
 }

@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\TransactionResource;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      *
@@ -37,6 +40,20 @@ class TransactionController extends Controller
     {
         return $request->all();
     }
+
+
+
+    public function historyTransactionPemungut($id)
+    {
+        try {
+            $transactions = Transaction::getHistoryTransactionOfPemungut($id);
+
+            return $this->successResponse(TransactionResource::collection($transactions), 'Successfully to get transactions data');
+        } catch (\Throwable $th) {
+            return $this->errorResponse([], $th->getMessage(), 500);
+        }
+    }
+
 
     /**
      * Display the specified resource.

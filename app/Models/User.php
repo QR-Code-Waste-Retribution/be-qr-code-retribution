@@ -102,4 +102,10 @@ class User extends Authenticatable
         return $this->hasMany(PemungutTransaction::class, 'pemungut_id', 'id');
     }
 
+    public function changeUserStatus($id){
+        $invoice = Invoice::find('id', $id);
+        $invoice->status = (int) !$invoice->status;
+        $invoice->save();
+    }
+
 }
