@@ -7,7 +7,6 @@ use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\UserController;
 use App\Utils\DokuGenerateToken;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,25 +22,25 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/test', function (Request $request) {
     $token = DokuGenerateToken::generateToken();
-
-    // $response = Http::withHeaders([
-    //     'Client-Id' => $token['client_id'],
-    //     'Request-Id' => $token['request_id'],
-    //     'Request-Timestamp' => $token['request_timestamp'],
-    //     'Signature' => $token['signature'],
-    // ])->post('https://api-sandbox.doku.com/checkout/v1/payment', $request->toArray());
-
     return response()->json($token);
 });
 Route::post('login', [AuthController::class, 'login']);
 
+
+// User
 Route::put('user/change/{id}/password', [UserController::class, 'changePassword']);
 Route::put('user/edit/{id}/profile', [UserController::class, 'editProfile']);
 Route::post('user/add', [AuthController::class, 'register']);
 
+// Invoice
 Route::post('people/{uuid}/invoice', [InvoiceController::class, 'getInvoiceOfUser']);
 Route::resource('invoice', InvoiceController::class);
+
+// Transaction
+Route::get('/transaction/pemungut/{id}', [TransactionController::class, 'historyTransactionPemungut'])->name('transaction.history.pemungut');
 Route::resource('transaction', TransactionController::class);
+
+// Category
 Route::resource('category', CategoriesController::class);
 
 

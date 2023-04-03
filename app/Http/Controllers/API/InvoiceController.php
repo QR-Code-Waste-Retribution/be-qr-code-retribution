@@ -72,37 +72,7 @@ class InvoiceController extends Controller
             }
     
             $sub_district_id = $request->sub_district_id;
-            $invoice_user_current_month = Invoice::select('invoice.*', 'users_categories.user_id', 'users_categories.address', 'sub_districts.name as sub_district_name')
-                ->join('users_categories', function ($join) use ($sub_district_id) {
-                    $join->on('invoice.user_id', '=', 'users_categories.user_id')
-                        ->where('users_categories.sub_district_id', '=', $sub_district_id);
-                })
-                ->join('sub_districts', function ($join) {
-                    $join->on('users_categories.sub_district_id', '=', 'sub_districts.id');
-                })
-                ->where('invoice.uuid_user', '=', $uuid)
-                ->where(DB::raw('MONTH(invoice.created_at)'), '=', DB::raw('MONTH(CURRENT_DATE())'))
-                ->whereColumn('invoice.category_id', '=', 'users_categories.category_id')
-                ->orderBy('invoice.created_at');
-    
-            $invoice_user_previous_month = Invoice::select('invoice.*', 'users_categories.user_id', 'users_categories.address', 'sub_districts.name as sub_district_name')
-                ->join('users_categories', function ($join) use ($sub_district_id) {
-                    $join->on('invoice.user_id', '=', 'users_categories.user_id')
-                        ->where('users_categories.sub_district_id', '=', $sub_district_id);
-                })
-                ->join('sub_districts', function ($join) {
-                    $join->on('users_categories.sub_district_id', '=', 'sub_districts.id');
-                })
-                ->where('invoice.uuid_user', '=', $uuid)
-                ->where('invoice.status', '=', 0)
-                ->where(DB::raw('MONTH(invoice.created_at)'), '<', DB::raw('MONTH(CURRENT_DATE())'))
-                ->whereColumn('invoice.category_id', '=', 'users_categories.category_id')
-                ->orderBy('invoice.created_at')
-                ->union($invoice_user_current_month)
-                ->get();
-    
-            $invoice_user = $invoice_user_previous_month;
-    
+            $invoice_user = Invoice::getInvoiceById($uuid, $sub_district_id);
             $invoice_resource = InvoiceResource::collection($invoice_user);
             $result = Invoice::formatUserInvoice($invoice_resource);
     
