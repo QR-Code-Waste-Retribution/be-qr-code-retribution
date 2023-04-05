@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -74,17 +75,13 @@ class AuthController extends Controller
 
   protected function createNewToken($_token)
   {
-    $auth = auth()->user();
-    $user = json_decode(json_encode($auth), true);
-    $user['role'] = $auth->role;
-    $user['district'] = $auth->district->name;
-    $user['sub_district'] = $auth->sub_district->name;
+    $user = auth()->user();
 
     return $this->successResponse([
       'access_token' => $_token->createToken('qr_code_retribution')->accessToken,
       'credential_token' => $_token->createToken('qr_code_retribution')->token,
       'token_type' => 'bearer',
-      'user' => $user,
+      'user' => new UserResource($user),
     ], "Successfully login to app");
   }
 }
