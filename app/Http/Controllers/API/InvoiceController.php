@@ -4,7 +4,9 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\InvoiceResource;
+use App\Http\Resources\UserResource;
 use App\Models\Invoice;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -75,8 +77,15 @@ class InvoiceController extends Controller
             $invoice_user = Invoice::getInvoiceById($uuid, $sub_district_id);
             $invoice_resource = InvoiceResource::collection($invoice_user);
             $result = Invoice::formatUserInvoice($invoice_resource);
+
+            $user = User::where('uuid', $uuid)->with('role')->first();
+
+            $response = [
+                'invoice' => $result,
+                'user' =>  new UserResource($user),
+            ];
     
-            return $this->successResponse($result, "Successfully to get invoice category");
+            return $this->successResponse($response, "Successfully to get invoice category");
      
         } catch (\Throwable $th) {
             //throw $th;

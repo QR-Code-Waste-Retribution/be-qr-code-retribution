@@ -76,7 +76,7 @@ class AuthController extends Controller
   {
     $auth = auth()->user();
     $user = json_decode(json_encode($auth), true);
-    $user['role'] = $auth->role->name;
+    $user['role'] = $auth->role;
     $user['district'] = $auth->district->name;
     $user['sub_district'] = $auth->sub_district->name;
 
