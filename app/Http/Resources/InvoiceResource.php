@@ -22,7 +22,6 @@ class InvoiceResource extends JsonResource
                 "formated_price" => number_format($this->price, 2)
             ],
             "user_id" =>  $this->user_id,
-            "user" =>  $this->user,
             "status" =>  $this->status,
             "category" => new CategoryResource($this->category),
             "address" => $this->address,

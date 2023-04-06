@@ -86,9 +86,7 @@ class InvoiceController extends Controller
             ];
     
             return $this->successResponse($response, "Successfully to get invoice category");
-     
         } catch (\Throwable $th) {
-            //throw $th;
             return $this->errorResponse([], $th->getMessage(), 500);
         }
     }
