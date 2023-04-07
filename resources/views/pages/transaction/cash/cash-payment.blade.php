@@ -55,10 +55,10 @@
                     @forelse ($pemungut_transactions as $item)
                         <tr>
                             <th scope="row">{{ (request()->input('page', 1) - 1) * 10 + $loop->iteration }}</th>
-                            <td><span class=""><span class="fw-semibold">{{ $item->name }}</span><br>
-                                    Kec. {{ $item->sub_district->name }}</span></td>
-                            <td>Rp. {{ number_format($item->pemungut_transactions[0]->total) }}</td>
-                            <td>{{ date('F Y', strtotime($item->created_at)) }}</td>
+                            <td><a class="" href="{{ route('transaction-cash.show', $item->id) }}"><span class="fw-semibold">{{ $item->name }}</span><br>
+                                    Kec. {{ $item->sub_district->name }}</a></td>
+                            <td>Rp. {{ number_format(collect($item->pemungut_transactions)->sum('total')) }}</td>
+                            <td>{{ \App\Models\PemungutTransaction::getRangeArreas($item->pemungut_transactions) }}</td>
                             <td class="">
                                 @if (!$item->pemungut_transactions[0]->status)
                                     <span class="badge text-bg-danger">Belum Disetor</span>
@@ -69,7 +69,11 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5"><p class="text-danger fs-6">No Item</p></td>
+                            <td><p class="text-danger fs-7">-</p></td>
+                            <td><p class="text-danger fs-7">-</p></td>
+                            <td><p class="text-danger fs-7">-</p></td>
+                            <td><p class="text-danger fs-7">-</p></td>
+                            <td><p class="text-danger fs-7">-</p></td>
                         </tr>
                     @endforelse
                 </tbody>

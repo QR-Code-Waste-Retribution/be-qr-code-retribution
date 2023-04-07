@@ -25,14 +25,8 @@
                                 <button type="button" title="Search"><i class="bi bi-search"></i></button>
                             </div>
                         </div>
-                        <select class="form-select fs-7 w-25" name="sub_district" aria-label="Default select example">
-                            <option disabled>Pilih Kecamatan</option>
-                            <option value="all">Semua Kecamatan</option>
-                            @foreach ($sub_districts as $item)
-                                <option value="{{ $item->id }}" @if (request()->input('sub_district') == $item->id) selected @endif>Kec.
-                                    {{ $item->name }}</option>
-                            @endforeach
-                        </select>
+                        
+                        <x-sub-district-dropdown col="3" />
                     </div>
                     <div class="d-flex justify-content-end">
                         <button type="submit" title="Search" class="btn button-search btn-primary fs-7 px-3 py-2 my-2"><i

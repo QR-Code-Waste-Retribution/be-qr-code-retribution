@@ -22,27 +22,39 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', [AuthController::class, 'index']);
-Route::get('/login', [AuthController::class, 'index']);
+Route::get('/login', [AuthController::class, 'index'])->name('login');
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 
-// Dashboard
-Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
-Route::get('/dashboard/pemasukan', [HomeController::class, 'income'])->name('dashboard.income');
+Route::middleware(['auth', 'role:petugas_kabupaten'])->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/pemasukan', [HomeController::class, 'income'])->name('dashboard.income');
+    
+    // User Management
+    Route::prefix('user')->group(function () {
+        
+        // Masyarakat
+        Route::resource('masyarakat', MasyarakatController::class);
+        Route::post('masyarakat/status', [MasyarakatController::class, 'changeStatusUser'])->name('masyarakat.status');
+        
+        // Pemungut
+        Route::resource('pemungut', PemungutController::class);
+        Route::post('pemungut/status', [PemungutController::class, 'changeStatusUser'])->name('pemungut.status');
+    });
 
-// User Management
-Route::prefix('user')->group(function () {
+    // User
+    Route::resource('user', UserController::class);
+
+    // Categories
+    Route::resource('category', CategoryController::class);
+    Route::post('category/status', [CategoryController::class, 'changeStatusCategory']);
+
+    // Cash Payment
+    Route::put('transaction-cash/change/status', [CashPaymentController::class, 'changeDepositStatus'])->name('cash.payment.change.status');
+    Route::resource('transaction-cash', CashPaymentController::class);
     
-    // Masyarakat
-    Route::resource('masyarakat', MasyarakatController::class);
-    Route::post('masyarakat/status', [MasyarakatController::class, 'changeStatusUser'])->name('masyarakat.status');
-    
-    // Pemungut
-    Route::resource('pemungut', PemungutController::class);
-    Route::post('pemungut/status', [PemungutController::class, 'changeStatusUser'])->name('pemungut.status');
+    // Non Cash Payment
+    Route::resource('transaction-noncash', NonCashPaymentController::class);
 });
-Route::resource('user', UserController::class);
-Route::resource('category', CategoryController::class);
-Route::post('category/status', [CategoryController::class, 'changeStatusCategory']);
-Route::resource('transaction-cash', CashPaymentController::class);
-Route::resource('transaction-noncash', NonCashPaymentController::class);
 

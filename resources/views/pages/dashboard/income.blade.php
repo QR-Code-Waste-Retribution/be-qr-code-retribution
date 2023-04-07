@@ -22,30 +22,7 @@
                     <button type="submit" title="Search"><i class="bi bi-search"></i></button>
                 </form>
             </div>
-            <div class="">
-                <select class="form-select fs-7" aria-label="Default select example">
-                    @php
-                        $months = [
-                            1 => 'Januari',
-                            2 => 'Februari',
-                            3 => 'Maret',
-                            4 => 'April',
-                            5 => 'Mei',
-                            6 => 'Juni',
-                            7 => 'Juli',
-                            8 => 'Agustus',
-                            9 => 'September',
-                            10 => 'Oktober',
-                            11 => 'November',
-                            12 => 'Desember',
-                        ];
-                    @endphp
-                    @foreach ($months as $key => $value)
-                        <option value="{{ $key }}" @if ($key == 1) selected @endif>
-                            {{ $value }}</option>
-                    @endforeach
-                </select>
-            </div>
+            <x-month-select col="3" />
         </div>
         <div class="col-12 mt-4">
             <table class="table fs-7 table-hover">
@@ -59,17 +36,18 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @for ($i = 0; $i < 10; $i++)
+                    @foreach ($transactions as $item)
                         <tr>
-                            <th scope="row">{{ $i + 1 }}</th>
-                            <td>Kec. Balige</td>
-                            <td>Rp. 1.243.000 -,</td>
-                            <td>Rp. 243.000 -,</td>
-                            <td>Rp. 1.243.000 -,</td>
+                            <th scope="row">{{ $loop->iteration }}</th>
+                            <td>Kec. {{ $item['sub_district']['name'] }}</td>
+                            <td>Rp. {{ number_format($item['total'], 2) }} -,</td>
+                            <td>Rp. {{ number_format($item['cash'], 2) }} -,</td>
+                            <td>Rp. {{ number_format($item['noncash'], 2) }} -,</td>
                         </tr>
-                    @endfor
+                    @endforeach
                 </tbody>
             </table>
+            {{ $transactions->links() }}
         </div>
     </div>
 @endsection

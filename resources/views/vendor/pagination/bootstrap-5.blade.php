@@ -30,13 +30,13 @@
         <div class="d-none flex-sm-fill d-sm-flex align-items-sm-center justify-content-sm-between">
             <div>
                 <p class="small text-muted">
-                    {!! __('Showing') !!}
+                    {!! __('Menampilkan') !!}
                     <span class="fw-semibold">{{ $paginator->firstItem() }}</span>
-                    {!! __('to') !!}
+                    {!! __('sampai') !!}
                     <span class="fw-semibold">{{ $paginator->lastItem() }}</span>
-                    {!! __('of') !!}
+                    {!! __('dari') !!}
                     <span class="fw-semibold">{{ $paginator->total() }}</span>
-                    {!! __('results') !!}
+                    {!! __('hasil') !!}
                 </p>
             </div>
 
@@ -61,7 +61,7 @@
                         @foreach (range(1, $paginator->lastPage()) as $i)
                             @if ($i >= $paginator->currentPage() - 1 && $i <= $paginator->currentPage() + 1)
                                 @if ($i == $paginator->currentPage())
-                                    <li class="active"><span class="page-link">{{ $i }}</span></li>
+                                    <li class="active bg-primary"><span class="page-link">{{ $i }}</span></li>
                                 @else
                                     <li class="page-item"><a class="page-link"
                                             href="{{ $paginator->url($i) }}">{{ $i }}</a></li>

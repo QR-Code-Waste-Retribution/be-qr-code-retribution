@@ -35,9 +35,10 @@
                 <label for="inputEmail4" class="form-label fs-7">Tipe Pembayaran Kategori</label>
                 <select class="form-select fs-7 @error('tipe_pembayaran_kategori') is-invalid @enderror" name="tipe_pembayaran_kategori" aria-label="Default select example">
                     <option disabled selected>Tipe Pembayaran Kategori</option>
-                    <option value="1">Bulan</option>
-                    <option value="2">Hari</option>
-                    <option value="3">Unit</option>
+                    <option value="MONTH">Bulan</option>
+                    <option value="DAY">Hari</option>
+                    <option value="UNIT">Unit</option>
+                    <option value="PACKET">Paket</option>
                 </select>
                 @error('tipe_pembayaran_kategori')
                     <div class="invalid-feedback fs-7">{{ $message }}</div>

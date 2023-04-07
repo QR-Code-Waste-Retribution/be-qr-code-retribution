@@ -13,8 +13,9 @@
 
 @section('body')
     <div class="col-lg-12">
-        <form class="row g-3" action="{{ route('category.store') }}" method="POST">
+        <form class="row g-3" action="{{ route('category.update', $category->id) }}" method="POST">
             @csrf
+            @method('PUT')
             <div class="col-12">
                 <label for="inputNanme4" class="form-label fs-7">Nama Kategori</label>
                 <input type="text" class="form-control fs-7 @error('nama_kategori') is-invalid @enderror"
@@ -33,18 +34,20 @@
             </div>
             <div class="col-12">
                 <label for="inputEmail4" class="form-label fs-7">Tipe Pembayaran Kategori</label>
-                <select class="form-select fs-7 @error('tipe_pembayaran_kategori') is-invalid @enderror" name="tipe_pembayaran_kategori" aria-label="Default select example">
+                <select class="form-select fs-7 @error('tipe_pembayaran_kategori') is-invalid @enderror"
+                    name="tipe_pembayaran_kategori" aria-label="Default select example">
                     <option disabled selected>Tipe Pembayaran Kategori</option>
-                    <option value="1">Bulan</option>
-                    <option value="2">Hari</option>
-                    <option value="3">Unit</option>
+                    <option value="MONTH" @if ($category->type == 'MONTH') selected @endif>Bulan</option>
+                    <option value="DAY" @if ($category->type == 'DAY') selected @endif>Hari</option>
+                    <option value="UNIT" @if ($category->type == 'UNIT') selected @endif>Unit</option>
+                    <option value="PACKET" @if ($category->type == 'PACKET') selected @endif>Paket</option>
                 </select>
                 @error('tipe_pembayaran_kategori')
                     <div class="invalid-feedback fs-7">{{ $message }}</div>
                 @enderror
             </div>
             <div class="text-center">
-                <button type="submit" class="btn btn-success fs-7">Tambah</button>
+                <button type="submit" class="btn btn-success fs-7">Edit</button>
                 <a href="{{ route('category.index') }}" class="btn btn-danger fs-7">Batal</a>
             </div>
         </form>

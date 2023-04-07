@@ -21,11 +21,22 @@ class AuthController extends Controller
         $validated = $request->validated();
 
         if (Auth::attempt($validated)) {
+            $request->session()->regenerate();
+
             return redirect()->route('dashboard');
         }
 
         return redirect()->back()->withErrors([
             'messages' => 'Username dan password yang anda masukkan tidak ada',
-        ]);
+        ])->withInput();
     }
+
+    public function logout(Request $request) {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        
+        return redirect('/login');
+    }
+    
 }

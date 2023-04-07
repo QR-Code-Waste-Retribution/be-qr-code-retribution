@@ -6,6 +6,7 @@ use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
@@ -106,6 +107,10 @@ class User extends Authenticatable
         $invoice = Invoice::find('id', $id);
         $invoice->status = (int) !$invoice->status;
         $invoice->save();
+    }
+
+    public function getAllCountOfUsersRole(){
+        return $this->selectRaw('role_id, count(*) as total')->whereIn('role_id', [1, 2])->groupBy('role_id')->get();
     }
 
 }

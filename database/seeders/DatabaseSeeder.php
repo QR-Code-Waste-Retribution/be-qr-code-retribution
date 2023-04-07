@@ -34,7 +34,6 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
         ]);
         Transaction::factory(100)->create();
-        PemungutTransaction::factory(100)->create();
 
         $this->call([
             PemungutTransactionsSeeder::class,

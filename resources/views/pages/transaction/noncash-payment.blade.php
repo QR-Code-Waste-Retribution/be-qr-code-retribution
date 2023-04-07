@@ -20,7 +20,7 @@
             </div>
             <div class="col-md-6">
                 <div class="row">
-                    <div class="col-6">
+                    {{-- <div class="col-6">
                         <label for="" class="form-label fs-7 fw-medium">Pilih Bulan</label>
                         <select class="form-select fs-7" aria-label="Default select example">
                             <option value="1" selected>Januari</option>
@@ -35,7 +35,7 @@
                             <option value="1">One</option>
                             <option value="2">Two</option>
                         </select>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
         </div>
@@ -49,13 +49,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @for ($i = 0; $i < 10; $i++)
+                    @foreach ($non_cash_payment as $item)
                         <tr>
-                            <th scope="row">{{ $i + 1 }}</th>
-                            <td><span class="">Kec. {{ fake()->city() }}</span></td>
-                            <td>Rp. {{ number_format(fake()->randomNumber(5, true), 2) }}</td>
+                            <th scope="row">{{ $loop->iteration }}</th>
+                            <td><span class="">Kec. {{ $item->sub_district->name}}</span></td>
+                            <td>Rp. {{ number_format($item->total, 2) }}</td>
                         </tr>
-                    @endfor
+                    @endforeach
                 </tbody>
             </table>
         </div>

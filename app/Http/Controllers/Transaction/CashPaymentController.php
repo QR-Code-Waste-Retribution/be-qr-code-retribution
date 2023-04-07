@@ -3,13 +3,21 @@
 namespace App\Http\Controllers\Transaction;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\User\PemungutController;
+use App\Models\PemungutTransaction;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class CashPaymentController extends Controller
 {
+
+    public $pemungut_transactions;
+
+    public function __construct() {
+        $this->pemungut_transactions = new PemungutTransaction();
+    }
     /**
      * Display a listing of the resource.
      *
@@ -21,52 +29,42 @@ class CashPaymentController extends Controller
         $month = $request->month ?? '';
         $sub_district = $request->sub_district ?? null;
 
-        $pemungut_transactions = User::where('role_id', 2)->with(['pemungut_transactions', 'sub_district'])->where('district_id', 1)
-            ->where(function (Builder $query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%');
-            });
+        $pemungut_transactions = $this->pemungut_transactions->getAllTransaction($sub_district, $search);
 
-        if ($sub_district && $sub_district != 'all') {
-            $pemungut_transactions = $pemungut_transactions->where('sub_district_id', $sub_district);
-        }
-
-        $pemungut_transactions = $pemungut_transactions->paginate(10);
-
-        return view('pages.transaction.cash-payment', compact('pemungut_transactions'));
+        return view('pages.transaction.cash.cash-payment', compact('pemungut_transactions'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
-        //
+        $cash = $this->pemungut_transactions->show($id);
+        return view('pages.transaction.cash.detail', compact('cash'));
     }
 
+
+    public function changeDepositStatus(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'pemungut_transaction_id' => 'required',
+        ], [
+            'required' => 'Input :attribute tidak boleh kosong',
+        ]);
+
+
+        if ($validator->fails()) {
+            return redirect()
+                ->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $id = explode(',', $request->pemungut_transaction_id);
+        PemungutTransaction::whereIn('id', $id)->update(['status' => 1]);
+
+        return redirect()->back()->with([
+            'type' => 'success',
+            'status' => 'Yeyyyy, Anda berhasil mengubah status penyetoran',
+        ]);
+    }
     /**
      * Show the form for editing the specified resource.
      *
@@ -100,4 +98,32 @@ class CashPaymentController extends Controller
     {
         //
     }
+
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
 }

@@ -8,6 +8,13 @@ use Illuminate\Http\Request;
 
 class NonCashPaymentController extends Controller
 {
+    public $transaction;
+
+
+    public function __construct()
+    {
+        $this->transaction = new Transaction();
+    }
     /**
      * Display a listing of the resource.
      *
@@ -15,8 +22,8 @@ class NonCashPaymentController extends Controller
      */
     public function index()
     {
-        // $non_cash_transaction = Transaction::all()->where();
-        return view('pages.transaction.noncash-payment');
+        $non_cash_payment = $this->transaction->getAllNonCashTransaction();
+        return view('pages.transaction.noncash-payment', compact('non_cash_payment'));
     }
 
     /**

@@ -14,10 +14,13 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+
+    public function index(Request $request)
     {
+        $search = $request->search ?? '';
         $categories = Category::where('district_id', auth()->user()->district_id)
             ->where('parent_id', '!=', null)
+            ->where('name', 'like', '%' . $search . '%')
             ->paginate(10);
         return view('pages.category.index', compact('categories'));
     }
@@ -43,9 +46,11 @@ class CategoryController extends Controller
         $validator = Validator::make($request->all(), [
             'nama_kategori' => 'required',
             'harga_tarif' => 'required',
+            'tipe_pembayaran_kategori' => 'required',
         ], [
             'required' => 'Input :attribute tidak boleh kosong',
         ]);
+
 
         if ($validator->fails()) {
             return redirect()
@@ -58,13 +63,13 @@ class CategoryController extends Controller
             'name' => $request->nama_kategori,
             'description' => fake()->text(),
             'price' => $request->harga_tarif,
-            'type' => 'month',
+            'type' => $request->tipe_pembayaran_kategori,
             'parent_id' => null,
-            'district_id' => 1,
+            'district_id' => auth()->user()->district_id,
         ]);
 
         return redirect()->route('category.index')->with([
-            'type' => 'Successfully to create category',
+            'type' => 'success',
             'status' => 'Yeyyyy, Anda berhasil menambahkan Kategori Baru',
         ]);
     }
@@ -77,7 +82,7 @@ class CategoryController extends Controller
      */
     public function show($id)
     {
-        //
+        
     }
 
     /**
@@ -101,7 +106,32 @@ class CategoryController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'nama_kategori' => 'required',
+            'harga_tarif' => 'required',
+            'tipe_pembayaran_kategori' => 'required',
+        ], [
+            'required' => 'Input :attribute tidak boleh kosong',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()
+                ->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $category = Category::find($id);
+        $category->name = $request->nama_kategori;
+        $category->price = $request->harga_tarif;
+        $category->type = $request->tipe_pembayaran_kategori;
+
+        $category->save();
+
+        return redirect()->route('category.index')->with([
+            'type' => 'success',
+            'status' => 'Yeyyyy, Anda berhasil mengedit Kategori ' . $category->name,
+        ]);
     }
 
 

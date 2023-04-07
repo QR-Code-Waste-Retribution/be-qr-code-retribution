@@ -17,7 +17,7 @@
     <div class="col-lg-12">
         <div class="row box-container">
             <div class="col-12">
-                <form method="GET" action="{{ route('masyarakat.index') }}">
+                <form method="GET" action="{{ route('category.index') }}">
                     <div class="d-flex align-items-center gap-5">
                         <div class="search-bar">
                             <div class="search-form d-flex align-items-center">

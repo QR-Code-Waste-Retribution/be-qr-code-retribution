@@ -147,7 +147,7 @@ class CategorySeeder extends Seeder
                 'status' => 1,
                 'district_id' => $category['district_id'],
             ]);
-            $this->command->info(json_encode($category, JSON_PRETTY_PRINT));
+            // $this->command->info(json_encode($category, JSON_PRETTY_PRINT));
         }
     }
 }

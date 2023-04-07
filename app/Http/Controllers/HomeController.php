@@ -2,12 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
+    public $transactions;
+    public $users;
+
+
+    public function __construct() {
+        $this->transactions = new Transaction();
+        $this->users = new User();
+    }
     /**
      * Display a listing of the resource.
      *
@@ -15,13 +24,14 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $income = DB::table('transactions')->sum('price');
-        $users = DB::table('users')->select('role_id', DB::raw('count(*) as total'))->whereIn('role_id', [1, 2])->groupBy('role_id')->get()->toArray();
+        $income = $this->transactions->sumTransactionByType();
+        $users = $this->users->getAllCountOfUsersRole();
         return view('pages.home', compact('income', 'users'));
     }
     
     public function income(){
-        return view('pages.dashboard.income');
+        $transactions = $this->transactions->getAllTransaction();
+        return view('pages.dashboard.income', compact('transactions'));
     }
 
     /**
