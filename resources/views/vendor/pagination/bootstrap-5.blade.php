@@ -64,7 +64,7 @@
                                     <li class="active bg-primary"><span class="page-link">{{ $i }}</span></li>
                                 @else
                                     <li class="page-item"><a class="page-link"
-                                            href="{{ $paginator->url($i) }}">{{ $i }}</a></li>
+                                            href="{{ url()->current() . '?page=' . $i }}">{{ $i }}</a></li>
                                 @endif
                             @endif
                         @endforeach

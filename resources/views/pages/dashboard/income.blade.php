@@ -38,7 +38,7 @@
                 <tbody>
                     @foreach ($transactions as $item)
                         <tr>
-                            <th scope="row">{{ $loop->iteration }}</th>
+                            <th scope="row">{{ (request()->input('page', 1) - 1) * 10 + $loop->iteration }}</th>
                             <td>Kec. {{ $item['sub_district']['name'] }}</td>
                             <td>Rp. {{ number_format($item['total'], 2) }} -,</td>
                             <td>Rp. {{ number_format($item['cash'], 2) }} -,</td>
