@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Transaction;
 
+use App\Export\PaymentExport;
 use App\Http\Controllers\Controller;
 use App\Models\PemungutTransaction;
 use App\Models\User;
@@ -9,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CashPaymentController extends Controller
 {
@@ -17,6 +19,11 @@ class CashPaymentController extends Controller
 
     public function __construct() {
         $this->pemungut_transactions = new PemungutTransaction();
+    }
+
+    public function export()
+    {
+        return Excel::download(new PaymentExport('CASH'), 'cash.xlsx');
     }
     /**
      * Display a listing of the resource.

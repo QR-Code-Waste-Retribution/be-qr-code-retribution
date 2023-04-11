@@ -49,12 +49,14 @@ Route::middleware(['auth', 'role:petugas_kabupaten'])->group(function () {
     // Categories
     Route::resource('category', CategoryController::class);
     Route::post('category/status', [CategoryController::class, 'changeStatusCategory']);
-
+    
     // Cash Payment
     Route::put('transaction-cash/change/status', [CashPaymentController::class, 'changeDepositStatus'])->name('cash.payment.change.status');
+    Route::get('transaction-cash/export', [CashPaymentController::class, 'export'])->name('transaction-cash.export');
     Route::resource('transaction-cash', CashPaymentController::class);
     
     // Non Cash Payment
+    Route::get('transaction-noncash/export', [NonCashPaymentController::class, 'export'])->name('transaction-noncash.export');
     Route::resource('transaction-noncash', NonCashPaymentController::class);
 });
 

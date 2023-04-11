@@ -15,11 +15,12 @@ class CategoryController extends Controller
      * @return \Illuminate\Http\Response
      */
 
+    
     public function index(Request $request)
     {
+
         $search = $request->search ?? '';
         $categories = Category::where('district_id', auth()->user()->district_id)
-            ->where('parent_id', '!=', null)
             ->where('name', 'like', '%' . $search . '%')
             ->paginate(10);
         return view('pages.category.index', compact('categories'));
@@ -82,7 +83,6 @@ class CategoryController extends Controller
      */
     public function show($id)
     {
-        
     }
 
     /**

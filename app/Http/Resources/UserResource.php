@@ -25,7 +25,6 @@ class UserResource extends JsonResource
             'address' => $this->address,
             'phoneNumber' => $this->phoneNumber,
             'email_verified_at' => $this->email_verified_at,
-            'urban_village_id' => $this->urban_village_id,
             'sub_district_id' => $this->sub_district_id,
             'district_id' => $this->district_id,
             'district' => new DistrictResource($this->district),

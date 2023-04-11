@@ -15,6 +15,10 @@
     <div class="col-lg-12">
         <div class="row align-items-center box-container">
             <div class="col-md-12">
+                <a class="button-primary text-center px-4" href="{{ route('transaction-cash.export') }}">Download Excel &nbsp;<i
+                        class="bi bi-download"></i></a>
+            </div>
+            <div class="col-md-12">
                 <div class="row">
                     <div class="col-12">
                         <form method="GET" action="{{ route('transaction-cash.index') }}">
@@ -55,7 +59,8 @@
                     @forelse ($pemungut_transactions as $item)
                         <tr>
                             <th scope="row">{{ (request()->input('page', 1) - 1) * 10 + $loop->iteration }}</th>
-                            <td><a class="" href="{{ route('transaction-cash.show', $item->id) }}"><span class="fw-semibold">{{ $item->name }}</span><br>
+                            <td><a class="" href="{{ route('transaction-cash.show', $item->id) }}"><span
+                                        class="fw-semibold">{{ $item->name }}</span><br>
                                     Kec. {{ $item->sub_district->name }}</a></td>
                             <td>Rp. {{ number_format(collect($item->pemungut_transactions)->sum('total')) }}</td>
                             <td>{{ \App\Models\PemungutTransaction::getRangeArreas($item->pemungut_transactions) }}</td>
@@ -69,11 +74,21 @@
                         </tr>
                     @empty
                         <tr>
-                            <td><p class="text-danger fs-7">-</p></td>
-                            <td><p class="text-danger fs-7">-</p></td>
-                            <td><p class="text-danger fs-7">-</p></td>
-                            <td><p class="text-danger fs-7">-</p></td>
-                            <td><p class="text-danger fs-7">-</p></td>
+                            <td>
+                                <p class="text-danger fs-7">-</p>
+                            </td>
+                            <td>
+                                <p class="text-danger fs-7">-</p>
+                            </td>
+                            <td>
+                                <p class="text-danger fs-7">-</p>
+                            </td>
+                            <td>
+                                <p class="text-danger fs-7">-</p>
+                            </td>
+                            <td>
+                                <p class="text-danger fs-7">-</p>
+                            </td>
                         </tr>
                     @endforelse
                 </tbody>

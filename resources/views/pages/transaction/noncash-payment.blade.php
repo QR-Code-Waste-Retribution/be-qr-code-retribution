@@ -15,7 +15,7 @@
     <div class="col-lg-12">
         <div class="row align-items-center">
             <div class="col-md-6">
-                <a class="button-primary text-center px-4" href="{{ url()->current() }}">Download Excel &nbsp;<i
+                <a class="button-primary text-center px-4" href="{{ route('transaction-noncash.export') }}">Download Excel &nbsp;<i
                         class="bi bi-download"></i></a>
             </div>
             <div class="col-md-6">

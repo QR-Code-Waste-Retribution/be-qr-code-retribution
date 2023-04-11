@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Transaction;
 
+use App\Export\PaymentExport;
 use App\Http\Controllers\Controller;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class NonCashPaymentController extends Controller
 {
@@ -25,6 +27,13 @@ class NonCashPaymentController extends Controller
         $non_cash_payment = $this->transaction->getAllNonCashTransaction();
         return view('pages.transaction.noncash-payment', compact('non_cash_payment'));
     }
+
+    
+    public function export()
+    {
+        return Excel::download(new PaymentExport('NONCASH'), 'non_cash.xlsx');
+    }
+
 
     /**
      * Show the form for creating a new resource.

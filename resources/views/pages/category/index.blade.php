@@ -53,8 +53,8 @@
                                 <td>
                                     <div class="d-flex gap-2">
                                         <div>
-                                            <a class="btn button btn-warning fs-7"
-                                                href="{{ route('category.edit', $item->id) }}">Edit</a>
+                                            <a class="btn edit-button fs-7"
+                                                href="{{ route('category.edit', $item->id) }}"><i class="bi bi-pencil"></i> Edit</a>
                                         </div>
                                         <div class="d-flex flex-column align-items-center justify-content-center"
                                             style="width: 60px;">

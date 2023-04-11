@@ -12,6 +12,17 @@
   scroll-behavior: smooth;
 }
 
+
+.edit-button {
+  background-color: #F0860A;
+  color: white;
+}
+
+.edit-button:hover {
+  background-color: #cf7309;
+  color: white;
+}
+
 body {
   font-family: "Poppins", sans-serif;
   background: #f6f9ff;
