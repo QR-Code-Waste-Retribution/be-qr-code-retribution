@@ -7,12 +7,17 @@ use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\UserResource;
 use App\Models\Invoice;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class InvoiceController extends Controller
 {
+    public $invoice;
+    public function __construct() {
+        $this->invoice = new Invoice();
+    }
     /**
      * Display a listing of the resource.
      *
@@ -50,8 +55,16 @@ class InvoiceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show()
+    public function show($id)
     {
+        try {
+            $invoice_user = $this->invoice->getAllInvoiceById($id);
+            $invoice_resource = InvoiceResource::collection($invoice_user);
+            $invoice = $this->invoice->formatUserAllInvoice($invoice_resource);
+            return $this->successResponse($invoice, "Successfully to get invoice category");
+        } catch (\Throwable $th) {
+            return $this->errorResponse([], $th->getMessage(), 500);
+        }
     }
 
     /**
@@ -60,7 +73,7 @@ class InvoiceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function getInvoiceOfUser(Request $request, $uuid)
+    public function getInvoiceOfUserByUUID(Request $request, $uuid)
     {
         try {
             $validator = Validator::make($request->all(), [
@@ -68,15 +81,15 @@ class InvoiceController extends Controller
             ], [
                 'required' => 'The :attribute is required.',
             ]);
-    
+
             if ($validator->fails()) {
                 return $this->errorResponse($validator->errors(), 'Missing id of sub district id', 422);
             }
-    
+
             $sub_district_id = $request->sub_district_id;
-            $invoice_user = Invoice::getInvoiceById($uuid, $sub_district_id);
+            $invoice_user = $this->invoice->getInvoiceById($uuid, $sub_district_id);
             $invoice_resource = InvoiceResource::collection($invoice_user);
-            $result = Invoice::formatUserInvoice($invoice_resource);
+            $result = $this->invoice->formatUserInvoice($invoice_resource);
 
             $user = User::where('uuid', $uuid)->with('role')->first();
 
@@ -84,7 +97,7 @@ class InvoiceController extends Controller
                 'invoice' => $result,
                 'user' =>  new UserResource($user),
             ];
-    
+
             return $this->successResponse($response, "Successfully to get invoice category");
         } catch (\Throwable $th) {
             return $this->errorResponse([], $th->getMessage(), 500);

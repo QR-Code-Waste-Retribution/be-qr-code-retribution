@@ -32,8 +32,8 @@ class UserSeeder extends Seeder
         ];
         $admin = [
             'uuid' => fake()->uuid(), 
-            'name' => 'Zico Andreas Aritonang',
-            'username' => 'admin',
+            'name' => 'Pemungut A',
+            'username' => 'pemungut',
             'password' => bcrypt('password'),
             'nik' => '217356253165324',
             'gender' => 'Laki-Laki',
@@ -47,7 +47,7 @@ class UserSeeder extends Seeder
         ];
         $masyarakat = [
             'uuid' => fake()->uuid(), 
-            'name' => 'Zico Andreas Aritonang',
+            'name' => 'Linux',
             'username' => 'masyarakat',
             'password' => bcrypt('password'),
             'nik' => '217356253165325',
