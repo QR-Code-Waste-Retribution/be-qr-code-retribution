@@ -61,7 +61,11 @@ class InvoiceController extends Controller
             $invoice_user = $this->invoice->getAllInvoiceById($id);
             $invoice_resource = InvoiceResource::collection($invoice_user);
             $invoice = $this->invoice->formatUserAllInvoice($invoice_resource);
-            return $this->successResponse($invoice, "Successfully to get invoice category");
+            $response = [
+                'invoice' => $invoice,
+                'user' => null,
+            ];
+            return $this->successResponse($response, "Successfully to get invoice category");
         } catch (\Throwable $th) {
             return $this->errorResponse([], $th->getMessage(), 500);
         }
