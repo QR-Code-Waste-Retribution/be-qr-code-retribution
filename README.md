@@ -5,7 +5,9 @@
 - php artisan key:generate
 - Buka Xampp 
     - Manager-Osx (mac os) pake command + space
-    - Xampp (Windows)
+    - Xampp (Windows)        
+        - run mysql dan apache
+
 - php artisan migrate:fresh --seed
 - php artisan passport:install --force
 - php artisan serve
@@ -19,6 +21,8 @@
 - Buka Xampp 
     - Manager-Osx (mac os) pake command + space
     - Xampp (Windows)
+        - run mysql dan apache
+
 - php artisan migrate:fresh --seed
 - php artisan passport:install --force
 - php artisan serve
