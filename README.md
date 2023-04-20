@@ -1,7 +1,7 @@
 # How to install
 
 - git clone https://github.com/QR-Code-Waste-Retribution/be-qr-code-retribution.git
-- composer install
+- /usr/bin/composer install
 - php artisan key:generate
 - Buka Xampp 
     - Manager-Osx (mac os) pake command + space
@@ -17,7 +17,7 @@
 
 # Me-Run dan Menghubungkan dengan Front-End Aplikasi Mobile
 - git pull origin main
-- composer install
+- /usr/bin/composer install
 - Buka Xampp 
     - Manager-Osx (mac os) pake command + space
     - Xampp (Windows)
