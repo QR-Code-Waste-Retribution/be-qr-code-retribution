@@ -9,6 +9,9 @@ class Transaction extends Model
 {
     use HasFactory;
 
+
+    protected $guarded = [];
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
@@ -108,5 +111,37 @@ class Transaction extends Model
         })->collapse();
 
         return $income;
+    }
+
+    public function generateReferenceAndTransactionNumber(){
+        $reference_number = 'REF-' . date('Ymd') . '-' . substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 4) . '-' . substr(str_shuffle('1234567890'), 0, 7);
+        $transaction_number = 'TRAN-' . date('Ymd') . '-' . substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 5) . '-' . substr(str_shuffle('1234567890'), 0, 7);
+
+        return [
+            'reference_number' => $reference_number,
+            'transaction_number' => $transaction_number,
+        ];
+    }
+
+    public function storeTransactionInvoice($data){
+        // $invoice_id = $data['invoice_id'];
+        // $invoice = Invoice::whereIn('id', $invoice_id)->get();
+
+        $number = $this->generateReferenceAndTransactionNumber();
+
+        $transactions = $this->create([
+            'price' => $data['total_amount'],
+            'status' => 1,
+            'date' => now(),
+            'reference_number' => $number['reference_number'],
+            'transaction_number' => $number['transaction_number'],
+            'user_id' => $data['masyarakat_id'],
+            'pemungut_id' => $data['pemungut_id'],
+            'sub_district_id' => $data['sub_district_id'],
+            'category_id' => $data['category_id'],
+            'type' => $data['type'],
+        ]);
+
+        return $transactions;
     }
 }

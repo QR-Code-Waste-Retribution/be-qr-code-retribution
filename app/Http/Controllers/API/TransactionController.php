@@ -10,6 +10,13 @@ use Illuminate\Http\Request;
 class TransactionController extends Controller
 {
 
+    public $transaction;
+
+    public function __construct()
+    {
+        $this->transaction = new Transaction();
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -38,7 +45,12 @@ class TransactionController extends Controller
      */
     public function store(Request $request)
     {
-        return $request->all();
+        try {
+            $transaction = $this->transaction->storeTransactionInvoice($request->all());
+            return $this->successResponse($transaction, 'Transaction succesfully');
+        } catch (\Throwable $th) {
+            return $this->errorResponse($th->getMessage(), 'Something Went error');
+        }
     }
 
 
