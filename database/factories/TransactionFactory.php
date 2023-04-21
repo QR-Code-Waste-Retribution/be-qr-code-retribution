@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\Category;
 use App\Models\Transaction;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -28,7 +29,7 @@ class TransactionFactory extends Factory
         return [
             'price' => fake()->randomElement([10000, 20000, 30000, 40000, 50000]),
             'status' => '0',
-            'date' => now(),
+            'date' =>  Carbon::now()->subMonths(rand(0, 4))->format('Y-m-d'),
             'type' => $paymentMethod[$randomInt],
             'reference_number' => $reference_number,
             'transaction_number' => $transaction_number,

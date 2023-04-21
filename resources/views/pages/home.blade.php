@@ -89,10 +89,10 @@
                             new Chart(document.querySelector('#lineChart'), {
                                 type: 'line',
                                 data: {
-                                    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                                    labels: @json($graph['months']),
                                     datasets: [{
                                         label: 'Pemasukan',
-                                        data: [3000000, 3500000, 2750000, 2950000, 4000000, 5000000, 3500000],
+                                        data: @json($graph['income']),
                                         fill: false,
                                         borderColor: 'rgb(75, 192, 192)',
                                         tension: 0.1
