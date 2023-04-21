@@ -13,7 +13,8 @@ class HomeController extends Controller
     public $users;
 
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->transactions = new Transaction();
         $this->users = new User();
     }
@@ -26,10 +27,13 @@ class HomeController extends Controller
     {
         $income = $this->transactions->sumTransactionByType();
         $users = $this->users->getAllCountOfUsersRole();
-        return view('pages.home', compact('income', 'users'));
+        $graph = $this->transactions->getIncomeData();
+
+        return view('pages.home', compact('income', 'users', 'graph'));
     }
-    
-    public function income(){
+
+    public function income()
+    {
         $transactions = $this->transactions->getAllTransaction();
         return view('pages.dashboard.income', compact('transactions'));
     }

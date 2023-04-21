@@ -37,7 +37,9 @@ class CashPaymentController extends Controller
         $sub_district = $request->sub_district ?? null;
 
         $pemungut_transactions = $this->pemungut_transactions->getAllTransaction($sub_district, $search);
+        // $targetIncome = $this->pemungut_transactions->getIncomeData();
 
+        // return $targetIncome;
         return view('pages.transaction.cash.cash-payment', compact('pemungut_transactions'));
     }
 

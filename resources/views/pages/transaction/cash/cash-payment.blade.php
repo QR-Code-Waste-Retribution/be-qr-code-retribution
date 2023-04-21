@@ -14,9 +14,28 @@
 @section('body')
     <div class="col-lg-12">
         <div class="row align-items-center box-container">
+            <div class="col-4">
+                <div class="card info-card revenue-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Target Pemasukan <span>| Bulan Ini</span></h5>
+
+                        <div class="d-flex align-items-center">
+                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                <i class="bi bi-currency-dollar"></i>
+                            </div>
+                            <div class="ps-3">
+                                <h6 class="fs-4">Rp. {{ number_format('20000000', 2) }} -,</h6>
+                                <span class="text-success small pt-1 fw-bold"></span><span
+                                    class="text-muted small pt-2 ps-1">21 Februari 2023</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
             <div class="col-md-12">
-                <a class="button-primary text-center px-4" href="{{ route('transaction-cash.export') }}">Download Excel &nbsp;<i
-                        class="bi bi-download"></i></a>
+                <a class="button-primary text-center px-4" href="{{ route('transaction-cash.export') }}">Download Excel
+                    &nbsp;<i class="bi bi-download"></i></a>
             </div>
             <div class="col-md-12">
                 <div class="row">

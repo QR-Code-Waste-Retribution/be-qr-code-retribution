@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use DateTime;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -118,4 +119,12 @@ class PemungutTransaction extends Model
     {
         return collect($data['pemungut_transactions'])->pluck('id');
     }
+
+    public function getTargetIncome()
+    {
+        return Invoice::select(DB::raw('SUM(price) as target'))
+            ->where(DB::raw('MONTH(invoice.created_at)'), '=', DB::raw('MONTH(CURRENT_DATE())'))
+            ->get();
+    }
+    
 }
