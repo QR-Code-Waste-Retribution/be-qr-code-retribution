@@ -68,4 +68,31 @@ class UserController extends Controller
 
         return $this->successResponse($user, 'Berhasil mengubah password anda', 200);
     }
+
+    public function editMasyarakatProfile(Request $request, $id){
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'username' => 'required',
+            'nik' => 'required',
+            'phoneNumber' => 'required',
+            'category_id' => 'required',
+            'sub_district_id' => 'required', 
+            'address' => 'required', 
+        ], [
+            'required' => 'Input :attribute tidak boleh kosong',
+            'confirmed' => 'Input :attribute harus sama',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errorResponse($validator->errors(), 'Input tidak boleh ada yang kosong', 422);
+        }
+
+        $user = User::find($id);
+
+        if (!$user) {
+            return $this->errorResponse([], "User tidak ditemukan", 401);
+        }
+
+        
+    }
 }

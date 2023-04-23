@@ -78,11 +78,6 @@ class User extends Authenticatable
         return $this->belongsTo(SubDistrict::class);
     }
 
-    public function urban_village()
-    {
-        return $this->belongsTo(UrbanVillage::class);
-    }
-
     public function category()
     {
         return $this->belongsToMany(Category::class, 'users_categories')->withPivot('address');

@@ -27,7 +27,6 @@ class DatabaseSeeder extends Seeder
             RolesSeeder::class,
         ]);
 
-        UrbanVillage::factory(100)->create();
         User::factory(300)->create();
         $this->call([
             UserSeeder::class,

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Http\Resources\DokuFormat\LineItemOrderDokuResource;
+use App\Utils\DokuGenerateToken;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -118,25 +120,17 @@ class Transaction extends Model
 
     public function storeTransactionInvoice($data)
     {
-        // $invoice_id = $data['invoice_id'];
-        // $invoice = Invoice::whereIn('id', $invoice_id)->get();
+        $invoice_id = $data['invoice_id'];
+        $masyarakat_id = $data['masyarakat_id'];
 
-        $number = $this->generateReferenceAndTransactionNumber();
+        $invoice =  LineItemOrderDokuResource::collection(Invoice::whereIn('id', $invoice_id)->with('category:id,name')->get())->toArray($data);
+        $masyarakat = User::find($masyarakat_id);
+        
+        $doku = DokuGenerateToken::generateToken($invoice, $masyarakat);
 
-        $transactions = $this->create([
-            'price' => $data['total_amount'],
-            'status' => 1,
-            'date' => now(),
-            'reference_number' => $number['reference_number'],
-            'transaction_number' => $number['transaction_number'],
-            'user_id' => $data['masyarakat_id'],
-            'pemungut_id' => $data['pemungut_id'],
-            'sub_district_id' => $data['sub_district_id'],
-            'category_id' => $data['category_id'],
-            'type' => $data['type'],
-        ]);
-
-        return $transactions;
+        return [
+            'doku' => $doku,
+        ];
     }
 
 
