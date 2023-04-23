@@ -38,7 +38,6 @@ class UserFactory extends Factory
             'gender' => fake()->randomElement(['Laki-Laki', 'Perempuan']),
             'address' => fake()->city(),
             'phoneNumber' => fake()->phoneNumber(),
-            'urban_village_id' => random_int(1, 100),
             'district_id' => $district->id,
             'sub_district_id' => $sub_district,
             'role_id' => fake()->randomElement([1, 2, 3]),

@@ -25,7 +25,6 @@ return new class extends Migration
             $table->text('address')->nullable();
             $table->string('phoneNumber')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->unsignedBigInteger('urban_village_id')->nullable();
             $table->unsignedBigInteger('sub_district_id');
             $table->unsignedBigInteger('district_id');
             $table->unsignedBigInteger('role_id')->default(1);
@@ -36,10 +35,6 @@ return new class extends Migration
             $table->foreign('role_id')
                 ->references('id')
                 ->on('roles');
-
-            $table->foreign('urban_village_id')
-                ->references('id')
-                ->on('urban_villages');
 
             $table->foreign('sub_district_id')
                 ->references('id')

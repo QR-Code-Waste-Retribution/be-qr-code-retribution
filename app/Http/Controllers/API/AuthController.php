@@ -53,7 +53,6 @@ class AuthController extends Controller
       "phoneNumber" => "required",
       "district_id" => "required",
       "sub_district_id" => "required",
-      "urban_village_id" => "required"
     ], [
       'required' => 'Input :attribute tidak boleh kosong',
     ]);
