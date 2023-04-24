@@ -7,20 +7,14 @@ return [
     ],
     "PAYMENTS" => [
         "CHECKOUT" => [
-            "payment.url" => "/checkout/v1/payment",
-            "currency" => "IDR",
-            "callback_url" => "http://doku.com/",
-            "callback_url_cancel" => "https://doku.com",
-            "language" => "EN",
-            "auto_redirect" => true,
-            "disable_retry_payment" => true,
-            "payment" => [
-                "payment_due_date" => 60,
-                "payment_method_types" => [
-                    "QRIS",
-                ]
+            "QRIS" => [
+                "payment.url" => "/checkout/v1/payment",
             ],
         ],
-        "DIRECT_API" => [],
+        "VIRTUAL_ACCOUNT" => [
+            "BRI_VA" => [
+                'payment.url' => '/bri-virtual-account/v2/payment-code'
+            ],
+        ],
     ],
 ];

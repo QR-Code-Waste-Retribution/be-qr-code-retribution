@@ -7,46 +7,45 @@ use Illuminate\Support\Facades\Http;
 
 class DokuGenerateToken
 {
+    /**
+     * $method.
+     *
+     * @return [
+     *      'payments' => @string,
+     *      'type' => @string,  
+     * ]
+     */
+    public $method;
+    public $uuid;
 
-    public static function generateToken($lineItems, $customer)
+    private $config;
+    private $dokuMode;
+
+    public function __construct($method, $uuid)
+    {
+        $this->method = $method;
+        $this->uuid = $uuid;
+        $this->dokuMode = env('DOKU_MODE');
+        $this->config = config('doku');
+    }
+
+    public function generateToken($lineItems, $customer)
     {
         $clientId = env("DOKU_CLIENT_ID");
-        $requestId = '93626957-8ebe-4e0e-9778-3a1a623ea18b';
-        $dateTime = gmdate("Y-m-d H:i:s");
-        $isoDateTime = date(DATE_ISO8601, strtotime($dateTime));
-        $dateTimeFinal = substr($isoDateTime, 0, 19) . "Z";
-        $requestDate =  $dateTimeFinal;
-        $targetPath = "/checkout/v1/payment"; 
+        $basePath = $this->config["BASE_URL"][$this->dokuMode];
+
+        $requestId = $this->uuid;
+        $requestDate =  $this->makeDate();
+
+        // Payment Type [Checkout || Virtual Account]
+        $methodPayments = $this->method['payments'];
+        $typePayments = $this->method['type'];
+
+        $targetPath = $this->config['PAYMENTS'][$methodPayments][$typePayments]['payment.url'];
+
         $secretKey = env("DOKU_SECRET_KEY");
 
-        $tax = [
-            "name" => 'Pajak Pembayaran',
-            "quantity" => 1,
-            "price" => 3500,
-        ];
-
-        array_push($lineItems, $tax);
-
-        $requestBody = [
-            "order" => [
-                "amount" => collect($lineItems)->sum('price'),
-                "invoice_number" => "INV-2137823",
-                "currency" => "IDR",
-                "callback_url" => "http://doku.com/",
-                "callback_url_cancel" => "https://doku.com",
-                "language" => "EN",
-                "auto_redirect" => true,
-                "disable_retry_payment" => true,
-                "line_items" => $lineItems,
-            ],
-            "payment" => [
-                "payment_due_date" => 60,
-                "payment_method_types" => [
-                    "QRIS",
-                ]
-            ],
-            "customer" => $customer,
-        ];
+        $requestBody = $this->createRequestBody($lineItems, $customer);
 
         $digestValue = base64_encode(hash('sha256', json_encode($requestBody), true));
 
@@ -56,7 +55,6 @@ class DokuGenerateToken
             "Request-Target:" . $targetPath . "\n" .
             "Digest:" . $digestValue;
 
-        
 
         $signature = base64_encode(hash_hmac('sha256', $componentSignature, $secretKey, true));
 
@@ -64,9 +62,9 @@ class DokuGenerateToken
             'Content-Type' => 'application/json',
             'Client-Id' => $clientId,
             'Request-Id' => $requestId,
-            'Request-Timestamp' => $dateTimeFinal,
+            'Request-Timestamp' => $requestDate,
             'Signature' => 'HMACSHA256=' . $signature,
-        ])->post('https://api-sandbox.doku.com/checkout/v1/payment', $requestBody);
+        ])->post("$basePath$targetPath", $requestBody);
 
         $responseJson = json_decode($response->body());
         $httpCode = $response->status();
@@ -75,5 +73,73 @@ class DokuGenerateToken
             'data' => $responseJson,
             'code' => $httpCode,
         ];
+    }
+
+    public function makeDate()
+    {
+        $dateTime = gmdate("Y-m-d H:i:s");
+        $isoDateTime = date(DATE_ISO8601, strtotime($dateTime));
+        $dateTimeFinal = substr($isoDateTime, 0, 19) . "Z";
+        return $dateTimeFinal;
+    }
+
+    public function createRequestBody($lineItems, $customer)
+    {
+
+        $tax = [
+            "name" => 'Pajak Pembayaran',
+            "quantity" => 1,
+            "price" => 3500,
+        ];
+
+        array_push($lineItems, $tax);
+
+        if ($this->method['payments'] == 'VIRTUAL_ACCOUNT') {
+            $amount = collect($lineItems)->sum('price');
+
+            $requestBody = [
+                "order" => array(
+                    "invoice_number" => "INV-" . time(),
+                    "amount" => $amount,
+                ),
+                "virtual_account_info" => array(
+                    "billing_type" => "FIX_BILL",
+                    "expired_time" => 60,
+                    "reusable_status" => false,
+                    'info1' => "Sistem Retribusi Pas",
+                    "info2" => "ar Terima kasih sud",
+                    "info3" => "ah membayar wajib re",
+                    "info4" => "tribusi anda",
+                ),
+                "customer" => array(
+                    "name" => "Anton Budiman",
+                    "email" => "anton@example.com"
+                )
+            ];
+            return $requestBody;
+        }
+
+        if ($this->method['payments'] == 'CHECKOUT') {
+            return [
+                "order" => [
+                    "amount" => collect($lineItems)->sum('price'),
+                    "invoice_number" => "INV-" . time(),
+                    "currency" => "IDR",
+                    "callback_url" => "http://doku.com/",
+                    "callback_url_cancel" => "https://doku.com",
+                    "language" => "EN",
+                    "auto_redirect" => true,
+                    "disable_retry_payment" => true,
+                    "line_items" => $lineItems,
+                ],
+                "payment" => [
+                    "payment_due_date" => 60,
+                    "payment_method_types" => [
+                        "QRIS",
+                    ]
+                ],
+                "customer" => $customer,
+            ];
+        }
     }
 }

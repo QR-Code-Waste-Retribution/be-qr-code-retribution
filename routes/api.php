@@ -20,10 +20,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/test', function (Request $request) {
-    $token = DokuGenerateToken::generateToken();
-    return response()->json($token);
-});
 Route::post('login', [AuthController::class, 'login']);
 
 
@@ -39,6 +35,8 @@ Route::resource('invoice', InvoiceController::class);
 // Transaction
 Route::get('/transaction/pemungut/{id}', [TransactionController::class, 'historyTransactionPemungut'])->name('transaction.history.pemungut');
 Route::resource('transaction', TransactionController::class);
+
+
 
 // Category
 Route::resource('category', CategoriesController::class);
