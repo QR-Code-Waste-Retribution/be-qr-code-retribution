@@ -129,7 +129,7 @@ class Transaction extends Model
         $doku = new DokuGenerateToken($data['method'], $data['uuid']);
         $token = $doku->generateToken($invoice, $masyarakat);
 
-        return $doku['data'];
+        return $token;
     }
 
 
