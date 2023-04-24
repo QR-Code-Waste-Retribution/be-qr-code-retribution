@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreTransactionRequest;
 use App\Http\Resources\TransactionResource;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class TransactionController extends Controller
 {
@@ -15,6 +17,7 @@ class TransactionController extends Controller
     public function __construct()
     {
         $this->transaction = new Transaction();
+        $this->middleware('uuid')->only('store');
     }
 
     /**
@@ -46,8 +49,25 @@ class TransactionController extends Controller
     public function store(Request $request)
     {
         try {
+            $validator = Validator::make($request->all(), [
+                "invoice_id" => 'required',
+                "total_amount" =>  'required',
+                "masyarakat_id" =>  'required',
+                "pemungut_id" =>  'nullable',
+                "category_id" =>  'required',
+                "sub_district_id" =>  'required',
+                "type" => 'required',
+                "method" => 'nullable',
+            ], [
+                'required' => 'Input :attribute tidak boleh kosong',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->errorResponse($validator->errors(), 'Input tidak boleh ada yang kosong', 422);
+            }
+
             $transaction = $this->transaction->storeTransactionInvoice($request->all());
-            return $this->successResponse($transaction, 'Transaction succesfully');
+            return $this->successResponse($transaction, 'Silahkan lanjutkan pembayaran sesuai metode yang anda pilih!!');
         } catch (\Throwable $th) {
             return $this->errorResponse($th->getMessage(), 'Something Went error');
         }

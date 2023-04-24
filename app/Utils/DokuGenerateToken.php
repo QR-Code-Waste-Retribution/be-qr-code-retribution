@@ -7,11 +7,26 @@ use Illuminate\Support\Facades\Http;
 
 class DokuGenerateToken
 {
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return [
+     *      'payments' => @string,
+     *      'type' => @string,  
+     * ]
+     */
+    public $method;
+    public $uuid;
 
-    public static function generateToken($lineItems, $customer)
+    public function __construct($method, $uuid) {
+        $this->method = $method;
+        $this->uuid = $uuid;
+    }
+
+    public function generateToken($lineItems, $customer)
     {
         $clientId = env("DOKU_CLIENT_ID");
-        $requestId = '93626957-8ebe-4e0e-9778-3a1a623ea18b';
+        $requestId = $this->uuid;
         $dateTime = gmdate("Y-m-d H:i:s");
         $isoDateTime = date(DATE_ISO8601, strtotime($dateTime));
         $dateTimeFinal = substr($isoDateTime, 0, 19) . "Z";

@@ -125,12 +125,11 @@ class Transaction extends Model
 
         $invoice =  LineItemOrderDokuResource::collection(Invoice::whereIn('id', $invoice_id)->with('category:id,name')->get())->toArray($data);
         $masyarakat = User::find($masyarakat_id);
-        
-        $doku = DokuGenerateToken::generateToken($invoice, $masyarakat);
 
-        return [
-            'doku' => $doku,
-        ];
+        $doku = new DokuGenerateToken($data['method'], $data['uuid']);
+        $token = $doku->generateToken($invoice, $masyarakat);
+
+        return $doku['data'];
     }
 
 
