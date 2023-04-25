@@ -21,16 +21,13 @@ class TransactionResource extends JsonResource
                 "formated_price" => number_format($this->price, 2)
             ],
             "status" => $this->status,
-            "date" => [
-                'date' => $this->date,
-                'formated_date' => date('d F Y', strtotime($this->date)),
-            ],
+            "date" => $this->date,
             "type" => $this->type,
             "reference_number" => $this->reference_number,
             "transaction_number" => $this->transaction_number,
-            "user_id" => $this->user,
+            "user" => $this->user,
             "pemungut_id" => $this->pemungut_id,
-            "category_id" => new CategoryResource($this->category),
+            "category_id" => $this->category,
             "created_at" => [
                 'date' => $this->created_at,
                 'formated_date' => date('d F Y', strtotime($this->created_at)),

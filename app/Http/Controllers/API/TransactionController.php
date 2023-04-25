@@ -67,7 +67,7 @@ class TransactionController extends Controller
             }
 
             $transaction = $this->transaction->storeTransactionInvoice($request->all());
-            return $this->successResponse($transaction['data'], 'Silahkan lanjutkan pembayaran sesuai metode yang anda pilih!!', $transaction['code']);
+            return $this->successResponse($transaction, $transaction['message'], $transaction['code']);
         } catch (\Throwable $th) {
             return $this->errorResponse($th->getMessage(), 'Something Went error');
         }
