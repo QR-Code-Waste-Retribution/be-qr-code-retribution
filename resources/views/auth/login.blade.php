@@ -49,10 +49,11 @@
                     <div class="row justify-content-center">
                         <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
 
-                            <div class="d-flex justify-content-center py-4">
+                            <div class="d-flex justify-content-center py-4 flex-column align-items-center">
+                                <img src="{{ asset('assets/img/logo_toba.png') }}" alt="" style="width: 150px">
+                                <br>
                                 <a href="index.html" class="logo d-flex align-items-center w-auto">
-                                    <img src="assets/img/logo.png" alt="">
-                                    <span class="d-none d-lg-block">Waste Retribution</span>
+                                    <span class="d-none d-lg-block">Sistem Retribusi Sampah</span>
                                 </a>
                             </div><!-- End Logo -->
 
@@ -96,7 +97,7 @@
                                             </div>
                                         </div>
                                         <div class="col-12">
-                                            <button class="btn btn-primary w-100" type="submit">Login</button>
+                                            <button class="btn btn-primary w-100" type="submit" style="background-color: #55A630; border-color: #55A630">Login</button>
                                         </div>
                                         <div class="col-12">
                                             <p class="small mb-0 text-center"><a href="pages-register.html">Terms of

@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use App\Http\Resources\DokuFormat\LineItemOrderDokuResource;
+use App\Http\Resources\FInvoiceResource;
+use App\Http\Resources\InvoiceResource;
+use App\Http\Resources\TransactionResource;
 use App\Utils\DokuGenerateToken;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -122,14 +125,41 @@ class Transaction extends Model
     {
         $invoice_id = $data['invoice_id'];
         $masyarakat_id = $data['masyarakat_id'];
+        $numberRefAndTran = $this->generateReferenceAndTransactionNumber();
 
-        $invoice =  LineItemOrderDokuResource::collection(Invoice::whereIn('id', $invoice_id)->with('category:id,name')->get())->toArray($data);
-        $masyarakat = User::find($masyarakat_id);
+        if ($data['type'] != 'CASH') {
+            $masyarakat = User::find($masyarakat_id);
+            $invoice =  LineItemOrderDokuResource::collection(
+                Invoice::whereIn('id', $invoice_id)->with('category:id,name')->get()
+            )->toArray($data);
+            $doku = new DokuGenerateToken($data['method'], $data['uuid']);
+            $token = $doku->generateToken($invoice, $masyarakat);
+            $token['message'] = 'Silahkan lanjutkan pembayaran sesuai metode yang anda pilih!!';
+            return $token['data'];
+        }
 
-        $doku = new DokuGenerateToken($data['method'], $data['uuid']);
-        $token = $doku->generateToken($invoice, $masyarakat);
+        $invoice = Invoice::whereIn('id', $invoice_id);
+        $invoice->update(['status' => 1]);
 
-        return $token;
+        $transactions = $this->create([
+            'price' => $data['total_amount'],
+            'date' => now(),
+            'status' => 1,
+            'type' => 'CASH',
+            'reference_number' => $numberRefAndTran['reference_number'],
+            'transaction_number' => $numberRefAndTran['transaction_number'],
+            'user_id' => $masyarakat_id,
+            'pemungut_id' => $data['pemungut_id'],
+            'category_id' => 1,
+            'sub_district_id' => $data['sub_district_id'],
+        ]);
+
+        return [
+            'transaction' => new TransactionResource($transactions),
+            'invoice' => FInvoiceResource::collection($invoice->get()),
+            'message' => 'Silahkan lanjutkan pembayaran sesuai metode yang anda pilih!!',
+            'code' => 201,
+        ];
     }
 
 
