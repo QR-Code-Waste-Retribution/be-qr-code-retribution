@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Http\Resources\DokuFormat\LineItemOrderDokuResource;
+use App\Http\Resources\FInvoiceResource;
 use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\TransactionResource;
 use App\Utils\DokuGenerateToken;
@@ -155,7 +156,7 @@ class Transaction extends Model
 
         return [
             'transaction' => new TransactionResource($transactions),
-            'invoice' => InvoiceResource::collection($invoice->get()),
+            'invoice' => FInvoiceResource::collection($invoice->get()),
             'message' => 'Silahkan lanjutkan pembayaran sesuai metode yang anda pilih!!',
             'code' => 201,
         ];
