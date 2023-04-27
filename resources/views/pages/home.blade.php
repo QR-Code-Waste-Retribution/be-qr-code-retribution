@@ -141,9 +141,7 @@
 
                     <!-- Sales Card -->
                     <div class="col-xxl-4 col-md-5">
-                        <h5 class="card-title text-center fs-6">$ Tunai <span
-                                class="text-success small pt-1 fw-bold"></span> <span class="text-muted small pt-2">21
-                                Februari 2023</span>
+                        <h5 class="card-title text-center fs-6">$ Tunai
                         </h5>
                         <div class="d-flex">
                             <div class="card info-card sales-card pt-4 card-dashboard col-md-6">
@@ -153,17 +151,24 @@
                                             <span class="text-success small pt-1 fw-bold"></span> <span
                                                 class="text-muted small pt-2">Sudah Disetor</span>
                                             <h6 class="fs-5">Rp. {{ number_format($income['cash'], 2) }} -,</h6>
+                                            <span class="text-success small pt-1 fw-bold"></span> <span
+                                                class="text-muted small pt-2">21
+                                                Februari 2023</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="card info-card sales-card pt-4 card-dashboard col-md-6" style="background-color: #55a63088">
+                            <div class="card info-card sales-card pt-4 card-dashboard col-md-6"
+                                style="background-color: #55a63088">
                                 <div class="card-body">
                                     <div class="d-flex align-items-center">
                                         <div class="p-0">
                                             <span class="text-success small pt-1 fw-bold"></span> <span
                                                 class="text-muted small pt-2">Belum Disetor</span>
                                             <h6 class="fs-5">Rp. {{ number_format($income['cash'], 2) }} -,</h6>
+                                            <span class="text-success small pt-1 fw-bold"></span> <span
+                                                class="text-muted small pt-2">21
+                                                Februari 2023</span>
                                         </div>
                                     </div>
                                 </div>
