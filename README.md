@@ -2,7 +2,7 @@
 
 # Me-Run dan Menghubungkan dengan Front-End Aplikasi Mobile
 - git pull origin main
-- /usr/local/bin/composer.phar install
+- /usr/local/bin/composer.phar install atau /usr/local/bin/composer.phar install
 - Buka Xampp 
     - Manager-Osx (mac os) pake command + space
     - Xampp (Windows)
