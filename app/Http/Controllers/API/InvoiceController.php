@@ -71,6 +71,15 @@ class InvoiceController extends Controller
         }
     }
 
+    public function getAllUserInInvoice(){
+        try {
+            $users = Invoice::all();
+            return $this->successResponse($users, "Successfully to get invoice category");
+        } catch (\Throwable $th) {
+            return $this->errorResponse([], $th->getMessage(), 500);
+        }
+    }
+
     /**
      * Display the specified resource.
      *

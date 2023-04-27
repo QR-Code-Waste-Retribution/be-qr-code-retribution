@@ -30,19 +30,15 @@ Route::post('user/add', [AuthController::class, 'register']);
 
 // Invoice
 Route::post('people/{uuid}/invoice', [InvoiceController::class, 'getInvoiceOfUserByUUID']);
+Route::get('/invoice/user/all', [InvoiceController::class, 'getAllUserInInvoice']);
 Route::resource('invoice', InvoiceController::class);
 
 // Transaction
 Route::get('/transaction/pemungut/{id}', [TransactionController::class, 'historyTransactionPemungut'])->name('transaction.history.pemungut');
 Route::resource('transaction', TransactionController::class);
 
-
-
 // Category
 Route::resource('category', CategoriesController::class);
-
-
-
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
