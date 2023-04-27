@@ -77,7 +77,7 @@
             </div>
             <div class="text-center">
                 <button type="submit" class="btn btn-success fs-7">Tambah</button>
-                <button type="reset" class="btn btn-danger fs-7">Batal</button>
+                <a href="{{ route('pemungut.index') }}" class="btn btn-danger fs-7">Batal</a>
             </div>
         </form>
     </div>
