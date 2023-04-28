@@ -81,10 +81,9 @@ class Invoice extends Model
         array_push($this->invoices_formatted, $invoice);
     }
 
-
     public function getInvoiceById($uuid, $sub_district_id)
     {
-        $invoice_user_current_month = Invoice::select('invoice.*', 'users_categories.user_id', 'users_categories.address', 'sub_districts.name as sub_district_name')
+        $invoice_user_current_month = $this->select('invoice.*', 'users_categories.user_id', 'users_categories.address', 'sub_districts.name as sub_district_name')
             ->join('users_categories', function ($join) use ($sub_district_id) {
                 $join->on('invoice.user_id', '=', 'users_categories.user_id')
                     ->where('users_categories.sub_district_id', '=', $sub_district_id);
@@ -97,7 +96,7 @@ class Invoice extends Model
             ->whereColumn('invoice.category_id', '=', 'users_categories.category_id')
             ->orderBy('invoice.created_at');
 
-        $invoice_user_previous_month = Invoice::select('invoice.*', 'users_categories.user_id', 'users_categories.address', 'sub_districts.name as sub_district_name')
+        $invoice_user_previous_month = $this->select('invoice.*', 'users_categories.user_id', 'users_categories.address', 'sub_districts.name as sub_district_name')
             ->join('users_categories', function ($join) use ($sub_district_id) {
                 $join->on('invoice.user_id', '=', 'users_categories.user_id')
                     ->where('users_categories.sub_district_id', '=', $sub_district_id);
@@ -131,5 +130,31 @@ class Invoice extends Model
 
 
         return $invoice;
+    }
+
+    public function allInvoicePaidAndUnpaid($sub_district_id)
+    {
+        $usersUnpaid = User::join('invoice', 'users.id', '=', 'invoice.user_id')
+            ->select('users.*', 'invoice.price as invoicePrice', 'invoice.user_id as invoiceUserId', 'invoice.status as invoiceStatus')
+            ->where('invoice.status', 0)
+            ->where('users.sub_district_id', $sub_district_id)
+            ->get();
+
+        $usersPaid = User::join('invoice', 'users.id', '=', 'invoice.user_id')
+            ->select('users.*', 'invoice.price as invoicePrice', 'invoice.user_id as invoiceUserId', 'invoice.status as invoiceStatus')
+            ->where('invoice.status', 1)
+            ->where('users.sub_district_id', $sub_district_id)
+            ->get();
+
+        return [
+            'users.paid' => [
+                'records' => $usersPaid,
+                'count' => count($usersPaid), 
+            ],
+            'users.unpaid' => [
+                'records' => $usersUnpaid,
+                'count' => count($usersUnpaid), 
+            ],
+        ];
     }
 }

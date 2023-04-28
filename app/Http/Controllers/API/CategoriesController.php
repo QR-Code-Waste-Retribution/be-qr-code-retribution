@@ -21,7 +21,7 @@ class CategoriesController extends Controller
             $district_id = $request->district_id ?? 1;
             $categories = Category::getAllByDistrict($district_id);
 
-            return $this->successResponse(CategoryResource::collection($categories), 'Successfully to get all categories');
+            return $this->successResponse(['categories' => CategoryResource::collection($categories)], 'Successfully to get all categories');
         } catch (\Throwable $th) {
             return $this->errorResponse([], $th->getMessage(), 500);
         }
