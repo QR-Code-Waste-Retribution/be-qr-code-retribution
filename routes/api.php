@@ -29,7 +29,7 @@ Route::put('user/edit/{id}/profile', [UserController::class, 'editProfile']);
 Route::post('user/add', [AuthController::class, 'register']);
 
 // Invoice
-Route::get('/invoice/users/all/{sub_district_id}', [InvoiceController::class, 'getAllInvoicePaidAndUnpaid']);
+Route::get('/invoice/users/all/{sub_district_id}', [InvoiceController::class, 'getAllUserForInvoicePaidAndUnpaid']);
 Route::post('people/{uuid}/invoice', [InvoiceController::class, 'getInvoiceOfUserByUUID']);
 Route::resource('invoice', InvoiceController::class);
 

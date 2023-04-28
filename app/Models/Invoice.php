@@ -132,7 +132,7 @@ class Invoice extends Model
         return $invoice;
     }
 
-    public function allInvoicePaidAndUnpaid($sub_district_id)
+    public function allUserForInvoicePaidAndUnpaid($sub_district_id)
     {
         $usersUnpaid = User::join('invoice', 'users.id', '=', 'invoice.user_id')
             ->select('users.*', 'invoice.price as invoicePrice', 'invoice.user_id as invoiceUserId', 'invoice.status as invoiceStatus')
