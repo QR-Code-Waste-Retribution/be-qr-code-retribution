@@ -37,7 +37,7 @@ class Category extends Model
     }
 
     public static function getAllByDistrict($district_id){
-        return self::all()->where('district_id', $district_id);
+        return self::all()->where('district_id', $district_id)->whereNotNull('parent_id');
     }
 
     

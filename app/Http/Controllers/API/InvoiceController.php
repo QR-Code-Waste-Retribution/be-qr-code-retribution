@@ -71,6 +71,15 @@ class InvoiceController extends Controller
         }
     }
 
+    public function getAllUserForInvoicePaidAndUnpaid($sub_district_id){
+        try {
+            $users = $this->invoice->allUserForInvoicePaidAndUnpaid($sub_district_id);
+            return $this->successResponse($users, "Successfully to get invoice category");
+        } catch (\Throwable $th) {
+            return $this->errorResponse([], $th->getMessage(), 500);
+        }
+    }
+
     /**
      * Display the specified resource.
      *
