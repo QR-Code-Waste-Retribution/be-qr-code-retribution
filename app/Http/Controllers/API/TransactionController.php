@@ -17,7 +17,7 @@ class TransactionController extends Controller
     public function __construct()
     {
         $this->transaction = new Transaction();
-        $this->middleware('uuid')->only('store');
+        $this->middleware('uuid')->only('storeNonCash');
     }
 
     /**
@@ -66,13 +66,40 @@ class TransactionController extends Controller
                 return $this->errorResponse($validator->errors(), 'Input tidak boleh ada yang kosong', 422);
             }
 
-            $transaction = $this->transaction->storeTransactionInvoice($request->all());
+            $transaction = $this->transaction->storeTransactionInvoiceCash($request->all());
             return $this->successResponse($transaction, $transaction['message'], $transaction['code']);
         } catch (\Throwable $th) {
             return $this->errorResponse($th->getMessage(), 'Something Went error');
         }
     }
 
+
+    public function storeNonCash(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                "invoice_id" => 'required',
+                "total_amount" =>  'required',
+                "masyarakat_id" =>  'required',
+                "pemungut_id" =>  'nullable',
+                "category_id" =>  'required',
+                "sub_district_id" =>  'required',
+                "type" => 'required',
+                "method" => 'nullable',
+            ], [
+                'required' => 'Input :attribute tidak boleh kosong',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->errorResponse($validator->errors(), 'Input tidak boleh ada yang kosong', 422);
+            }
+
+            $transaction = $this->transaction->storeTransactionInvoiceNonCash($request->all());
+            return $this->successResponse($transaction['transaction'], $transaction['message'], $transaction['code']);
+        } catch (\Throwable $th) {
+            return $this->errorResponse($th->getMessage(), 'Something Went error');
+        }
+    }
 
 
     public function historyTransactionPemungut($id)
