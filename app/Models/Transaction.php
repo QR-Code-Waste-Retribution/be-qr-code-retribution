@@ -48,6 +48,11 @@ class Transaction extends Model
         return self::where('pemungut_id', $pemungut_id)->get();
     }
 
+    public static function getHistoryTransactionOfMasyarakat($masyarakat_id)
+    {
+        return self::where('user_id', $masyarakat_id)->orderBy('id', "DESC")->get();
+    }
+
     public function getAllNonCashTransaction()
     {
         return $this
@@ -144,7 +149,7 @@ class Transaction extends Model
         $transactions = $this->create([
             'price' => $data['total_amount'],
             'date' => now(),
-            'status' => 1,
+            'status' => '1',
             'type' => 'CASH',
             'reference_number' => $numberRefAndTran['reference_number'],
             'transaction_number' => $numberRefAndTran['transaction_number'],

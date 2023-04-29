@@ -86,6 +86,19 @@ class TransactionController extends Controller
         }
     }
 
+    public function getHistoryTransactionMasyarakat($id)
+    {
+        try {
+            $transactions = Transaction::getHistoryTransactionOfMasyarakat($id);
+
+            return $this->successResponse([
+                'transaction' => TransactionResource::collection($transactions),
+            ], 'Successfully to get transactions data');
+        } catch (\Throwable $th) {
+            return $this->errorResponse([], $th->getMessage(), 500);
+        }
+    }
+
 
     /**
      * Display the specified resource.
