@@ -35,6 +35,8 @@ Route::resource('invoice', InvoiceController::class);
 
 // Transaction
 Route::get('/transaction/pemungut/{id}', [TransactionController::class, 'historyTransactionPemungut'])->name('transaction.history.pemungut');
+Route::get('/transaction/masyarakat/{id}', [TransactionController::class, 'getHistoryTransactionMasyarakat'])->name('transaction.history.masyarakat');
+Route::post('/transaction/store/non-cash', [TransactionController::class, 'storeNonCash'])->name('transaction.store.non-cash');
 Route::resource('transaction', TransactionController::class);
 
 // Category

@@ -48,6 +48,11 @@ class Transaction extends Model
         return self::where('pemungut_id', $pemungut_id)->get();
     }
 
+    public static function getHistoryTransactionOfMasyarakat($masyarakat_id)
+    {
+        return self::where('user_id', $masyarakat_id)->orderBy('id', "DESC")->get();
+    }
+
     public function getAllNonCashTransaction()
     {
         return $this
@@ -121,22 +126,11 @@ class Transaction extends Model
         ];
     }
 
-    public function storeTransactionInvoice($data)
+    public function storeTransactionInvoiceCash($data)
     {
         $invoice_id = $data['invoice_id'];
         $masyarakat_id = $data['masyarakat_id'];
         $numberRefAndTran = $this->generateReferenceAndTransactionNumber();
-
-        if ($data['type'] != 'CASH') {
-            $masyarakat = User::find($masyarakat_id);
-            $invoice =  LineItemOrderDokuResource::collection(
-                Invoice::whereIn('id', $invoice_id)->with('category:id,name')->get()
-            )->toArray($data);
-            $doku = new DokuGenerateToken($data['method'], $data['uuid']);
-            $token = $doku->generateToken($invoice, $masyarakat);
-            $token['message'] = 'Silahkan lanjutkan pembayaran sesuai metode yang anda pilih!!';
-            return $token['data'];
-        }
 
         $invoice = Invoice::whereIn('id', $invoice_id);
         $invoice->update(['status' => 1]);
@@ -144,7 +138,7 @@ class Transaction extends Model
         $transactions = $this->create([
             'price' => $data['total_amount'],
             'date' => now(),
-            'status' => 1,
+            'status' => '1',
             'type' => 'CASH',
             'reference_number' => $numberRefAndTran['reference_number'],
             'transaction_number' => $numberRefAndTran['transaction_number'],
@@ -157,6 +151,25 @@ class Transaction extends Model
         return [
             'transaction' => new TransactionResource($transactions),
             'invoice' => FInvoiceResource::collection($invoice->get()),
+            'message' => 'Silahkan lanjutkan pembayaran sesuai metode yang anda pilih!!',
+            'code' => 201,
+        ];
+    }
+
+    public function storeTransactionInvoiceNonCash($data)
+    {
+        $invoice_id = $data['invoice_id'];
+        $masyarakat_id = $data['masyarakat_id'];
+
+        $masyarakat = User::find($masyarakat_id);
+        $invoice =  LineItemOrderDokuResource::collection(
+            Invoice::whereIn('id', $invoice_id)->with('category:id,name')->get()
+        )->toArray($data);
+        $doku = new DokuGenerateToken($data['method'], $data['uuid']);
+        $token = $doku->generateToken($invoice, $masyarakat);
+
+        return [
+            'transaction' => $token['data'],
             'message' => 'Silahkan lanjutkan pembayaran sesuai metode yang anda pilih!!',
             'code' => 201,
         ];
