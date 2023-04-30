@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreTransactionRequest;
 use App\Http\Resources\TransactionResource;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
@@ -54,7 +53,7 @@ class TransactionController extends Controller
                 "total_amount" =>  'required',
                 "masyarakat_id" =>  'required',
                 "pemungut_id" =>  'nullable',
-                "category_id" =>  'required',
+                "category_id" =>  'nullable',
                 "sub_district_id" =>  'required',
                 "type" => 'required',
                 "method" => 'nullable',
@@ -82,7 +81,7 @@ class TransactionController extends Controller
                 "total_amount" =>  'required',
                 "masyarakat_id" =>  'required',
                 "pemungut_id" =>  'nullable',
-                "category_id" =>  'required',
+                "category_id" =>  'nullable',
                 "sub_district_id" =>  'required',
                 "type" => 'required',
                 "method" => 'nullable',
