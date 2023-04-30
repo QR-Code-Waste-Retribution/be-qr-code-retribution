@@ -126,6 +126,10 @@ class TransactionController extends Controller
     }
 
 
+    public function updateNonCashStatusAfterPayment(Request $request, $transaction_id)
+    {
+
+    }
     /**
      * Display the specified resource.
      *
@@ -159,6 +163,7 @@ class TransactionController extends Controller
     {
         //
     }
+
 
     /**
      * Remove the specified resource from storage.

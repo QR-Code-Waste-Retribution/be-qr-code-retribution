@@ -166,8 +166,24 @@ class Transaction extends Model
             Invoice::whereIn('id', $invoice_id)->with('category:id,name')->get()
         )->toArray($data);
         $doku = new DokuGenerateToken($data['method'], $data['uuid']);
-        $token = $doku->generateToken($invoice, $masyarakat);
 
+        $numberRefAndTran = $this->generateReferenceAndTransactionNumber();
+
+        $transactions = $this->create([
+            'price' => $data['total_amount'],
+            'date' => now(),
+            'status' => '1',
+            'type' => 'CASH',
+            'reference_number' => $numberRefAndTran['reference_number'],
+            'transaction_number' => $numberRefAndTran['transaction_number'],
+            'user_id' => $masyarakat_id,
+            'pemungut_id' => $data['pemungut_id'],
+            'category_id' => 1,
+            'sub_district_id' => $data['sub_district_id'],
+        ]);
+        
+        $token = $doku->generateToken($invoice, $masyarakat);
+        $token['merchant.transaction_id'] = $transactions->id; 
         return [
             'transaction' => $token['data'],
             'message' => 'Silahkan lanjutkan pembayaran sesuai metode yang anda pilih!!',
