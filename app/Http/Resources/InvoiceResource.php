@@ -27,6 +27,7 @@ class InvoiceResource extends JsonResource
             "address" => $this->address,
             "sub_district_name" => $this->sub_district_name,
             "date" => $this->date,
+            "arreas" => $this->arreas,
             "created_at" => [
                 'date' => $this->created_at,
                 'formated_date' => date('d F Y', strtotime($this->created_at)),

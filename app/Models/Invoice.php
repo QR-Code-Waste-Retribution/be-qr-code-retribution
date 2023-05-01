@@ -73,6 +73,7 @@ class Invoice extends Model
                     if(strcmp($invoice['created_at'], $item['created_at'])){
                         $item['date'] =  $item['date'] . ' - ' . date('d F Y', strtotime($invoice['created_at']));
                     }
+                    $item['arreas'] += 1; 
                     return;
                     break;
                 } else {
