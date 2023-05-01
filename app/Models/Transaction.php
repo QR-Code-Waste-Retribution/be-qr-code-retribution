@@ -158,16 +158,13 @@ class Transaction extends Model
 
     public function storeTransactionInvoiceNonCash($data)
     {
-        $invoice_id = $data['invoice_id'];
+        $line_items = $data['line_items'];
         $masyarakat_id = $data['masyarakat_id'];
 
         $masyarakat = User::find($masyarakat_id);
-        $invoice =  LineItemOrderDokuResource::collection(
-            Invoice::whereIn('id', $invoice_id)->with('category:id,name')->get()
-        )->toArray($data);
 
         $doku = new DokuGenerateToken($data['method'], $data['uuid']);
-        $token = $doku->generateToken($invoice, $masyarakat);
+        $token = $doku->generateToken($line_items, $masyarakat, $data['total_amount']);
 
         $numberRefAndTran = $this->generateReferenceAndTransactionNumber();
         $transactions = $this->create([
