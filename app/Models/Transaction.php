@@ -165,12 +165,14 @@ class Transaction extends Model
         $invoice =  LineItemOrderDokuResource::collection(
             Invoice::whereIn('id', $invoice_id)->with('category:id,name')->get()
         )->toArray($data);
+
         $doku = new DokuGenerateToken($data['method'], $data['uuid']);
+        $token = $doku->generateToken($invoice, $masyarakat);
 
         $numberRefAndTran = $this->generateReferenceAndTransactionNumber();
-
+        
         $transactions = $this->create([
-            'price' => $data['total_amount'],
+            'price' => $token['data']['response']['order']['amount'],
             'date' => now(),
             'status' => '1',
             'type' => 'CASH',
@@ -182,8 +184,10 @@ class Transaction extends Model
             'sub_district_id' => $data['sub_district_id'],
         ]);
         
-        $token = $doku->generateToken($invoice, $masyarakat);
-        $token['merchant.transaction_id'] = $transactions->id; 
+
+        $token['data']['merchant.transaction_id'] = $transactions['id']; 
+
+
         return [
             'transaction' => $token['data'],
             'message' => 'Silahkan lanjutkan pembayaran sesuai metode yang anda pilih!!',

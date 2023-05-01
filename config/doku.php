@@ -16,7 +16,7 @@ return [
                 'payment.url' => '/bri-virtual-account/v2/payment-code'
             ],
             "BNI_VA" => [
-                'payment.url' => '/bri-virtual-account/v2/payment-code'
+                'payment.url' => '/bni-virtual-account/v2/payment-code'
             ],
         ],
     ],

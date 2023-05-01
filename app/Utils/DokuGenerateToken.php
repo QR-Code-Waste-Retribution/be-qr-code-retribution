@@ -66,7 +66,7 @@ class DokuGenerateToken
             'Signature' => 'HMACSHA256=' . $signature,
         ])->post("$basePath$targetPath", $requestBody);
 
-        $responseJson = json_decode($response->body());
+        $responseJson = json_decode($response->body(), true);
         $httpCode = $response->status();
 
         return [
