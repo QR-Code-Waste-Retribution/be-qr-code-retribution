@@ -28,7 +28,6 @@ class InvoiceSeeder extends Seeder
                     'uuid_user' => $user->uuid,
                     'status' => 0,
                 ]);
-                // $this->command->info(json_encode($invoice, JSON_PRETTY_PRINT));
             }   
         }
     }

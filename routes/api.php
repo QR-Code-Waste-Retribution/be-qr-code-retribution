@@ -26,6 +26,9 @@ Route::post('login', [AuthController::class, 'login']);
 // User
 Route::put('user/change/{id}/password', [UserController::class, 'changePassword']);
 Route::put('user/edit/{id}/profile', [UserController::class, 'editProfile']);
+Route::get('user/all/{sub_district_id}', [UserController::class, 'getAllUserBySubDistrict']);
+
+// Auth
 Route::post('user/add', [AuthController::class, 'register']);
 
 // Invoice

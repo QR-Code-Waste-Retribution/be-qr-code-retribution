@@ -128,7 +128,22 @@ class TransactionController extends Controller
 
     public function updateNonCashStatusAfterPayment(Request $request, $transaction_id)
     {
+        try {
+            $validator = Validator::make($request->all(), [
+                "invoice_id" => 'required',
+            ], [
+                'required' => 'Input :attribute tidak boleh kosong',
+            ]);
 
+            if ($validator->fails()) {
+                return $this->errorResponse($validator->errors(), 'Input tidak boleh ada yang kosong', 422);
+            }
+
+            $transaction = $this->transaction->updateTransactionAndInvoiceNonCash($request->invoice_id, $transaction_id);
+            return $this->successResponse($transaction, "Pembayaran anda telah berhasil terimakasih", 203);
+        } catch (\Throwable $th) {
+            return $this->errorResponse($th->getMessage(), 'Something Went error');
+        }
     }
     /**
      * Display the specified resource.

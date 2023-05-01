@@ -80,7 +80,7 @@ class User extends Authenticatable
 
     public function category()
     {
-        return $this->belongsToMany(Category::class, 'users_categories')->withPivot('address');
+        return $this->belongsToMany(Category::class, 'users_categories')->withPivot(['address', 'sub_district_id']);
     }
 
     public function invoices()
@@ -106,6 +106,10 @@ class User extends Authenticatable
 
     public function getAllCountOfUsersRole(){
         return $this->selectRaw('role_id, count(*) as total')->whereIn('role_id', [1, 2])->groupBy('role_id')->get();
+    }
+
+    public function allUserBySubDistrict($sub_district_id){
+        return $this->where('sub_district_id', $sub_district_id)->get();
     }
 
 }

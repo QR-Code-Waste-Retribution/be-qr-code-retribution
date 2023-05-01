@@ -170,7 +170,6 @@ class Transaction extends Model
         $token = $doku->generateToken($invoice, $masyarakat);
 
         $numberRefAndTran = $this->generateReferenceAndTransactionNumber();
-        
         $transactions = $this->create([
             'price' => $token['data']['response']['order']['amount'],
             'date' => now(),
@@ -183,9 +182,9 @@ class Transaction extends Model
             'category_id' => 1,
             'sub_district_id' => $data['sub_district_id'],
         ]);
-        
 
-        $token['data']['merchant.transaction_id'] = $transactions['id']; 
+
+        $token['data']['merchant.transaction_id'] = $transactions['id'];
 
 
         return [
@@ -247,5 +246,15 @@ class Transaction extends Model
         })->collapse();
 
         return $income;
+    }
+
+    public function updateTransactionAndInvoiceNonCash($invoice_id, $transaction_id)
+    {
+        Invoice::whereIn('id', $invoice_id)->update(['status' => 1]);
+
+        $transaction = Transaction::find($transaction_id);
+        $transaction->status = '1';
+
+        return $transaction;
     }
 }
