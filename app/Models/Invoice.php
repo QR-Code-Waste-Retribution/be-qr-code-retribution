@@ -46,43 +46,49 @@ class Invoice extends Model
     public function checkStatusInvoice($invoice)
     {
         if (count($this->invoices_formatted) > 0) {
-            foreach ($this->invoices_formatted as $item) {
+            foreach ($this->invoices_formatted as &$item) {
                 if ($invoice['category_id'] == $item['category_id'] && $invoice['status'] == $item['status']) {
                     $item['price'] += $invoice['price'];
-                    if(strcmp($invoice['created_at'], $item['created_at'])){
-                        $item['date'] =  $item['date'] . ' - ' . date('d F Y', strtotime($invoice['created_at']));
+                    if (strcmp($invoice['created_at'], $item['created_at']) !== 0) {
+                        $item['date'] .= ' - ' . date('d F Y', strtotime($invoice['created_at']));
                     }
+
+                    if ($invoice['address'] === $item['address']) {
+                        $item['variants'] .= $invoice['id'] . ",";
+                    }
+
                     return;
-                    break;
-                } else {
-                    $invoice['date'] = date('d F Y', strtotime($invoice['created_at']));
                 }
             }
-        } else {
-            $invoice['date'] = date('d F Y', strtotime($invoice['created_at']));
         }
+
+        $invoice['date'] = date('d F Y', strtotime($invoice['created_at']));
+        $invoice['variants'] .= $invoice['id'] . ",";
         array_push($this->invoices_formatted, $invoice);
     }
 
     public function checkStatusInvoiceAndSubDistrict($invoice)
     {
         if (count($this->invoices_formatted) > 0) {
-            foreach ($this->invoices_formatted as $item) {
+            foreach ($this->invoices_formatted as &$item) {
                 if ($invoice['category_id'] == $item['category_id'] && $invoice['status'] == $item['status'] && $invoice['sub_district_id'] == $item['sub_district_id']) {
                     $item['price'] += $invoice['price'];
-                    if(strcmp($invoice['created_at'], $item['created_at'])){
-                        $item['date'] =  $item['date'] . ' - ' . date('d F Y', strtotime($invoice['created_at']));
+                    if (strcmp($invoice['created_at'], $item['created_at']) !== 0) {
+                        $item['date'] .= ' - ' . date('d F Y', strtotime($invoice['created_at']));
                     }
+        
+                    if ($invoice['address'] === $item['address']) {
+                        $item['variants'] .= $invoice['id'] . ",";
+                    }
+        
                     return;
-                    break;
-                } else {
-                    $invoice['date'] = date('d F Y', strtotime($invoice['created_at']));
                 }
             }
-        } else {
-            $invoice['date'] = date('d F Y', strtotime($invoice['created_at']));
         }
-        array_push($this->invoices_formatted, $invoice);
+        
+        $invoice['date'] = date('d F Y', strtotime($invoice['created_at']));
+        $invoice['variants'] .= $invoice['id'] . ",";
+        array_push($this->invoices_formatted, $invoice);        
     }
 
     public function getInvoiceById($uuid, $sub_district_id)
