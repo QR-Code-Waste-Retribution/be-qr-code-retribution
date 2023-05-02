@@ -29,7 +29,7 @@ class DokuGenerateToken
         $this->config = config('doku');
     }
 
-    public function generateToken($lineItems, $customer)
+    public function generateToken($lineItems, $customer, $total_amount)
     {
         $clientId = env("DOKU_CLIENT_ID");
         $basePath = $this->config["BASE_URL"][$this->dokuMode];
@@ -45,8 +45,8 @@ class DokuGenerateToken
 
         $secretKey = env("DOKU_SECRET_KEY");
 
-        $requestBody = $this->createRequestBody($lineItems, $customer);
-
+        $requestBody = $this->createRequestBody($lineItems, $customer, $total_amount);
+        
         $digestValue = base64_encode(hash('sha256', json_encode($requestBody), true));
 
         $componentSignature = "Client-Id:" . $clientId . "\n" .
@@ -66,7 +66,7 @@ class DokuGenerateToken
             'Signature' => 'HMACSHA256=' . $signature,
         ])->post("$basePath$targetPath", $requestBody);
 
-        $responseJson = json_decode($response->body());
+        $responseJson = json_decode($response->body(), true);
         $httpCode = $response->status();
 
         return [
@@ -83,7 +83,7 @@ class DokuGenerateToken
         return $dateTimeFinal;
     }
 
-    public function createRequestBody($lineItems, $customer)
+    public function createRequestBody($lineItems, $customer, $total_amount)
     {
 
         $tax = [
@@ -94,8 +94,9 @@ class DokuGenerateToken
 
         array_push($lineItems, $tax);
 
+        $amount = $total_amount + $tax['price'];
+        
         if ($this->method['payments'] == 'VIRTUAL_ACCOUNT') {
-            $amount = collect($lineItems)->sum('price');
 
             $requestBody = [
                 "order" => array(
@@ -122,11 +123,11 @@ class DokuGenerateToken
         if ($this->method['payments'] == 'CHECKOUT') {
             return [
                 "order" => [
-                    "amount" => collect($lineItems)->sum('price'),
+                    "amount" => $amount,
                     "invoice_number" => "INV-" . time(),
                     "currency" => "IDR",
-                    "callback_url" => "http://doku.com/",
-                    "callback_url_cancel" => "https://doku.com",
+                    "callback_url" => "qr_code_app://",
+                    "callback_url_cancel" => "qr_code_app://cancel",
                     "language" => "EN",
                     "auto_redirect" => true,
                     "disable_retry_payment" => true,

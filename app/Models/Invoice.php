@@ -49,7 +49,9 @@ class Invoice extends Model
             foreach ($this->invoices_formatted as $item) {
                 if ($invoice['category_id'] == $item['category_id'] && $invoice['status'] == $item['status']) {
                     $item['price'] += $invoice['price'];
-                    $item['date'] =  $item['date'] . ' - ' . date('d F Y', strtotime($invoice['created_at']));
+                    if(strcmp($invoice['created_at'], $item['created_at'])){
+                        $item['date'] =  $item['date'] . ' - ' . date('d F Y', strtotime($invoice['created_at']));
+                    }
                     return;
                     break;
                 } else {
@@ -68,7 +70,9 @@ class Invoice extends Model
             foreach ($this->invoices_formatted as $item) {
                 if ($invoice['category_id'] == $item['category_id'] && $invoice['status'] == $item['status'] && $invoice['sub_district_id'] == $item['sub_district_id']) {
                     $item['price'] += $invoice['price'];
-                    $item['date'] =  $item['date'] . ' - ' . date('d F Y', strtotime($invoice['created_at']));
+                    if(strcmp($invoice['created_at'], $item['created_at'])){
+                        $item['date'] =  $item['date'] . ' - ' . date('d F Y', strtotime($invoice['created_at']));
+                    }
                     return;
                     break;
                 } else {
@@ -134,26 +138,32 @@ class Invoice extends Model
 
     public function allUserForInvoicePaidAndUnpaid($sub_district_id)
     {
-        $usersUnpaid = User::join('invoice', 'users.id', '=', 'invoice.user_id')
-            ->select('users.*', 'invoice.price as invoicePrice', 'invoice.user_id as invoiceUserId', 'invoice.status as invoiceStatus')
-            ->where('invoice.status', 0)
-            ->where('users.sub_district_id', $sub_district_id)
+        $usersPaid = User::withCount(['invoices as invoiceCount' => function ($query) {
+            $query->where('status', 1);
+        }])
+            ->where('sub_district_id', $sub_district_id)
+            ->groupBy('id')
+            ->having('invoiceCount', '>', 0)
             ->get();
 
-        $usersPaid = User::join('invoice', 'users.id', '=', 'invoice.user_id')
-            ->select('users.*', 'invoice.price as invoicePrice', 'invoice.user_id as invoiceUserId', 'invoice.status as invoiceStatus')
-            ->where('invoice.status', 1)
-            ->where('users.sub_district_id', $sub_district_id)
+
+        $usersUnpaid = User::withCount(['invoices as invoiceCount' => function ($query) {
+            $query->where('status', 0);
+        }])
+            ->where('sub_district_id', $sub_district_id)
+            ->groupBy('id')
+            ->having('invoiceCount', '>', 0)
             ->get();
+
 
         return [
             'users.paid' => [
                 'records' => $usersPaid,
-                'count' => count($usersPaid), 
+                'count' => $usersPaid->sum('invoiceCount'),
             ],
             'users.unpaid' => [
                 'records' => $usersUnpaid,
-                'count' => count($usersUnpaid), 
+                'count' => $usersUnpaid->sum('invoiceCount'),
             ],
         ];
     }

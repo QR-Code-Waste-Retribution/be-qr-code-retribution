@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreTransactionRequest;
 use App\Http\Resources\TransactionResource;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
@@ -54,7 +53,7 @@ class TransactionController extends Controller
                 "total_amount" =>  'required',
                 "masyarakat_id" =>  'required',
                 "pemungut_id" =>  'nullable',
-                "category_id" =>  'required',
+                "category_id" =>  'nullable',
                 "sub_district_id" =>  'required',
                 "type" => 'required',
                 "method" => 'nullable',
@@ -78,11 +77,11 @@ class TransactionController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                "invoice_id" => 'required',
+                "line_items" => 'required',
                 "total_amount" =>  'required',
                 "masyarakat_id" =>  'required',
                 "pemungut_id" =>  'nullable',
-                "category_id" =>  'required',
+                "category_id" =>  'nullable',
                 "sub_district_id" =>  'required',
                 "type" => 'required',
                 "method" => 'nullable',
@@ -127,6 +126,25 @@ class TransactionController extends Controller
     }
 
 
+    public function updateNonCashStatusAfterPayment(Request $request, $transaction_id)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                "invoice_id" => 'required',
+            ], [
+                'required' => 'Input :attribute tidak boleh kosong',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->errorResponse($validator->errors(), 'Input tidak boleh ada yang kosong', 422);
+            }
+
+            $transaction = $this->transaction->updateTransactionAndInvoiceNonCash($request->invoice_id, $transaction_id);
+            return $this->successResponse($transaction, "Pembayaran anda telah berhasil terimakasih", 203);
+        } catch (\Throwable $th) {
+            return $this->errorResponse($th->getMessage(), 'Something Went error');
+        }
+    }
     /**
      * Display the specified resource.
      *
@@ -160,6 +178,7 @@ class TransactionController extends Controller
     {
         //
     }
+
 
     /**
      * Remove the specified resource from storage.

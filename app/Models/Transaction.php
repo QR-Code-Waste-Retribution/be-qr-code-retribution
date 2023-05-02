@@ -158,15 +158,31 @@ class Transaction extends Model
 
     public function storeTransactionInvoiceNonCash($data)
     {
-        $invoice_id = $data['invoice_id'];
+        $line_items = $data['line_items'];
         $masyarakat_id = $data['masyarakat_id'];
 
         $masyarakat = User::find($masyarakat_id);
-        $invoice =  LineItemOrderDokuResource::collection(
-            Invoice::whereIn('id', $invoice_id)->with('category:id,name')->get()
-        )->toArray($data);
+
         $doku = new DokuGenerateToken($data['method'], $data['uuid']);
-        $token = $doku->generateToken($invoice, $masyarakat);
+        $token = $doku->generateToken($line_items, $masyarakat, $data['total_amount']);
+
+        $numberRefAndTran = $this->generateReferenceAndTransactionNumber();
+        $transactions = $this->create([
+            'price' => $token['data']['response']['order']['amount'],
+            'date' => now(),
+            'status' => '1',
+            'type' => 'CASH',
+            'reference_number' => $numberRefAndTran['reference_number'],
+            'transaction_number' => $numberRefAndTran['transaction_number'],
+            'user_id' => $masyarakat_id,
+            'pemungut_id' => $data['pemungut_id'],
+            'category_id' => 1,
+            'sub_district_id' => $data['sub_district_id'],
+        ]);
+
+
+        $token['data']['merchant.transaction_id'] = $transactions['id'];
+
 
         return [
             'transaction' => $token['data'],
@@ -227,5 +243,15 @@ class Transaction extends Model
         })->collapse();
 
         return $income;
+    }
+
+    public function updateTransactionAndInvoiceNonCash($invoice_id, $transaction_id)
+    {
+        Invoice::whereIn('id', $invoice_id)->update(['status' => 1]);
+
+        $transaction = Transaction::find($transaction_id);
+        $transaction->status = '1';
+
+        return $transaction;
     }
 }
