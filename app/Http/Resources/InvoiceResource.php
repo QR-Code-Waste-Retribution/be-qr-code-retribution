@@ -26,7 +26,7 @@ class InvoiceResource extends JsonResource
             "category" => new CategoryResource($this->category),
             "address" => $this->address,
             "sub_district_name" => $this->sub_district_name,
-            "date" => $this->date,
+            "date" => implode(' - ', array_unique(array_map("trim", explode('-',$this->date)))),
             "variants" => array_map('intval', array_unique(array_filter(explode(',', $this->variants)))),
             "created_at" => [
                 'date' => $this->created_at,

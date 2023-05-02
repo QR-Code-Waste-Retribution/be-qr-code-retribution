@@ -63,7 +63,7 @@ class Invoice extends Model
         }
 
         $invoice['date'] = date('d F Y', strtotime($invoice['created_at']));
-        $invoice['variants'] .= $invoice['id'] . ",";
+        // $invoice['variants'] .= $invoice['id'] . ",";
         array_push($this->invoices_formatted, $invoice);
     }
 
