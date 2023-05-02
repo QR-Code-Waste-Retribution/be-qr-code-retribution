@@ -128,12 +128,35 @@ class Transaction extends Model
 
     public function storeTransactionInvoiceCash($data)
     {
-        $invoice_id = $data['invoice_id'];
+        $invoices = $data['invoices_id'];
+
+        $parentsArray = [];
+        $variantsCount = [];
+
+        $invoices_id = [];
+        foreach ($invoices as $invoice) {
+            $parentsArray[] = $invoice['parents'];
+            $variantsCount[$invoice['parents']] = count($invoice['variants']) + 1;
+
+            $invoices_id[] = $invoice['parents'];
+            $invoices_id = array_merge($invoices_id, $invoice['variants']);
+        }
+
+        $invoices_id = array_filter($invoices_id, 'is_int');
+        $invoices_id = array_values($invoices_id);
+
         $masyarakat_id = $data['masyarakat_id'];
         $numberRefAndTran = $this->generateReferenceAndTransactionNumber();
 
-        $invoice = Invoice::whereIn('id', $invoice_id);
+        $invoice = Invoice::whereIn('id', $invoices_id);
         $invoice->update(['status' => 1]);
+
+        $invoice_parents = Invoice::whereIn('id', $parentsArray)->get();
+
+        foreach ($invoice_parents as $item) {
+            $item['price'] *= $variantsCount[$item->id];
+            $item['variants_count'] = $variantsCount[$item->id];
+        }
 
         $transactions = $this->create([
             'price' => $data['total_amount'],
@@ -150,7 +173,7 @@ class Transaction extends Model
 
         return [
             'transaction' => new TransactionResource($transactions),
-            'invoice' => FInvoiceResource::collection($invoice->get()),
+            'invoice' => FInvoiceResource::collection($invoice_parents),
             'message' => 'Silahkan lanjutkan pembayaran sesuai metode yang anda pilih!!',
             'code' => 201,
         ];

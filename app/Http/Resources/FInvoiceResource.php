@@ -17,6 +17,7 @@ class FInvoiceResource extends JsonResource
         return [
             'user' => new UserResource($this->user),
             'category' => new CategoryResource($this->category),
+            'variants.count' => $this->variants_count,
             'price' => [
                 "normal_price" => $this->price,
                 "formated_price" => number_format($this->price, 2)

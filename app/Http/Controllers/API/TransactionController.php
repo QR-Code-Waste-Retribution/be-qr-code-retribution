@@ -49,7 +49,7 @@ class TransactionController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                "invoice_id" => 'required',
+                "invoices_id" => 'required',
                 "total_amount" =>  'required',
                 "masyarakat_id" =>  'required',
                 "pemungut_id" =>  'nullable',
