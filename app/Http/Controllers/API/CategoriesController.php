@@ -15,13 +15,18 @@ class CategoriesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public $category;
+    public function __construct()
+    {
+        $this->category = new Category();
+    }
+
     public function index(Request $request)
     {
         try {
             $district_id = $request->district_id ?? 1;
-            $categories = Category::getAllByDistrict($district_id);
-
-            return $this->successResponse(['categories' => CategoryResource::collection($categories)], 'Successfully to get all categories');
+            $categories = CategoryResource::collection($this->category->getAllByDistrict($district_id));
+            return $this->successResponse(['categories' => $categories], 'Successfully to get all categories');
         } catch (\Throwable $th) {
             return $this->errorResponse([], $th->getMessage(), 500);
         }
