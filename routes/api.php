@@ -5,7 +5,6 @@ use App\Http\Controllers\API\CategoriesController;
 use App\Http\Controllers\API\InvoiceController;
 use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\UserController;
-use App\Utils\DokuGenerateToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,6 +19,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::post('/socket', function (Request $request) {
+    $data = $request['data'];
+    $uuid = $request['uuid'];
+    
+    event(new \App\Events\QREvent($data, $uuid));
+    return null;
+});
+
 Route::post('login', [AuthController::class, 'login']);
 
 
@@ -33,6 +40,7 @@ Route::post('user/add', [AuthController::class, 'register']);
 
 // Invoice
 Route::get('/invoice/users/all/{sub_district_id}', [InvoiceController::class, 'getAllUserForInvoicePaidAndUnpaid']);
+Route::get('/invoice/total/compensated/', [InvoiceController::class, 'getTotalAmountUnpaidAndPaidInvoice']);
 Route::post('people/{uuid}/invoice', [InvoiceController::class, 'getInvoiceOfUserByUUID']);
 Route::resource('invoice', InvoiceController::class);
 
