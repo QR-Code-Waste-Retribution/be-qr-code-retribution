@@ -24,6 +24,37 @@ class Invoice extends Model
         return $this->belongsTo(Category::class);
     }
 
+
+    public function totalAmountUnpaidAndPaidInvoiceMonthly($district_id)
+    {
+        $currentMonth = date('m');
+
+        $invoice = Invoice::select(
+            DB::raw("CASE
+                WHEN status = 0 THEN 'unpaid'
+                WHEN status = 1 THEN 'paid'
+                ELSE 'Unknown'
+            END AS status"),
+            DB::raw('SUM(price) as total_amount'),
+            DB::raw('MAX(created_at) as updated_at')
+        )
+            ->whereIn('user_id', function ($query) use ($district_id) {
+                $query->select('id')
+                    ->from('users')
+                    ->where('district_id', $district_id);
+            })
+            ->whereMonth('created_at', $currentMonth)
+            ->groupBy('status')
+            ->get();
+
+        return collect($invoice)->mapWithKeys(function ($item) {
+            return [$item['status'] => [
+                'total' => $item['total_amount'],
+                'date' =>  date('d F Y', strtotime($item['updated_at']))
+            ]];
+        })->toArray();
+    }
+
     public function formatUserInvoice($invoices)
     {
         foreach ($invoices as $item) {
@@ -76,19 +107,19 @@ class Invoice extends Model
                     if (strcmp($invoice['created_at'], $item['created_at']) !== 0) {
                         $item['date'] .= ' - ' . date('d F Y', strtotime($invoice['created_at']));
                     }
-        
+
                     if ($invoice['address'] === $item['address']) {
                         $item['variants'] .= $invoice['id'] . ",";
                     }
-        
+
                     return;
                 }
             }
         }
-        
+
         $invoice['date'] = date('d F Y', strtotime($invoice['created_at']));
         $invoice['variants'] .= $invoice['id'] . ",";
-        array_push($this->invoices_formatted, $invoice);        
+        array_push($this->invoices_formatted, $invoice);
     }
 
     public function getInvoiceById($uuid, $sub_district_id)

@@ -48,11 +48,13 @@ class AuthController extends Controller
   {
     $validator = Validator::make($request->all(), [
       "name" => "required",
+      "nik" => "nullable",
       "username" => "required",
       "gender" => "required",
       "phoneNumber" => "required",
       "district_id" => "required",
       "sub_district_id" => "required",
+      "category_id" => "required",
     ], [
       'required' => 'Input :attribute tidak boleh kosong',
     ]);

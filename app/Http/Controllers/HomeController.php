@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Invoice;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -11,12 +12,14 @@ class HomeController extends Controller
 {
     public $transactions;
     public $users;
+    public $invoice;
 
 
     public function __construct()
     {
         $this->transactions = new Transaction();
         $this->users = new User();
+        $this->invoice = new Invoice();
     }
     /**
      * Display a listing of the resource.
@@ -29,7 +32,12 @@ class HomeController extends Controller
         $users = $this->users->getAllCountOfUsersRole();
         $graph = $this->transactions->getIncomeData();
 
-        return view('pages.home', compact('income', 'users', 'graph'));
+
+
+        $district_id = auth()->user()->district_id; 
+        $invoice_monthly = $this->invoice->totalAmountUnpaidAndPaidInvoiceMonthly($district_id);
+
+        return view('pages.home', compact('income', 'users', 'graph', 'invoice_monthly'));
     }
 
     public function income()

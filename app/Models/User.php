@@ -109,7 +109,11 @@ class User extends Authenticatable
     }
 
     public function allUserBySubDistrict($sub_district_id){
-        return $this->where('sub_district_id', $sub_district_id)->get();
+        return $this
+            ->with(['category'])
+            ->where('sub_district_id', $sub_district_id)
+            ->where('role_id', 1)
+            ->get();
     }
 
 }
