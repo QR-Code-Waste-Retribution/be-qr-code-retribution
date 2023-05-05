@@ -25,7 +25,7 @@ class Invoice extends Model
     }
 
 
-    public function totalAmountUnpaidAndPaidInvoiceMonthly($district_id)
+    public function totalAmountUnpaidAndPaidInvoiceMonthly()
     {
         $currentMonth = date('m');
 
@@ -38,10 +38,10 @@ class Invoice extends Model
             DB::raw('SUM(price) as total_amount'),
             DB::raw('MAX(created_at) as updated_at')
         )
-            ->whereIn('user_id', function ($query) use ($district_id) {
+            ->whereIn('user_id', function ($query){
                 $query->select('id')
                     ->from('users')
-                    ->where('district_id', $district_id);
+                    ->where('district_id', auth()->user()->district_id);
             })
             ->whereMonth('created_at', $currentMonth)
             ->groupBy('status')

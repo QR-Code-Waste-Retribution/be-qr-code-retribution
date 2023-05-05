@@ -28,7 +28,7 @@ class TransactionFactory extends Factory
         $pemungut = User::inRandomOrder()->where('role_id', 2)->where('district_id', $masyarakat->district_id)->first();
         return [
             'price' => fake()->randomElement([10000, 20000, 30000, 40000, 50000]),
-            'status' => '0',
+            'status' => fake()->randomElement([0, 1]),
             'date' =>  Carbon::now()->subMonths(rand(0, 4))->format('Y-m-d'),
             'type' => $paymentMethod[$randomInt],
             'reference_number' => $reference_number,

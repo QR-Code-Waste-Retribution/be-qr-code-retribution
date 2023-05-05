@@ -34,9 +34,9 @@
                                         </div>
                                         <div class="ps-3">
                                             <h6 class="fs-4">Rp.
-                                                {{ number_format($invoice_monthly['paid']['total'], 2) }} -,</h6>
+                                                {{ number_format($invoice_monthly['paid']['total'] ?? 0, 2) }} -,</h6>
                                             <span class="text-success small pt-1 fw-bold"></span><span
-                                                class="text-muted small pt-2 ps-1">{{ $invoice_monthly['paid']['date'] }}</span>
+                                                class="text-muted small pt-2 ps-1">{{ $invoice_monthly['paid']['date'] ?? "-" }}</span>
 
                                         </div>
                                     </div>
@@ -62,7 +62,7 @@
                                         </div>
                                         <div class="ps-3">
                                             <h6 class="fs-4">Rp.
-                                                {{ number_format($invoice_monthly['unpaid']['total'], 2) }} -,</h6>
+                                                {{ number_format($invoice_monthly['unpaid']['total'] ?? 0, 2) }} -,</h6>
                                             <span class="text-success small pt-1 fw-bold"></span><span
                                                 class="text-muted small pt-2 ps-1">{{ $invoice_monthly['unpaid']['date'] }}</span>
 
@@ -95,9 +95,9 @@
                                         </div>
                                         <div class="ps-3">
                                             <h6 class="fs-4">Rp.
-                                                {{ number_format($income['cash'] + $income['noncash'], 2) }} -,</h6>
+                                                {{ number_format($income_tambahan->total_amount, 2) }} -,</h6>
                                             <span class="text-success small pt-1 fw-bold"></span><span
-                                                class="text-muted small pt-2 ps-1">21 Februari 2023</span>
+                                                class="text-muted small pt-2 ps-1">{{ date('d F Y', strtotime($income_tambahan->updated_at)) }}</span>
 
                                         </div>
                                     </div>
@@ -127,7 +127,7 @@
                                         </div>
                                         <div class="ps-3">
                                             <h6 class="fs-4">Rp.
-                                                {{ number_format($income['cash'] + $income['noncash'], 2) }} -,</h6>
+                                                {{ number_format(($invoice_monthly['paid']['total'] ?? 0)  + $income_tambahan->total_amount + $income['noncash'], 2) }} -,</h6>
                                             <span class="text-success small pt-1 fw-bold"></span><span
                                                 class="text-muted small pt-2 ps-1">21 Februari 2023</span>
 

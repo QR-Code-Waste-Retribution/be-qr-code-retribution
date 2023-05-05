@@ -31,13 +31,10 @@ class HomeController extends Controller
         $income = $this->transactions->sumTransactionByType();
         $users = $this->users->getAllCountOfUsersRole();
         $graph = $this->transactions->getIncomeData();
+        $income_tambahan = $this->transactions->getIncomeTambahanDataByDistrictId();
+        $invoice_monthly = $this->invoice->totalAmountUnpaidAndPaidInvoiceMonthly();
 
-
-
-        $district_id = auth()->user()->district_id; 
-        $invoice_monthly = $this->invoice->totalAmountUnpaidAndPaidInvoiceMonthly($district_id);
-
-        return view('pages.home', compact('income', 'users', 'graph', 'invoice_monthly'));
+        return view('pages.home', compact('income', 'users', 'graph', 'invoice_monthly', 'income_tambahan'));
     }
 
     public function income()
