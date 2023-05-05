@@ -261,6 +261,7 @@ class Transaction extends Model
         $transactions = $this->selectRaw('type, SUM(price) as total')
             ->where(DB::raw('MONTH(transactions.date)'), '=', DB::raw('MONTH(CURRENT_DATE())'))
             ->groupBy('type', 'date')->get();
+        
         $income = collect($transactions)->map(function ($item) {
             return [strtolower($item['type']) => (int)$item['total']];
         })->collapse();
@@ -276,5 +277,21 @@ class Transaction extends Model
         $transaction->status = '1';
 
         return $transaction;
+    }
+
+    public function getIncomeTambahanDataByDistrictId()
+    {
+        return $this->select(
+            DB::raw('SUM(transactions.price) as total_amount'),
+            DB::raw('MAX(created_at) as updated_at'),
+        )
+            ->whereIn('category_id', function ($query) {
+                $query->select('id')
+                    ->from('categories')
+                    ->whereIn('type', ['packet', 'unit', 'day'])
+                    ->where('district_id', auth()->user()->district_id);
+            })
+            ->where('status', 1)
+            ->first();
     }
 }
