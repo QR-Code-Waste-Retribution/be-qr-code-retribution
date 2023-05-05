@@ -19,6 +19,35 @@ class PemungutTransaction extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function getDepositPemungut()
+    {
+        $deposit = $this->select(
+            DB::raw("
+                CASE
+                    WHEN status = 0 THEN 'already_deposited'
+                    WHEN status = 1 THEN 'not_yet_deposited'
+                END as status_deposit,
+                SUM(total) as total_amount
+            "),
+            DB::raw('MAX(updated_at) as updated_at')
+        )
+            ->whereIn('pemungut_id', function ($query) {
+                $query->select('id')
+                    ->from('users')
+                    ->where('district_id', auth()->user()->district_id);
+            })
+            ->whereRaw('MONTH(pemungut_transactions.updated_at) = MONTH(CURRENT_DATE())')
+            ->groupBy('pemungut_transactions.status')
+            ->get();
+
+        return collect($deposit)->mapWithKeys(function ($item) {
+            return [$item['status_deposit'] => [
+                'total' => $item['total_amount'],
+                'date' =>  date('d F Y', strtotime($item['updated_at']))
+            ]];
+        })->toArray();
+    }
+
     public function getAllTransaction($sub_district, $search)
     {
         $pemungut_transactions = User::where('role_id', 2)
@@ -126,5 +155,4 @@ class PemungutTransaction extends Model
             ->where(DB::raw('MONTH(invoice.created_at)'), '=', DB::raw('MONTH(CURRENT_DATE())'))
             ->get();
     }
-    
 }
