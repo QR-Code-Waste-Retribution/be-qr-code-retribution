@@ -24,8 +24,8 @@ class PemungutTransaction extends Model
         $deposit = $this->select(
             DB::raw("
                 CASE
-                    WHEN status = 0 THEN 'already_deposited'
-                    WHEN status = 1 THEN 'not_yet_deposited'
+                    WHEN status = 0 THEN 'not_yet_deposited'
+                    WHEN status = 1 THEN 'already_deposited'
                 END as status_deposit,
                 SUM(total) as total_amount
             "),
