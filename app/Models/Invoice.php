@@ -36,14 +36,14 @@ class Invoice extends Model
                 ELSE 'Unknown'
             END AS status"),
             DB::raw('SUM(price) as total_amount'),
-            DB::raw('MAX(created_at) as updated_at')
+            DB::raw('MAX(updated_at) as updated_at')
         )
             ->whereIn('user_id', function ($query){
                 $query->select('id')
                     ->from('users')
                     ->where('district_id', auth()->user()->district_id);
             })
-            ->whereMonth('created_at', $currentMonth)
+            ->whereMonth('updated_at', $currentMonth)
             ->groupBy('status')
             ->get();
 

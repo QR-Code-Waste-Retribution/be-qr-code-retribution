@@ -261,13 +261,15 @@ class Transaction extends Model
         $transactions = $this->selectRaw('type, SUM(price) as total')
             ->where(DB::raw('MONTH(transactions.date)'), '=', DB::raw('MONTH(CURRENT_DATE())'))
             ->groupBy('type', 'date')->get();
-        
+
         $income = collect($transactions)->map(function ($item) {
             return [strtolower($item['type']) => (int)$item['total']];
         })->collapse();
 
         return $income;
     }
+
+
 
     public function updateTransactionAndInvoiceNonCash($invoice_id, $transaction_id)
     {
