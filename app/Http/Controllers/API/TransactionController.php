@@ -133,7 +133,7 @@ class TransactionController extends Controller
         try {
             $transactions = Transaction::getHistoryTransactionOfPemungut($id);
 
-            return $this->successResponse(TransactionResource::collection($transactions), 'Successfully to get transactions data');
+            return $this->successResponse($transactions, 'Successfully to get transactions data');
         } catch (\Throwable $th) {
             return $this->errorResponse([], $th->getMessage(), 500);
         }

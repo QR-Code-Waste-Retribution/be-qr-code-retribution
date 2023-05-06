@@ -45,7 +45,16 @@ class Transaction extends Model
 
     public static function getHistoryTransactionOfPemungut($pemungut_id)
     {
-        return self::where('pemungut_id', $pemungut_id)->get();
+        $transactions = self::where('pemungut_id', $pemungut_id)
+            ->orderBy('id', 'DESC')
+            ->get();
+
+        $filteredTransactions = $transactions->where('created_at', '>=', now()->startOfMonth());
+        $totalPrice = $filteredTransactions->sum('price');
+        return [
+            'transaction' => TransactionResource::collection($transactions),
+            'total_amount' => $totalPrice,
+        ];
     }
 
     public static function getHistoryTransactionOfMasyarakat($masyarakat_id)
