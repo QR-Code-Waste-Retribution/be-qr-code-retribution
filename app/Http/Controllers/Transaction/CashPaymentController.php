@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Transaction;
 
 use App\Export\PaymentExport;
 use App\Http\Controllers\Controller;
+use App\Models\Invoice;
 use App\Models\PemungutTransaction;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -16,9 +17,11 @@ class CashPaymentController extends Controller
 {
 
     public $pemungut_transactions;
+    public $invoice;
 
     public function __construct() {
         $this->pemungut_transactions = new PemungutTransaction();
+        $this->invoice = new Invoice();
     }
 
     public function export()
@@ -35,12 +38,13 @@ class CashPaymentController extends Controller
         $search = $request->search ?? '';
         $month = $request->month ?? '';
         $sub_district = $request->sub_district ?? null;
+        $invoice_monthly = $this->invoice->totalAmountUnpaidAndPaidInvoiceMonthly();
 
         $pemungut_transactions = $this->pemungut_transactions->getAllTransaction($sub_district, $search);
         // $targetIncome = $this->pemungut_transactions->getIncomeData();
 
         // return $targetIncome;
-        return view('pages.transaction.cash.cash-payment', compact('pemungut_transactions'));
+        return view('pages.transaction.cash.cash-payment', compact('pemungut_transactions', 'invoice_monthly'));
     }
 
     public function show($id)
