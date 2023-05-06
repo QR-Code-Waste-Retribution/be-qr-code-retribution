@@ -179,6 +179,30 @@ class Transaction extends Model
         ];
     }
 
+
+    public function storeTransactionAdditionalCash($data)
+    {
+        $category_id = $data['category_id'];
+        $numberRefAndTran = $this->generateReferenceAndTransactionNumber();
+
+        $transactions = $this->create([
+            'price' => $data['total_amount'],
+            'date' => now(),
+            'status' => '1',
+            'type' => 'CASH',
+            'reference_number' => $numberRefAndTran['reference_number'],
+            'transaction_number' => $numberRefAndTran['transaction_number'],
+            'user_id' => $data['pemungut_id'],
+            'pemungut_id' => $data['pemungut_id'],
+            'category_id' => $category_id,
+            'sub_district_id' => $data['sub_district_id'],
+        ]);
+
+        return [
+            'transaction' => new TransactionResource($transactions),
+        ];
+    }
+
     public function storeTransactionInvoiceNonCash($data)
     {
         $line_items = $data['line_items'];
