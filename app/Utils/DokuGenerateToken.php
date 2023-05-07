@@ -18,8 +18,10 @@ class DokuGenerateToken
     public $method;
     public $uuid;
 
+    private $total_amount;
     private $config;
     private $dokuMode;
+
 
     public function __construct($method, $uuid)
     {
@@ -71,6 +73,7 @@ class DokuGenerateToken
 
         return [
             'data' => $responseJson,
+            'total_amount' => $this->total_amount,
             'code' => $httpCode,
         ];
     }
@@ -94,14 +97,14 @@ class DokuGenerateToken
 
         array_push($lineItems, $tax);
 
-        $amount = $total_amount + $tax['price'];
+        $this->total_amount = $total_amount + $tax['price'];
         
         if ($this->method['payments'] == 'VIRTUAL_ACCOUNT') {
 
-            $requestBody = [
+            return [
                 "order" => array(
                     "invoice_number" => "INV-" . time(),
-                    "amount" => $amount,
+                    "amount" => $this->total_amount
                 ),
                 "virtual_account_info" => array(
                     "billing_type" => "FIX_BILL",
@@ -110,17 +113,16 @@ class DokuGenerateToken
                     'info1' => "Sistem Retribusi Pas",
                     "info2" => "ar Terima kasih sud",
                     "info3" => "ah membayar wajib re",
-                    "info4" => "tribusi anda",
+                    "info4" => "tribusi anda"
                 ),
-                "customer" => $customer
+                "customer" => $customer->only('name', 'email')
             ];
-            return $requestBody;
         }
 
         if ($this->method['payments'] == 'CHECKOUT') {
             return [
                 "order" => [
-                    "amount" => $amount,
+                    "amount" => $this->total_amount,
                     "invoice_number" => "INV-" . time(),
                     "currency" => "IDR",
                     "callback_url" => "qr_code_app://",

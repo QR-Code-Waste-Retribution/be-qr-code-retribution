@@ -223,8 +223,9 @@ class Transaction extends Model
         $token = $doku->generateToken($line_items, $masyarakat, $data['total_amount']);
 
         $numberRefAndTran = $this->generateReferenceAndTransactionNumber();
+
         $transactions = $this->create([
-            'price' => $token['data']['response']['order']['amount'],
+            'price' => $token['total_amount'],
             'date' => now(),
             'status' => '1',
             'type' => 'CASH',
@@ -236,14 +237,13 @@ class Transaction extends Model
             'sub_district_id' => $data['sub_district_id'],
         ]);
 
-
         $token['data']['merchant.transaction_id'] = $transactions['id'];
 
 
         return [
             'transaction' => $token['data'],
             'message' => 'Silahkan lanjutkan pembayaran sesuai metode yang anda pilih!!',
-            'code' => 201,
+            'code' => $token['code'],
         ];
     }
 
