@@ -229,7 +229,7 @@ class Transaction extends Model
             'date' => now(),
             'status' => '1',
             'type' => 'NONCASH',
-            'invoice_number' => $token['transaction']['id'],
+            'invoice_number' => $token['transaction']['invoice_number'],
             'reference_number' => $numberRefAndTran['reference_number'],
             'transaction_number' => $numberRefAndTran['transaction_number'],
             'user_id' => $masyarakat_id,
