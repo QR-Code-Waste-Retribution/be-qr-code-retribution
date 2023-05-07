@@ -225,11 +225,11 @@ class Transaction extends Model
         $token = $doku->generateToken($line_items, $masyarakat, $data['total_amount']);
 
         $transactions = $this->create([
-            'id' => $token['transaction']['id'],
             'price' => $token['transaction']['total_amount'],
             'date' => now(),
             'status' => '1',
             'type' => 'NONCASH',
+            'invoice_number' => $token['transaction']['id'],
             'reference_number' => $numberRefAndTran['reference_number'],
             'transaction_number' => $numberRefAndTran['transaction_number'],
             'user_id' => $masyarakat_id,

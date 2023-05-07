@@ -15,13 +15,17 @@ return new class extends Migration
     {
         Schema::create('payment_notifications', function (Blueprint $table) {
             $table->id();
-            $table->string('invoice_number');
             $table->string('acquirer');
             $table->string('channel');
             $table->bigInteger('amount');
             $table->string('original_request_id');
             $table->string('date');
+            $table->unsignedBigInteger('transaction_id');
             $table->timestamps();
+
+            $table->foreign('transaction_id')
+                ->references('id')
+                ->on('transactions');
         });
     }
 
