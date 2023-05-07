@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CategoriesController;
+use App\Http\Controllers\API\DokuController;
 use App\Http\Controllers\API\InvoiceController;
 use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\UserController;
@@ -51,6 +52,10 @@ Route::post('/transaction/store/non-cash', [TransactionController::class, 'store
 Route::post('/transaction/store/additional', [TransactionController::class, 'storeAddtionalRetribution'])->name('transaction.store.additional');
 Route::put('/transaction/update/non-cash/status/{transaction_id}', [TransactionController::class, 'updateNonCashStatusAfterPayment'])->name('transaction.store.non-cash');
 Route::resource('transaction', TransactionController::class);
+
+
+// Notification Payment Doku
+Route::post('/payments/notifications', [DokuController::class, 'notifications'])->name('doku.notification');
 
 // Category
 Route::resource('category', CategoriesController::class);

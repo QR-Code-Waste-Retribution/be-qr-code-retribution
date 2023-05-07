@@ -112,10 +112,7 @@ class DokuGenerateToken
                     "info3" => "ah membayar wajib re",
                     "info4" => "tribusi anda",
                 ),
-                "customer" => array(
-                    "name" => "Anton Budiman",
-                    "email" => "anton@example.com"
-                )
+                "customer" => $customer
             ];
             return $requestBody;
         }
