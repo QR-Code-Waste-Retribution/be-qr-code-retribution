@@ -32,7 +32,7 @@ class DokuController extends Controller
                 // TODO: Do update the transaction status based on the `transaction.status`
             } else {
                 // TODO: Response with 400 errors for Invalid Signature
-                return response('Invalid Signature', 400)->header('Content-Type', 'text/plain');
+                return response('Invalid Signature', 500)->header('Content-Type', 'text/plain');
             }
         } catch (\Throwable $th) {
             return $this->errorResponse([], $th->getMessage(), 500);
