@@ -22,6 +22,7 @@ class DokuGenerateToken
     private $config;
     private $dokuMode;
 
+    private $transaction_id;
 
     public function __construct($method, $uuid)
     {
@@ -73,7 +74,9 @@ class DokuGenerateToken
 
         return [
             'data' => $responseJson,
-            'total_amount' => $this->total_amount,
+            'transaction' => [
+                'total_amount' => $this->total_amount,
+            ],
             'code' => $httpCode,
         ];
     }
@@ -98,12 +101,13 @@ class DokuGenerateToken
         array_push($lineItems, $tax);
 
         $this->total_amount = $total_amount + $tax['price'];
-        
+        $this->transaction_id = "INV-" . time();
+
         if ($this->method['payments'] == 'VIRTUAL_ACCOUNT') {
 
             return [
                 "order" => array(
-                    "invoice_number" => "INV-" . time(),
+                    "invoice_number" => $this->transaction_id,
                     "amount" => $this->total_amount
                 ),
                 "virtual_account_info" => array(
@@ -123,7 +127,7 @@ class DokuGenerateToken
             return [
                 "order" => [
                     "amount" => $this->total_amount,
-                    "invoice_number" => "INV-" . time(),
+                    "invoice_number" => $this->transaction_id,
                     "currency" => "IDR",
                     "callback_url" => "qr_code_app://",
                     "callback_url_cancel" => "qr_code_app://cancel",

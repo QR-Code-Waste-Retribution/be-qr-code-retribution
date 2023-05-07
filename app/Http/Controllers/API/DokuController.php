@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\PaymentNotification;
 use Illuminate\Http\Request;
 
 class DokuController extends Controller
@@ -12,7 +13,7 @@ class DokuController extends Controller
         try {
             $notificationHeader = getallheaders();
             $notificationBody = file_get_contents('php://input');
-            $notificationPath = 'http://35.213.170.85/api/payments/notifications'; // Adjust according to your notification path
+            $notificationPath = '/api/payments/notifications'; // Adjust according to your notification path
             $secretKey = env("DOKU_SECRET_KEY"); // Adjust according to your secret key
 
             $digest = base64_encode(hash('sha256', $notificationBody, true));
@@ -26,7 +27,18 @@ class DokuController extends Controller
             $finalSignature = 'HMACSHA256=' . $signature;
 
             if ($finalSignature == $notificationHeader['Signature']) {
-                // TODO: Process if Signature is Valid
+
+                $decodedBody = json_decode($notificationBody, true);
+
+                PaymentNotification::create([
+                    'invoice_number' => $decodedBody['order']['invoice_number'],
+                    'acquirer' => $decodedBody['acquirer']['id'],
+                    'channel' => $decodedBody['channel']['id'],
+                    'amount' => $decodedBody['order']['amount'],
+                    'original_request_id' => $decodedBody['virtual_account_info']['virtual_account_number'],
+                    'date' => $decodedBody['transaction']['date'],
+                ]);
+
                 return response('OK', 200)->header('Content-Type', 'text/plain');
 
                 // TODO: Do update the transaction status based on the `transaction.status`

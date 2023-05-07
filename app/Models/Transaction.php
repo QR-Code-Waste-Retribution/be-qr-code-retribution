@@ -46,7 +46,7 @@ class Transaction extends Model
     public static function getHistoryTransactionOfPemungut($pemungut_id)
     {
         $transactions = self::where('pemungut_id', $pemungut_id)
-            ->orderBy('id', 'DESC')
+            ->orderBy('created_at', 'DESC')
             ->get();
 
         $filteredTransactions = $transactions->where('created_at', '>=', now()->startOfMonth());
@@ -59,7 +59,7 @@ class Transaction extends Model
 
     public static function getHistoryTransactionOfMasyarakat($masyarakat_id)
     {
-        return self::where('user_id', $masyarakat_id)->orderBy('id', "DESC")->get();
+        return self::where('user_id', $masyarakat_id)->orderBy('created_at', "DESC")->get();
     }
 
     public function getAllNonCashTransaction()
@@ -219,16 +219,17 @@ class Transaction extends Model
 
         $masyarakat = User::find($masyarakat_id);
 
+        $numberRefAndTran = $this->generateReferenceAndTransactionNumber();
+        
         $doku = new DokuGenerateToken($data['method'], $data['uuid']);
         $token = $doku->generateToken($line_items, $masyarakat, $data['total_amount']);
 
-        $numberRefAndTran = $this->generateReferenceAndTransactionNumber();
-
         $transactions = $this->create([
-            'price' => $token['total_amount'],
+            'id' => $token['transaction']['id'],
+            'price' => $token['transaction']['total_amount'],
             'date' => now(),
             'status' => '1',
-            'type' => 'CASH',
+            'type' => 'NONCASH',
             'reference_number' => $numberRefAndTran['reference_number'],
             'transaction_number' => $numberRefAndTran['transaction_number'],
             'user_id' => $masyarakat_id,
