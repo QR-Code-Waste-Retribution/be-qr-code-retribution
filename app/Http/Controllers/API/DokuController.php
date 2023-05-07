@@ -12,7 +12,7 @@ class DokuController extends Controller
         try {
             $notificationHeader = getallheaders();
             $notificationBody = file_get_contents('php://input');
-            $notificationPath = '/payments/notifications'; // Adjust according to your notification path
+            $notificationPath = 'http://35.213.170.85/api/payments/notifications'; // Adjust according to your notification path
             $secretKey = env("DOKU_SECRET_KEY"); // Adjust according to your secret key
 
             $digest = base64_encode(hash('sha256', $notificationBody, true));
