@@ -13,7 +13,7 @@ class DokuController extends Controller
             $notificationHeader = getallheaders();
             $notificationBody = file_get_contents('php://input');
             $notificationPath = '/payments/notifications'; // Adjust according to your notification path
-            $secretKey = 'SK-e8acCt3iB1a1A0Jodfad'; // Adjust according to your secret key
+            $secretKey = env("DOKU_SECRET_KEY"); // Adjust according to your secret key
 
             $digest = base64_encode(hash('sha256', $notificationBody, true));
             $rawSignature = "Client-Id:" . $notificationHeader['Client-Id'] . "\n"
@@ -32,7 +32,7 @@ class DokuController extends Controller
                 // TODO: Do update the transaction status based on the `transaction.status`
             } else {
                 // TODO: Response with 400 errors for Invalid Signature
-                return response('Invalid Signature', 500)->header('Content-Type', 'text/plain');
+                return response('Invalid Signature', 400)->header('Content-Type', 'text/plain');
             }
         } catch (\Throwable $th) {
             return $this->errorResponse([], $th->getMessage(), 500);
