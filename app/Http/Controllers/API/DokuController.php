@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\PaymentNotification;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 
 class DokuController extends Controller
@@ -30,8 +31,10 @@ class DokuController extends Controller
 
                 $decodedBody = json_decode($notificationBody, true);
 
+                $transaction_id = Transaction::where("invoice_number", $decodedBody['order']['invoice_number'])->first()->id;
+
                 PaymentNotification::create([
-                    'invoice_number' => $decodedBody['order']['invoice_number'],
+                    'transaction_id' => $transaction_id,
                     'acquirer' => $decodedBody['acquirer']['id'],
                     'channel' => $decodedBody['channel']['id'],
                     'amount' => $decodedBody['order']['amount'],
