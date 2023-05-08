@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Resources\DepositPemungutResource;
 use DateTime;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -46,6 +47,25 @@ class PemungutTransaction extends Model
                 'date' =>  date('d F Y', strtotime($item['updated_at']))
             ]];
         })->toArray();
+    }
+
+    public function getDepositPemungutById($pemungut_id)
+    {
+        $deposit = $this->selectRaw('id, pemungut_id, date, status, SUM(total) as total')
+            ->where('pemungut_id', $pemungut_id)
+            ->where(DB::raw('MONTH(pemungut_transactions.date)'), '=', DB::raw('MONTH(CURRENT_DATE())'))
+            ->groupBy('pemungut_id', 'status', 'date', 'id')
+            ->union(
+                PemungutTransaction::selectRaw('id, pemungut_id, date, status, SUM(total) as total')
+                    ->where('pemungut_id', $pemungut_id)
+                    ->where(DB::raw('MONTH(pemungut_transactions.date)'), '<', DB::raw('MONTH(CURRENT_DATE())'))
+                    ->where('status', 0)
+                    ->groupBy('pemungut_id', 'status', 'date', 'id')
+            )->get();
+
+        return [
+            'deposit' => DepositPemungutResource::collection($deposit)
+        ];
     }
 
     public function getAllTransaction($sub_district, $search)

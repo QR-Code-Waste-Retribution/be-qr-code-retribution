@@ -4,8 +4,11 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CategoriesController;
 use App\Http\Controllers\API\DokuController;
 use App\Http\Controllers\API\InvoiceController;
+use App\Http\Controllers\API\PemungutTransactionController;
 use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\User\PemungutController;
+use App\Models\PemungutTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -53,6 +56,8 @@ Route::post('/transaction/store/additional', [TransactionController::class, 'sto
 Route::put('/transaction/update/non-cash/status/{transaction_id}', [TransactionController::class, 'updateNonCashStatusAfterPayment'])->name('transaction.store.non-cash');
 Route::resource('transaction', TransactionController::class);
 
+// Pemungut Transaction
+Route::resource('pemungut_transaction', PemungutTransactionController::class);
 
 // Notification Payment Doku
 Route::post('/payments/notifications', [DokuController::class, 'notifications'])->name('doku.notification');

@@ -172,6 +172,7 @@ class Transaction extends Model
             'date' => now(),
             'status' => '1',
             'type' => 'CASH',
+            'invoice_number' => 'INV-' . time(),
             'reference_number' => $numberRefAndTran['reference_number'],
             'transaction_number' => $numberRefAndTran['transaction_number'],
             'user_id' => $masyarakat_id,
@@ -179,6 +180,23 @@ class Transaction extends Model
             'category_id' => 1,
             'sub_district_id' => $data['sub_district_id'],
         ]);
+
+        $pemungutTransaction = PemungutTransaction::where('pemungut_id', $data['pemungut_id'])
+            ->where('status', 0)
+            ->whereMonth('created_at', '=', now()->month)
+            ->first();
+
+        if ($pemungutTransaction) {
+            $pemungutTransaction->total += $data['total_amount'];
+            $pemungutTransaction->save();
+        } else {
+            PemungutTransaction::create([
+                'status' => 0,
+                'pemungut_id' => $data['pemungut_id'],
+                'total' => $data['total_amount'],
+                'date' => now(),
+            ]);
+        }
 
         return [
             'transaction' => new TransactionResource($transactions),
@@ -220,7 +238,7 @@ class Transaction extends Model
         $masyarakat = User::find($masyarakat_id);
 
         $numberRefAndTran = $this->generateReferenceAndTransactionNumber();
-        
+
         $doku = new DokuGenerateToken($data['method'], $data['uuid']);
         $token = $doku->generateToken($line_items, $masyarakat, $data['total_amount']);
 
