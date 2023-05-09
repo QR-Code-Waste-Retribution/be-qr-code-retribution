@@ -245,7 +245,7 @@ class Transaction extends Model
         $transactions = $this->create([
             'price' => $token['transaction']['total_amount'],
             'date' => now(),
-            'status' => '1',
+            'status' => '0',
             'type' => 'NONCASH',
             'invoice_number' => $token['transaction']['invoice_number'],
             'reference_number' => $numberRefAndTran['reference_number'],
