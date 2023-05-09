@@ -31,16 +31,21 @@ class DokuController extends Controller
 
                 $decodedBody = json_decode($notificationBody, true);
 
-                $transaction_id = Transaction::where("invoice_number", $decodedBody['order']['invoice_number'])->first()->id;
+                $transaction = Transaction::where("invoice_number", $decodedBody['order']['invoice_number'])->first();
 
-                PaymentNotification::create([
-                    'transaction_id' => $transaction_id,
-                    'acquirer' => $decodedBody['acquirer']['id'],
-                    'channel' => $decodedBody['channel']['id'],
-                    'amount' => $decodedBody['order']['amount'],
-                    'original_request_id' => $decodedBody['virtual_account_info']['virtual_account_number'],
-                    'date' => $decodedBody['transaction']['date'],
-                ]);
+                if ($transaction) {
+                    PaymentNotification::create([
+                        'transaction_id' => $transaction->id,
+                        'acquirer' => $decodedBody['acquirer']['id'],
+                        'channel' => $decodedBody['channel']['id'],
+                        'amount' => $decodedBody['order']['amount'],
+                        'original_request_id' => $decodedBody['virtual_account_info']['virtual_account_number'],
+                        'date' => $decodedBody['transaction']['date'],
+                    ]);
+                } else {
+                    return response('Not Found', 404)->header('Content-Type', 'text/plain');
+                }
+
 
                 return response('OK', 200)->header('Content-Type', 'text/plain');
 
