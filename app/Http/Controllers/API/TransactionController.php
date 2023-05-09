@@ -72,6 +72,33 @@ class TransactionController extends Controller
         }
     }
 
+    public function storeAddtionalRetribution(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                "total_amount" =>  'required',
+                "pemungut_id" =>  'nullable',
+                "category_id" =>  'nullable',
+                "sub_district_id" =>  'required',
+                "type" => 'required',
+                "method" => 'nullable',
+            ], [
+                'required' => 'Input :attribute tidak boleh kosong',
+            ]);
+
+
+            if ($validator->fails()) {
+                return $this->errorResponse($validator->errors(), 'Input tidak boleh ada yang kosong', 422);
+            }
+
+            $transaction = $this->transaction->storeTransactionAdditionalCash($request->all());
+
+            return $this->successResponse($transaction, "Pembayaran retribusi tambahan berhasil!!", 203);
+        } catch (\Throwable $th) {
+            return $this->errorResponse($th->getMessage(), 'Something Went error');
+        }
+    }
+
 
     public function storeNonCash(Request $request)
     {
@@ -106,7 +133,7 @@ class TransactionController extends Controller
         try {
             $transactions = Transaction::getHistoryTransactionOfPemungut($id);
 
-            return $this->successResponse(TransactionResource::collection($transactions), 'Successfully to get transactions data');
+            return $this->successResponse($transactions, 'Successfully to get transactions data');
         } catch (\Throwable $th) {
             return $this->errorResponse([], $th->getMessage(), 500);
         }

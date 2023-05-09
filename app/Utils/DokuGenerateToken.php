@@ -18,8 +18,11 @@ class DokuGenerateToken
     public $method;
     public $uuid;
 
+    private $total_amount;
     private $config;
     private $dokuMode;
+
+    private $invoice_number;
 
     public function __construct($method, $uuid)
     {
@@ -71,6 +74,10 @@ class DokuGenerateToken
 
         return [
             'data' => $responseJson,
+            'transaction' => [
+                'invoice_number' => $this->invoice_number,
+                'total_amount' => $this->total_amount,
+            ],
             'code' => $httpCode,
         ];
     }
@@ -94,14 +101,15 @@ class DokuGenerateToken
 
         array_push($lineItems, $tax);
 
-        $amount = $total_amount + $tax['price'];
-        
+        $this->total_amount = $total_amount + $tax['price'];
+        $this->invoice_number = "INV-" . time();
+
         if ($this->method['payments'] == 'VIRTUAL_ACCOUNT') {
 
-            $requestBody = [
+            return [
                 "order" => array(
-                    "invoice_number" => "INV-" . time(),
-                    "amount" => $amount,
+                    "invoice_number" => $this->invoice_number,
+                    "amount" => $this->total_amount
                 ),
                 "virtual_account_info" => array(
                     "billing_type" => "FIX_BILL",
@@ -110,21 +118,17 @@ class DokuGenerateToken
                     'info1' => "Sistem Retribusi Pas",
                     "info2" => "ar Terima kasih sud",
                     "info3" => "ah membayar wajib re",
-                    "info4" => "tribusi anda",
+                    "info4" => "tribusi anda"
                 ),
-                "customer" => array(
-                    "name" => "Anton Budiman",
-                    "email" => "anton@example.com"
-                )
+                "customer" => $customer->only('name', 'email')
             ];
-            return $requestBody;
         }
 
         if ($this->method['payments'] == 'CHECKOUT') {
             return [
                 "order" => [
-                    "amount" => $amount,
-                    "invoice_number" => "INV-" . time(),
+                    "amount" => $this->total_amount,
+                    "invoice_number" => $this->invoice_number,
                     "currency" => "IDR",
                     "callback_url" => "qr_code_app://",
                     "callback_url_cancel" => "qr_code_app://cancel",

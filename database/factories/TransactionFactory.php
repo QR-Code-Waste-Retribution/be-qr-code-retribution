@@ -18,6 +18,9 @@ class TransactionFactory extends Factory
      *
      * @return array<string, mixed>
      */
+
+    private static $number = 1;
+
     public function definition()
     {
         $randomInt = fake()->randomElement([0, 1]);
@@ -31,6 +34,7 @@ class TransactionFactory extends Factory
             'status' => fake()->randomElement([0, 1]),
             'date' =>  Carbon::now()->subMonths(rand(0, 4))->format('Y-m-d'),
             'type' => $paymentMethod[$randomInt],
+            'invoice_number' => "INV-" . (string)(time() + self::$number++),
             'reference_number' => $reference_number,
             'transaction_number' => $transaction_number,
             'user_id' => $masyarakat,
