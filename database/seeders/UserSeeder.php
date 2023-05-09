@@ -45,12 +45,42 @@ class UserSeeder extends Seeder
             'status' => 1,
             'remember_token' => Str::random(10),
         ];
-        $masyarakat = [
+        $masyarakatA = [
             'uuid' => fake()->uuid(), 
-            'name' => 'Linux',
-            'username' => 'masyarakat',
+            'name' => 'Zico',
+            'username' => 'masyarakatA',
             'password' => bcrypt('password'),
             'nik' => '217356253165325',
+            'gender' => 'Laki-Laki',
+            'address' => fake()->address(),
+            'phoneNumber' => fake()->phoneNumber(),
+            'sub_district_id' => 25,
+            'district_id' => 2,  
+            'role_id' => 1,
+            'status' => 1,
+            'remember_token' => Str::random(10),
+        ];
+        $masyarakatB = [
+            'uuid' => fake()->uuid(), 
+            'name' => 'Andreas',
+            'username' => 'masyarakatB',
+            'password' => bcrypt('password'),
+            'nik' => '217356253165326',
+            'gender' => 'Laki-Laki',
+            'address' => fake()->address(),
+            'phoneNumber' => fake()->phoneNumber(),
+            'sub_district_id' => 25,
+            'district_id' => 2,  
+            'role_id' => 1,
+            'status' => 1,
+            'remember_token' => Str::random(10),
+        ];
+        $masyarakatC = [
+            'uuid' => fake()->uuid(), 
+            'name' => 'Aritonang',
+            'username' => 'masyarakatC',
+            'password' => bcrypt('password'),
+            'nik' => '217356253165327',
             'gender' => 'Laki-Laki',
             'address' => fake()->address(),
             'phoneNumber' => fake()->phoneNumber(),
@@ -63,6 +93,8 @@ class UserSeeder extends Seeder
 
         User::create($petugas);
         User::create($admin);
-        User::create($masyarakat);
+        User::create($masyarakatA);
+        User::create($masyarakatB);
+        User::create($masyarakatC);
     }
 }

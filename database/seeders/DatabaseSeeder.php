@@ -37,6 +37,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             PemungutTransactionsSeeder::class,
             UserCategorySeeder::class,
+            TestSeeder::class,
             InvoiceSeeder::class,
         ]);
 
