@@ -217,6 +217,7 @@ class Transaction extends Model
             'date' => now(),
             'status' => '1',
             'type' => 'CASH',
+            'invoice_number' => 'INV-' . time(),
             'reference_number' => $numberRefAndTran['reference_number'],
             'transaction_number' => $numberRefAndTran['transaction_number'],
             'user_id' => $data['pemungut_id'],
@@ -224,6 +225,23 @@ class Transaction extends Model
             'category_id' => $category_id,
             'sub_district_id' => $data['sub_district_id'],
         ]);
+
+        $pemungutTransaction = PemungutTransaction::where('pemungut_id', $data['pemungut_id'])
+            ->where('status', 0)
+            ->whereMonth('created_at', '=', now()->month)
+            ->first();
+
+        if ($pemungutTransaction) {
+            $pemungutTransaction->total += $data['total_amount'];
+            $pemungutTransaction->save();
+        } else {
+            PemungutTransaction::create([
+                'status' => 0,
+                'pemungut_id' => $data['pemungut_id'],
+                'total' => $data['total_amount'],
+                'date' => now(),
+            ]);
+        }
 
         return [
             'transaction' => new TransactionResource($transactions),

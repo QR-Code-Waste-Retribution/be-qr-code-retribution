@@ -95,7 +95,7 @@ class TransactionController extends Controller
 
             return $this->successResponse($transaction, "Pembayaran retribusi tambahan berhasil!!", 203);
         } catch (\Throwable $th) {
-            return $this->errorResponse($th->getMessage(), 'Something Went error');
+            return $this->errorResponse($th->getMessage(), 'Something Went error', 500);
         }
     }
 
