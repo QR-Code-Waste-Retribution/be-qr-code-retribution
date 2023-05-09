@@ -328,7 +328,8 @@ class Transaction extends Model
         Invoice::whereIn('id', $invoice_id)->update(['status' => 1]);
 
         $transaction = Transaction::find($transaction_id);
-        $transaction->status = '1';
+        $transaction->status = 1;
+        $transaction->save();
 
         return $transaction;
     }
