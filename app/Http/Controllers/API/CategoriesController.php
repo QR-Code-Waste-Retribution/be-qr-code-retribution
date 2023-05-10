@@ -32,6 +32,16 @@ class CategoriesController extends Controller
         }
     }
 
+    public function getCategoriesAdditional($district_id)
+    {
+        try {
+            $categories = CategoryResource::collection($this->category->allAddtionalByDistrictId($district_id));
+            return $this->successResponse(['categories' => $categories], 'Successfully to get all additional categories');
+        } catch (\Throwable $th) {
+            return $this->errorResponse([], $th->getMessage(), 500);
+        }
+    }
+
     /**
      * Show the form for creating a new resource.
      *

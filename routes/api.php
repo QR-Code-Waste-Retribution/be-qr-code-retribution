@@ -63,6 +63,7 @@ Route::resource('pemungut_transaction', PemungutTransactionController::class);
 Route::post('/payments/notifications', [DokuController::class, 'notifications'])->name('doku.notification');
 
 // Category
+Route::get('/category/additional/{district_id}', [CategoriesController::class, 'getCategoriesAdditional'])->name('transaction.history.pemungut');
 Route::resource('category', CategoriesController::class);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

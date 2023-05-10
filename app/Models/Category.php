@@ -43,6 +43,11 @@ class Category extends Model
             ->whereNotNull('parent_id');
     }
 
-    
+    public function allAddtionalByDistrictId($district_id){
+        return $this
+            ->whereIn('type', ['packet', 'unit', 'day'])
+            ->where('district_id', $district_id)
+            ->where('price', '!=', 0)->get();
+    }
 
 }
