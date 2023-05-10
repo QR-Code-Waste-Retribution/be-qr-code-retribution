@@ -49,9 +49,7 @@
                     <!-- Revenue Card -->
                     <div class="col-xxl-3 col-md-5">
                         <a href="{{ route('dashboard.income') }}">
-                            <div class="card info-card revenue-card" data-bs-toggle="tooltip" data-bs-placement="right"
-                                data-bs-custom-class="custom-tooltip"
-                                data-bs-title="Klik untuk melihat lebih detail pemasukan">
+                            <div class="card info-card revenue-card">
                                 <div class="card-body">
                                     <h5 class="card-title">Total yang harus tercapai di Bulan Ini</h5>
 
@@ -82,9 +80,7 @@
                     <!-- Revenue Card -->
                     <div class="col-xxl-3 col-md-5">
                         <a href="{{ route('dashboard.income') }}">
-                            <div class="card info-card revenue-card" data-bs-toggle="tooltip" data-bs-placement="right"
-                                data-bs-custom-class="custom-tooltip"
-                                data-bs-title="Klik untuk melihat lebih detail pemasukan">
+                            <div class="card info-card revenue-card">
                                 <div class="card-body">
                                     <h5 class="card-title">Pemasukan <span>| Bulan Ini</span></h5>
 
@@ -114,9 +110,7 @@
                     <!-- Revenue Card -->
                     <div class="col-xxl-3 col-md-4">
                         <a href="{{ route('dashboard.income') }}">
-                            <div class="card info-card revenue-card" data-bs-toggle="tooltip" data-bs-placement="right"
-                                data-bs-custom-class="custom-tooltip"
-                                data-bs-title="Klik untuk melihat lebih detail pemasukan">
+                            <div class="card info-card revenue-card">
                                 <div class="card-body">
                                     <h5 class="card-title">Pemasukan <span>| Bulan Ini</span></h5>
 
