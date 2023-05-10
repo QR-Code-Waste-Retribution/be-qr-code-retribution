@@ -181,7 +181,7 @@
                             <div class="card-body">
                                 <div class="d-flex align-items-center">
                                     <div class="p-0">
-                                        <h6 class="fs-5">Rp. {{ number_format($income['noncash'], 2) }} -,</h6>
+                                        <h6 class="fs-5">Rp. {{ number_format($income['noncash'] ?? 0, 2) }} -,</h6>
                                         <span class="text-success small pt-1 fw-bold"></span> <span
                                             class="text-muted small pt-2 ps-1">21 Februari 2023</span>
                                     </div>
