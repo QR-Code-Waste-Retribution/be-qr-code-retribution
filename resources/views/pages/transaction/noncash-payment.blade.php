@@ -8,15 +8,16 @@
 @endphp
 
 @section('page_title', 'DATA TRANSAKSI - Pembayaran Non-Tunai')
-@section('page_subtitle', 'Anda dapat melihat iuran retribusi sampah yang sudah di kumpulkan oleh petugas pemungut')
+@section('page_subtitle', 'Anda dapat melihat iuran retribusi sampah yang sudah di bayarkan oleh masyarakat di tiap
+    kecamatan secara non-tunai')
 @section('breadcrumb_title', 'Data Transaksi')
 
 @section('body')
     <div class="col-lg-12">
         <div class="row align-items-center">
             <div class="col-md-6">
-                <a class="button-primary text-center px-4" href="{{ route('transaction-noncash.export') }}">Download Excel &nbsp;<i
-                        class="bi bi-download"></i></a>
+                <a class="button-primary text-center px-4" href="{{ route('transaction-noncash.export') }}">Download Excel
+                    &nbsp;<i class="bi bi-download"></i></a>
             </div>
             <div class="col-md-6">
                 <div class="row">
@@ -52,8 +53,12 @@
                     @foreach ($non_cash_payment as $item)
                         <tr>
                             <th scope="row">{{ $loop->iteration }}</th>
-                            <td><span class="">Kec. {{ $item->sub_district->name}}</span></td>
-                            <td>Rp. {{ number_format($item->total, 2) }}</td>
+                            <td><span class="">Kec. {{ $item->name }}</span></td>
+                            @if (count($item->transactions))
+                                <td>Rp. {{ number_format((int)collect($item->transactions)->sum('total') - (count($item->transactions) * 3500), 2)  }}</td>
+                            @else
+                                <td>Rp. 0</td>
+                            @endif
                         </tr>
                     @endforeach
                 </tbody>

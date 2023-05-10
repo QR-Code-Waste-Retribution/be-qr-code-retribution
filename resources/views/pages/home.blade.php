@@ -36,7 +36,7 @@
                                             <h6 class="fs-4">Rp.
                                                 {{ number_format($invoice_monthly['paid']['total'] ?? 0, 2) }} -,</h6>
                                             <span class="text-success small pt-1 fw-bold"></span><span
-                                                class="text-muted small pt-2 ps-1">{{ $invoice_monthly['paid']['date'] ?? "-" }}</span>
+                                                class="text-muted small pt-2 ps-1">{{ $invoice_monthly['paid']['date'] ?? '-' }}</span>
 
                                         </div>
                                     </div>
@@ -121,7 +121,8 @@
                                         </div>
                                         <div class="ps-3">
                                             <h6 class="fs-4">Rp.
-                                                {{ number_format(($invoice_monthly['paid']['total'] ?? 0)  + $income_tambahan->total_amount + ($income['noncash'] ?? 0), 2) }} -,</h6>
+                                                {{ number_format(($invoice_monthly['paid']['total'] ?? 0) + $income_tambahan->total_amount, 2) }}
+                                                -,</h6>
                                             <span class="text-success small pt-1 fw-bold"></span><span
                                                 class="text-muted small pt-2 ps-1">21 Februari 2023</span>
 
@@ -144,7 +145,8 @@
                                         <div class="p-0">
                                             <span class="text-success small pt-1 fw-bold"></span> <span
                                                 class="text-muted small pt-2">Sudah Disetor</span>
-                                            <h6 class="fs-5">Rp. {{ number_format($deposit['already_deposited']['total'] ?? 0, 2) }} -,</h6>
+                                            <h6 class="fs-5">Rp.
+                                                {{ number_format($deposit['already_deposited']['total'] ?? 0, 2) }} -,</h6>
                                             <span class="text-success small pt-1 fw-bold"></span> <span
                                                 class="text-muted small pt-2">21
                                                 Februari 2023</span>
@@ -159,7 +161,8 @@
                                         <div class="p-0">
                                             <span class="text-success small pt-1 fw-bold"></span> <span
                                                 class="text-muted small pt-2">Belum Disetor</span>
-                                            <h6 class="fs-5">Rp. {{ number_format($deposit['not_yet_deposited']['total'] ?? 0, 2) }} -,</h6>
+                                            <h6 class="fs-5">Rp.
+                                                {{ number_format($deposit['not_yet_deposited']['total'] ?? 0, 2) }} -,</h6>
                                             <span class="text-success small pt-1 fw-bold"></span> <span
                                                 class="text-muted small pt-2">21
                                                 Februari 2023</span>
@@ -175,7 +178,9 @@
                             <div class="card-body">
                                 <div class="d-flex align-items-center">
                                     <div class="p-0">
-                                        <h6 class="fs-5">Rp. {{ number_format($income['noncash'] ?? 0, 2) }} -,</h6>
+                                        @isset($income['noncash'])
+                                            <h6 class="fs-5">Rp. {{ number_format($income['noncash'], 2) }} -,</h6>
+                                        @endisset
                                         <span class="text-success small pt-1 fw-bold"></span> <span
                                             class="text-muted small pt-2 ps-1">21 Februari 2023</span>
                                     </div>

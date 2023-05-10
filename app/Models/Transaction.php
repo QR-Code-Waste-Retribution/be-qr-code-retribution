@@ -62,17 +62,12 @@ class Transaction extends Model
 
     public function getAllNonCashTransaction()
     {
-        return $this
-            ->selectRaw('sub_district_id, SUM(price) as total')
-            ->with(['sub_district:id,name'])
-            ->whereIn('sub_district_id', function ($query) {
-                $query->select('id')
-                    ->from('sub_districts')
-                    ->where('district_id', auth()->user()->district_id);
-            })
-            ->where('type', 'NONCASH')
-            ->groupBy('sub_district_id')
-            ->get();
+        return SubDistrict::select(['id', 'name'])
+        ->with(['transactions' => function ($query) {
+            $query->selectRaw('sub_district_id, SUM(price) as total')
+                ->where('type', 'NONCASH')
+                ->groupBy('sub_district_id');
+        }])->where('district_id', auth()->user()->district_id)->get();
     }
 
     public function getAllTransaction()
@@ -326,12 +321,12 @@ class Transaction extends Model
 
     public function sumTransactionByType()
     {
-        $transactions = $this->selectRaw('type, SUM(price) as total')
+        $transactions = $this->selectRaw('type, SUM(price) as total, COUNT(type) as count')
             ->where(DB::raw('MONTH(transactions.date)'), '=', DB::raw('MONTH(CURRENT_DATE())'))
             ->groupBy('type', 'date')->get();
 
         $income = collect($transactions)->map(function ($item) {
-            return [strtolower($item['type']) => (int)$item['total']];
+            return [strtolower($item['type']) => (int)$item['total'] - ($item['count'] * 3500)];
         })->collapse();
 
         return $income;
