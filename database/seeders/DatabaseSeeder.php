@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             CategorySeeder::class,
         ]);
-        Transaction::factory(300)->create();
+        // Transaction::factory(300)->create();
 
         $this->call([
             // PemungutTransactionsSeeder::class,

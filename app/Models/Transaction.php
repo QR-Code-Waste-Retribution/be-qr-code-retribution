@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use App\Http\Resources\DokuFormat\LineItemOrderDokuResource;
 use App\Http\Resources\FInvoiceResource;
-use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\TransactionResource;
 use App\Utils\DokuGenerateToken;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
