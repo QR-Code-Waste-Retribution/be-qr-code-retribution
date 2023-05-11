@@ -15,7 +15,7 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        $petugas = [
+        $petugas_toba = [
             'uuid' => fake()->uuid(), 
             'name' => 'Zico Andreas Aritonang',
             'username' => 'petugas',
@@ -24,13 +24,13 @@ class UserSeeder extends Seeder
             'gender' => 'Laki-Laki',
             'address' => fake()->address(),
             'phoneNumber' => fake()->phoneNumber(),
-            'sub_district_id' => 25,
-            'district_id' => 2,  
+            'sub_district_id' => 2,
+            'district_id' => 1,  
             'role_id' => 3,
             'status' => 1,
             'remember_token' => Str::random(10),
         ];
-        $admin = [
+        $pemungut_toba = [
             'uuid' => fake()->uuid(), 
             'name' => 'Pemungut A',
             'username' => 'pemungut',
@@ -39,13 +39,13 @@ class UserSeeder extends Seeder
             'gender' => 'Laki-Laki',
             'address' => fake()->address(),
             'phoneNumber' => fake()->phoneNumber(),
-            'sub_district_id' => 25,
-            'district_id' => 2,  
+            'sub_district_id' => 2,
+            'district_id' => 1,  
             'role_id' => 2,
             'status' => 1,
             'remember_token' => Str::random(10),
         ];
-        $masyarakatA = [
+        $masyarakatA_toba = [
             'uuid' => fake()->uuid(), 
             'name' => 'Zico',
             'username' => 'masyarakatA',
@@ -54,13 +54,13 @@ class UserSeeder extends Seeder
             'gender' => 'Laki-Laki',
             'address' => fake()->address(),
             'phoneNumber' => fake()->phoneNumber(),
-            'sub_district_id' => 25,
-            'district_id' => 2,  
+            'sub_district_id' => 2,
+            'district_id' => 1,  
             'role_id' => 1,
             'status' => 1,
             'remember_token' => Str::random(10),
         ];
-        $masyarakatB = [
+        $masyarakatB_toba = [
             'uuid' => fake()->uuid(), 
             'name' => 'Andreas',
             'username' => 'masyarakatB',
@@ -69,13 +69,13 @@ class UserSeeder extends Seeder
             'gender' => 'Laki-Laki',
             'address' => fake()->address(),
             'phoneNumber' => fake()->phoneNumber(),
-            'sub_district_id' => 25,
-            'district_id' => 2,  
+            'sub_district_id' => 2,
+            'district_id' => 1,  
             'role_id' => 1,
             'status' => 1,
             'remember_token' => Str::random(10),
         ];
-        $masyarakatC = [
+        $masyarakatC_toba = [
             'uuid' => fake()->uuid(), 
             'name' => 'Aritonang',
             'username' => 'masyarakatC',
@@ -84,17 +84,68 @@ class UserSeeder extends Seeder
             'gender' => 'Laki-Laki',
             'address' => fake()->address(),
             'phoneNumber' => fake()->phoneNumber(),
-            'sub_district_id' => 25,
-            'district_id' => 2,  
+            'sub_district_id' => 2,
+            'district_id' => 1,  
             'role_id' => 1,
             'status' => 1,
             'remember_token' => Str::random(10),
         ];
 
-        User::create($petugas);
-        User::create($admin);
-        User::create($masyarakatA);
-        User::create($masyarakatB);
-        User::create($masyarakatC);
+
+        // $petugas_sima = [
+        //     'uuid' => fake()->uuid(), 
+        //     'name' => 'Petugas SIMA',
+        //     'username' => 'petugas',
+        //     'password' => bcrypt('password'),
+        //     'nik' => '217356253165323',
+        //     'gender' => 'Laki-Laki',
+        //     'address' => fake()->address(),
+        //     'phoneNumber' => fake()->phoneNumber(),
+        //     'sub_district_id' => 10,
+        //     'district_id' => 2,  
+        //     'role_id' => 3,
+        //     'status' => 1,
+        //     'remember_token' => Str::random(10),
+        // ];
+        // $pemungut_sima = [
+        //     'uuid' => fake()->uuid(), 
+        //     'name' => 'Pemungut SIMA',
+        //     'username' => 'pemungut',
+        //     'password' => bcrypt('password'),
+        //     'nik' => '217356253165324',
+        //     'gender' => 'Laki-Laki',
+        //     'address' => fake()->address(),
+        //     'phoneNumber' => fake()->phoneNumber(),
+        //     'sub_district_id' => 10,
+        //     'district_id' => 2,  
+        //     'role_id' => 2,
+        //     'status' => 1,
+        //     'remember_token' => Str::random(10),
+        // ];
+        // $masyarakatA_sima = [
+        //     'uuid' => fake()->uuid(), 
+        //     'name' => 'Zico SIMA',
+        //     'username' => 'masyarakatA',
+        //     'password' => bcrypt('password'),
+        //     'nik' => '217356253165325',
+        //     'gender' => 'Laki-Laki',
+        //     'address' => fake()->address(),
+        //     'phoneNumber' => fake()->phoneNumber(),
+        //     'sub_district_id' => 10,
+        //     'district_id' => 2,  
+        //     'role_id' => 1,
+        //     'status' => 1,
+        //     'remember_token' => Str::random(10),
+        // ];
+
+        User::create($petugas_toba);
+        User::create($pemungut_toba);
+        User::create($masyarakatA_toba);
+        User::create($masyarakatB_toba);
+        User::create($masyarakatC_toba);
+       
+        // User::create($petugas_sima);
+        // User::create($pemungut_sima);
+        // User::create($masyarakatA_sima);
     }
 }
