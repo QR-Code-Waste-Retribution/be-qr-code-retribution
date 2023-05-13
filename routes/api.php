@@ -23,14 +23,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/socket', function (Request $request) {
-    $data = $request['data'];
-    $uuid = $request['uuid'];
-    
-    event(new \App\Events\QREvent($data, $uuid));
-    return null;
-});
-
 Route::post('login', [AuthController::class, 'login']);
 
 
