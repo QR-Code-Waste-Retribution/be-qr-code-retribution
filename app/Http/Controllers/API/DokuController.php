@@ -34,6 +34,8 @@ class DokuController extends Controller
                 $transaction = Transaction::where("invoice_number", $decodedBody['order']['invoice_number'])->first();
 
                 if ($transaction) {
+                    $transaction->status = 1;
+                    $transaction->save();
                     PaymentNotification::create([
                         'transaction_id' => $transaction->id,
                         'acquirer' => $decodedBody['acquirer']['id'],
