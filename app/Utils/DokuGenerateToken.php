@@ -72,6 +72,8 @@ class DokuGenerateToken
         $responseJson = json_decode($response->body(), true);
         $httpCode = $response->status();
 
+        $responseJson['bank'] = $this->config['PAYMENTS'][$methodPayments][$typePayments];
+
         return [
             'data' => $responseJson,
             'transaction' => [

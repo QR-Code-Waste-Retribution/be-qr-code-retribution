@@ -13,7 +13,12 @@ return [
         ],
         "VIRTUAL_ACCOUNT" => [
             "BRI_VA" => [
-                'payment.url' => '/bri-virtual-account/v2/payment-code'
+                'payment.url' => '/bri-virtual-account/v2/payment-code',
+                'bank_name' => [
+                    'full_name' => 'Bank Rakyat Indonesia',
+                    'short_name' => 'BRI',
+                ],
+                'va_type' => 'BRI_VA',
             ],
             "BNI_VA" => [
                 'payment.url' => '/bni-virtual-account/v2/payment-code'
