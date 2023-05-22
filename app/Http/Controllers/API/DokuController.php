@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PaymentNotification;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class DokuController extends Controller
 {
@@ -31,19 +32,26 @@ class DokuController extends Controller
 
                 $decodedBody = json_decode($notificationBody, true);
 
-                $transaction = Transaction::where("invoice_number", $decodedBody['order']['invoice_number'])->first();
+                $transaction = Transaction::where("invoice_number", $decodedBody['order']['invoice_number'])->with(['user'])->first();
 
                 if ($transaction) {
-                    $transaction->status = 1;
-                    $transaction->save();
-                    PaymentNotification::create([
-                        'transaction_id' => $transaction->id,
-                        'acquirer' => $decodedBody['acquirer']['id'],
-                        'channel' => $decodedBody['channel']['id'],
-                        'amount' => $decodedBody['order']['amount'],
-                        'original_request_id' => $decodedBody['virtual_account_info']['virtual_account_number'],
-                        'date' => $decodedBody['transaction']['date'],
-                    ]);
+                    $response = Http::post('http://localhost:6001/send-message', ['uuid' => $transaction->user->uuid, 'name' => 'Zico']);
+                    $httpCode = $response->status();
+
+                    if ($httpCode == 200) {
+                        $transaction->status = 1;
+                        $transaction->save();
+                        PaymentNotification::create([
+                            'transaction_id' => $transaction->id,
+                            'acquirer' => $decodedBody['acquirer']['id'],
+                            'channel' => $decodedBody['channel']['id'],
+                            'amount' => $decodedBody['order']['amount'],
+                            'original_request_id' => $decodedBody['virtual_account_info']['virtual_account_number'],
+                            'date' => $decodedBody['transaction']['date'],
+                        ]);
+                    }
+
+                    return response('Websocket Not Working', 500)->header('Content-Type', 'text/plain');
                 } else {
                     return response('Not Found', 404)->header('Content-Type', 'text/plain');
                 }
