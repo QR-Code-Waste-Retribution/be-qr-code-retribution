@@ -14,6 +14,9 @@ class Transaction extends Model
     use HasFactory;
 
 
+
+    protected $table = "masyarakat_transactions";
+
     protected $guarded = [];
 
     public function user()
@@ -322,7 +325,7 @@ class Transaction extends Model
     public function sumTransactionByType()
     {
         $transactions = $this->selectRaw('type, SUM(price) as total, COUNT(type) as count')
-            ->where(DB::raw('MONTH(transactions.date)'), '=', DB::raw('MONTH(CURRENT_DATE())'))
+            ->where(DB::raw('MONTH(masyarakat_transactions.date)'), '=', DB::raw('MONTH(CURRENT_DATE())'))
             ->groupBy('type', 'date')->get();
 
         $income = collect($transactions)->map(function ($item) {
@@ -348,7 +351,7 @@ class Transaction extends Model
     public function getIncomeTambahanDataByDistrictId()
     {
         return $this->select(
-            DB::raw('SUM(transactions.price) as total_amount'),
+            DB::raw('SUM(masyarakat_transactions.price) as total_amount'),
             DB::raw('MAX(created_at) as updated_at'),
         )
             ->whereIn('category_id', function ($query) {

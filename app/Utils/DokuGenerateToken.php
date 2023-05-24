@@ -96,7 +96,7 @@ class DokuGenerateToken
     {
 
         $tax = [
-            "name" => 'Pajak Pembayaran',
+            "name" => 'Biaya Layanan',
             "quantity" => 1,
             "price" => 3500,
         ];

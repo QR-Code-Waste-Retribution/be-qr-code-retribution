@@ -35,10 +35,10 @@ class DokuController extends Controller
                 $transaction = Transaction::where("invoice_number", $decodedBody['order']['invoice_number'])->with(['user'])->first();
 
                 if ($transaction) {
-                    $response = Http::post('http://localhost:6001/send-message', ['uuid' => $transaction->user->uuid, 'name' => 'Zico']);
-                    $httpCode = $response->status();
+                    // $response = Http::post('http://localhost:6001/send-message', ['uuid' => $transaction->user->uuid, 'name' => 'Zico']);
+                    // $httpCode = $response->status();
 
-                    if ($httpCode == 200) {
+                    // if ($httpCode == 200) {
                         $transaction->status = 1;
                         $transaction->save();
                         PaymentNotification::create([
@@ -49,7 +49,7 @@ class DokuController extends Controller
                             'original_request_id' => $decodedBody['virtual_account_info']['virtual_account_number'],
                             'date' => $decodedBody['transaction']['date'],
                         ]);
-                    }
+                    // }
 
                     return response('Websocket Not Working', 500)->header('Content-Type', 'text/plain');
                 } else {

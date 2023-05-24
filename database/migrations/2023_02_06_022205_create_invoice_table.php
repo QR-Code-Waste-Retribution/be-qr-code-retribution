@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->uuid('uuid_user');
             $table->unsignedBigInteger('category_id');
+            $table->unsignedBigInteger('masyarakat_transaction_id')->nullable();
             $table->bigInteger('price');
             $table->unsignedBigInteger('user_id');
             $table->integer('status')->default(0);
@@ -29,10 +30,14 @@ return new class extends Migration
             $table->foreign('user_id')
                 ->references('id')
                 ->on('users');
-                
+
             $table->foreign('uuid_user')
                 ->references('uuid')
                 ->on('users');
+
+            $table->foreign('masyarakat_transaction_id')
+                ->references('id')
+                ->on('masyarakat_transactions');
         });
     }
 

@@ -20,12 +20,12 @@ return new class extends Migration
             $table->bigInteger('amount');
             $table->string('original_request_id');
             $table->string('date');
-            $table->unsignedBigInteger('transaction_id');
+            $table->unsignedBigInteger('masyarakat_transaction_id');
             $table->timestamps();
 
-            $table->foreign('transaction_id')
+            $table->foreign('masyarakat_transaction_id')
                 ->references('id')
-                ->on('transactions');
+                ->on('masyarakat_transactions');
         });
     }
 
