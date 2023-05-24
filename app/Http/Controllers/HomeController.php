@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Invoice;
+use App\Models\PemungutTransaction;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -11,12 +13,16 @@ class HomeController extends Controller
 {
     public $transactions;
     public $users;
+    public $invoice;
+    public $pemungut_transaction;
 
 
     public function __construct()
     {
         $this->transactions = new Transaction();
+        $this->pemungut_transaction = new PemungutTransaction();
         $this->users = new User();
+        $this->invoice = new Invoice();
     }
     /**
      * Display a listing of the resource.
@@ -25,11 +31,14 @@ class HomeController extends Controller
      */
     public function index()
     {
+        $deposit = $this->pemungut_transaction->getDepositPemungut();
         $income = $this->transactions->sumTransactionByType();
         $users = $this->users->getAllCountOfUsersRole();
         $graph = $this->transactions->getIncomeData();
+        $income_tambahan = $this->transactions->getIncomeTambahanDataByDistrictId();
+        $invoice_monthly = $this->invoice->totalAmountUnpaidAndPaidInvoiceMonthly();
 
-        return view('pages.home', compact('income', 'users', 'graph'));
+        return view('pages.home', compact('deposit', 'users', 'graph', 'invoice_monthly', 'income_tambahan', 'income'));
     }
 
     public function income()

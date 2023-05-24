@@ -7,15 +7,14 @@ use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\UserResource;
 use App\Models\Invoice;
 use App\Models\User;
-use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class InvoiceController extends Controller
 {
     public $invoice;
-    public function __construct() {
+    public function __construct()
+    {
         $this->invoice = new Invoice();
     }
     /**
@@ -46,7 +45,17 @@ class InvoiceController extends Controller
      */
     public function store(Request $request)
     {
-        //
+    }
+
+
+    public function getTotalAmountUnpaidAndPaidInvoice()
+    {
+        try {
+            $invoice = $this->invoice->totalAmountUnpaidAndPaidInvoiceMonthly(1);
+            return $this->successResponse($invoice, "Successfully to get total amount invoice category");
+        } catch (\Throwable $th) {
+            return $this->errorResponse([], $th->getMessage(), 500);
+        }
     }
 
     /**
@@ -66,6 +75,16 @@ class InvoiceController extends Controller
                 'user' => null,
             ];
             return $this->successResponse($response, "Successfully to get invoice category");
+        } catch (\Throwable $th) {
+            return $this->errorResponse([], $th->getMessage(), 500);
+        }
+    }
+
+    public function getAllUserForInvoicePaidAndUnpaid($sub_district_id)
+    {
+        try {
+            $users = $this->invoice->allUserForInvoicePaidAndUnpaid($sub_district_id);
+            return $this->successResponse($users, "Successfully to get invoice category");
         } catch (\Throwable $th) {
             return $this->errorResponse([], $th->getMessage(), 500);
         }

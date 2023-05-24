@@ -16,4 +16,8 @@ class SubDistrict extends Model
     public static function getSubDistrictByDistrictUser(){
         return self::all()->where('district_id', auth()->user()->district_id);
     }
+
+    public function transactions(){
+        return $this->hasMany(Transaction::class);
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -10,6 +11,13 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
+    public $user;
+
+    public function __construct()
+    {
+        $this->user = new User();
+    }
+
     public function editProfile(Request $request, $id)
     {
         try {
@@ -19,23 +27,22 @@ class UserController extends Controller
             ], [
                 'required' => 'Input :attribute tidak boleh kosong',
             ]);
-    
+
             if ($validator->fails()) {
                 return $this->errorResponse($validator->errors(), 'Input tidak boleh ada yang kosong', 422);
             }
-    
+
             $user = User::find($id);
-    
+
             $user->phoneNumber = $request->phoneNumber;
             $user->address = $request->address;
-    
+
             $user->save();
-    
+
             return $this->successResponse($user, 'Berhasil mengubah profil anda', 200);
         } catch (\Throwable $err) {
             return $this->errorResponse('', $err->getMessage(), 401);
         }
-        
     }
 
     public function changePassword(Request $request, $id)
@@ -69,15 +76,16 @@ class UserController extends Controller
         return $this->successResponse($user, 'Berhasil mengubah password anda', 200);
     }
 
-    public function editMasyarakatProfile(Request $request, $id){
+    public function editMasyarakatProfile(Request $request, $id)
+    {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'username' => 'required',
             'nik' => 'required',
             'phoneNumber' => 'required',
             'category_id' => 'required',
-            'sub_district_id' => 'required', 
-            'address' => 'required', 
+            'sub_district_id' => 'required',
+            'address' => 'required',
         ], [
             'required' => 'Input :attribute tidak boleh kosong',
             'confirmed' => 'Input :attribute harus sama',
@@ -92,7 +100,15 @@ class UserController extends Controller
         if (!$user) {
             return $this->errorResponse([], "User tidak ditemukan", 401);
         }
+    }
 
-        
+    public function getAllUserBySubDistrict($sub_district_id)
+    {
+        try {
+            $users = UserResource::collection($this->user->allUserBySubDistrict($sub_district_id));
+            return $this->successResponse($users, "Successfully to get all users");
+        } catch (\Throwable $th) {
+            return $this->errorResponse([], $th->getMessage(), 500);
+        }
     }
 }

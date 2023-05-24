@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class FInvoiceResource extends JsonResource
+class DepositPemungutResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,14 +15,12 @@ class FInvoiceResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'user' => new UserResource($this->user),
-            'category' => new CategoryResource($this->category),
-            'variants.count' => $this->variants_count,
             'price' => [
-                "normal_price" => $this->price,
-                "formated_price" => number_format($this->price, 2)
+                "normal_price" => (int)$this->total,
+                "formated_price" => number_format($this->total, 2)
             ],
-            'status' => $this->status,
+            'date' =>  date('F Y', strtotime($this->date)),
+            'status' => $this->status
         ];
     }
 }

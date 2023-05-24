@@ -24,6 +24,37 @@ class Invoice extends Model
         return $this->belongsTo(Category::class);
     }
 
+
+    public function totalAmountUnpaidAndPaidInvoiceMonthly()
+    {
+        $currentMonth = date('m');
+
+        $invoice = Invoice::select(
+            DB::raw("CASE
+                WHEN status = 0 THEN 'unpaid'
+                WHEN status = 1 THEN 'paid'
+                ELSE 'Unknown'
+            END AS status"),
+            DB::raw('SUM(price) as total_amount'),
+            DB::raw('MAX(updated_at) as updated_at')
+        )
+            ->whereIn('user_id', function ($query){
+                $query->select('id')
+                    ->from('users')
+                    ->where('district_id', auth()->user()->district_id);
+            })
+            ->whereMonth('updated_at', $currentMonth)
+            ->groupBy('status')
+            ->get();
+
+        return collect($invoice)->mapWithKeys(function ($item) {
+            return [$item['status'] => [
+                'total' => $item['total_amount'],
+                'date' =>  date('d F Y', strtotime($item['updated_at']))
+            ]];
+        })->toArray();
+    }
+
     public function formatUserInvoice($invoices)
     {
         foreach ($invoices as $item) {
@@ -46,45 +77,54 @@ class Invoice extends Model
     public function checkStatusInvoice($invoice)
     {
         if (count($this->invoices_formatted) > 0) {
-            foreach ($this->invoices_formatted as $item) {
+            foreach ($this->invoices_formatted as &$item) {
                 if ($invoice['category_id'] == $item['category_id'] && $invoice['status'] == $item['status']) {
                     $item['price'] += $invoice['price'];
-                    $item['date'] =  $item['date'] . ' - ' . date('d F Y', strtotime($invoice['created_at']));
+                    if (strcmp($invoice['created_at'], $item['created_at']) !== 0) {
+                        $item['date'] .= ' - ' . date('d F Y', strtotime($invoice['created_at']));
+                    }
+
+                    if ($invoice['address'] === $item['address']) {
+                        $item['variants'] .= $invoice['id'] . ",";
+                    }
+
                     return;
-                    break;
-                } else {
-                    $invoice['date'] = date('d F Y', strtotime($invoice['created_at']));
                 }
             }
-        } else {
-            $invoice['date'] = date('d F Y', strtotime($invoice['created_at']));
         }
+
+        $invoice['date'] = date('d F Y', strtotime($invoice['created_at']));
+        // $invoice['variants'] .= $invoice['id'] . ",";
         array_push($this->invoices_formatted, $invoice);
     }
 
     public function checkStatusInvoiceAndSubDistrict($invoice)
     {
         if (count($this->invoices_formatted) > 0) {
-            foreach ($this->invoices_formatted as $item) {
+            foreach ($this->invoices_formatted as &$item) {
                 if ($invoice['category_id'] == $item['category_id'] && $invoice['status'] == $item['status'] && $invoice['sub_district_id'] == $item['sub_district_id']) {
                     $item['price'] += $invoice['price'];
-                    $item['date'] =  $item['date'] . ' - ' . date('d F Y', strtotime($invoice['created_at']));
+                    if (strcmp($invoice['created_at'], $item['created_at']) !== 0) {
+                        $item['date'] .= ' - ' . date('d F Y', strtotime($invoice['created_at']));
+                    }
+
+                    if ($invoice['address'] === $item['address']) {
+                        $item['variants'] .= $invoice['id'] . ",";
+                    }
+
                     return;
-                    break;
-                } else {
-                    $invoice['date'] = date('d F Y', strtotime($invoice['created_at']));
                 }
             }
-        } else {
-            $invoice['date'] = date('d F Y', strtotime($invoice['created_at']));
         }
+
+        $invoice['date'] = date('d F Y', strtotime($invoice['created_at']));
+        $invoice['variants'] .= $invoice['id'] . ",";
         array_push($this->invoices_formatted, $invoice);
     }
 
-
     public function getInvoiceById($uuid, $sub_district_id)
     {
-        $invoice_user_current_month = Invoice::select('invoice.*', 'users_categories.user_id', 'users_categories.address', 'sub_districts.name as sub_district_name')
+        $invoice_user_current_month = $this->select('invoice.*', 'users_categories.user_id', 'users_categories.address', 'sub_districts.name as sub_district_name')
             ->join('users_categories', function ($join) use ($sub_district_id) {
                 $join->on('invoice.user_id', '=', 'users_categories.user_id')
                     ->where('users_categories.sub_district_id', '=', $sub_district_id);
@@ -97,7 +137,7 @@ class Invoice extends Model
             ->whereColumn('invoice.category_id', '=', 'users_categories.category_id')
             ->orderBy('invoice.created_at');
 
-        $invoice_user_previous_month = Invoice::select('invoice.*', 'users_categories.user_id', 'users_categories.address', 'sub_districts.name as sub_district_name')
+        $invoice_user_previous_month = $this->select('invoice.*', 'users_categories.user_id', 'users_categories.address', 'sub_districts.name as sub_district_name')
             ->join('users_categories', function ($join) use ($sub_district_id) {
                 $join->on('invoice.user_id', '=', 'users_categories.user_id')
                     ->where('users_categories.sub_district_id', '=', $sub_district_id);
@@ -131,5 +171,37 @@ class Invoice extends Model
 
 
         return $invoice;
+    }
+
+    public function allUserForInvoicePaidAndUnpaid($sub_district_id)
+    {
+        $usersPaid = User::withCount(['invoices as invoiceCount' => function ($query) {
+            $query->where('status', 1);
+        }])
+            ->where('sub_district_id', $sub_district_id)
+            ->groupBy('id')
+            ->having('invoiceCount', '>', 0)
+            ->get();
+
+
+        $usersUnpaid = User::withCount(['invoices as invoiceCount' => function ($query) {
+            $query->where('status', 0);
+        }])
+            ->where('sub_district_id', $sub_district_id)
+            ->groupBy('id')
+            ->having('invoiceCount', '>', 0)
+            ->get();
+
+
+        return [
+            'users.paid' => [
+                'records' => $usersPaid,
+                'count' => $usersPaid->sum('invoiceCount'),
+            ],
+            'users.unpaid' => [
+                'records' => $usersUnpaid,
+                'count' => $usersUnpaid->sum('invoiceCount'),
+            ],
+        ];
     }
 }

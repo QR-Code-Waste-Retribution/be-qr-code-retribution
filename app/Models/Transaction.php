@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use App\Http\Resources\DokuFormat\LineItemOrderDokuResource;
 use App\Http\Resources\FInvoiceResource;
-use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\TransactionResource;
 use App\Utils\DokuGenerateToken;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -45,22 +43,31 @@ class Transaction extends Model
 
     public static function getHistoryTransactionOfPemungut($pemungut_id)
     {
-        return self::where('pemungut_id', $pemungut_id)->get();
+        $transactions = self::where('pemungut_id', $pemungut_id)
+            ->orderBy('created_at', 'DESC')
+            ->get();
+
+        $filteredTransactions = $transactions->where('created_at', '>=', now()->startOfMonth());
+        $totalPrice = $filteredTransactions->sum('price');
+        return [
+            'transaction' => TransactionResource::collection($transactions),
+            'total_amount' => $totalPrice,
+        ];
+    }
+
+    public static function getHistoryTransactionOfMasyarakat($masyarakat_id)
+    {
+        return self::where('user_id', $masyarakat_id)->orderBy('created_at', "DESC")->get();
     }
 
     public function getAllNonCashTransaction()
     {
-        return $this
-            ->selectRaw('sub_district_id, SUM(price) as total')
-            ->with(['sub_district:id,name'])
-            ->whereIn('sub_district_id', function ($query) {
-                $query->select('id')
-                    ->from('sub_districts')
-                    ->where('district_id', auth()->user()->district_id);
-            })
-            ->where('type', 'NONCASH')
-            ->groupBy('sub_district_id')
-            ->get();
+        return SubDistrict::select(['id', 'name'])
+        ->with(['transactions' => function ($query) {
+            $query->selectRaw('sub_district_id, SUM(price) as total')
+                ->where('type', 'NONCASH')
+                ->groupBy('sub_district_id');
+        }])->where('district_id', auth()->user()->district_id)->get();
     }
 
     public function getAllTransaction()
@@ -121,31 +128,44 @@ class Transaction extends Model
         ];
     }
 
-    public function storeTransactionInvoice($data)
+    public function storeTransactionInvoiceCash($data)
     {
-        $invoice_id = $data['invoice_id'];
+        $invoices = $data['invoices_id'];
+
+        $parentsArray = [];
+        $variantsCount = [];
+
+        $invoices_id = [];
+        foreach ($invoices as $invoice) {
+            $parentsArray[] = $invoice['parents'];
+            $variantsCount[$invoice['parents']] = count($invoice['variants']) + 1;
+
+            $invoices_id[] = $invoice['parents'];
+            $invoices_id = array_merge($invoices_id, $invoice['variants']);
+        }
+
+        $invoices_id = array_filter($invoices_id, 'is_int');
+        $invoices_id = array_values($invoices_id);
+
         $masyarakat_id = $data['masyarakat_id'];
         $numberRefAndTran = $this->generateReferenceAndTransactionNumber();
 
-        if ($data['type'] != 'CASH') {
-            $masyarakat = User::find($masyarakat_id);
-            $invoice =  LineItemOrderDokuResource::collection(
-                Invoice::whereIn('id', $invoice_id)->with('category:id,name')->get()
-            )->toArray($data);
-            $doku = new DokuGenerateToken($data['method'], $data['uuid']);
-            $token = $doku->generateToken($invoice, $masyarakat);
-            $token['message'] = 'Silahkan lanjutkan pembayaran sesuai metode yang anda pilih!!';
-            return $token['data'];
-        }
-
-        $invoice = Invoice::whereIn('id', $invoice_id);
+        $invoice = Invoice::whereIn('id', $invoices_id);
         $invoice->update(['status' => 1]);
+
+        $invoice_parents = Invoice::whereIn('id', $parentsArray)->get();
+
+        foreach ($invoice_parents as $item) {
+            $item['price'] *= $variantsCount[$item->id];
+            $item['variants_count'] = $variantsCount[$item->id];
+        }
 
         $transactions = $this->create([
             'price' => $data['total_amount'],
             'date' => now(),
-            'status' => 1,
+            'status' => '1',
             'type' => 'CASH',
+            'invoice_number' => 'INV-' . time(),
             'reference_number' => $numberRefAndTran['reference_number'],
             'transaction_number' => $numberRefAndTran['transaction_number'],
             'user_id' => $masyarakat_id,
@@ -154,11 +174,106 @@ class Transaction extends Model
             'sub_district_id' => $data['sub_district_id'],
         ]);
 
+        $pemungutTransaction = PemungutTransaction::where('pemungut_id', $data['pemungut_id'])
+            ->where('status', 0)
+            ->whereMonth('created_at', '=', now()->month)
+            ->first();
+
+        if ($pemungutTransaction) {
+            $pemungutTransaction->total += $data['total_amount'];
+            $pemungutTransaction->save();
+        } else {
+            PemungutTransaction::create([
+                'status' => 0,
+                'pemungut_id' => $data['pemungut_id'],
+                'total' => $data['total_amount'],
+                'date' => now(),
+            ]);
+        }
+
         return [
             'transaction' => new TransactionResource($transactions),
-            'invoice' => FInvoiceResource::collection($invoice->get()),
+            'invoice' => FInvoiceResource::collection($invoice_parents),
             'message' => 'Silahkan lanjutkan pembayaran sesuai metode yang anda pilih!!',
             'code' => 201,
+        ];
+    }
+
+
+    public function storeTransactionAdditionalCash($data)
+    {
+        $category_id = $data['category_id'];
+        $numberRefAndTran = $this->generateReferenceAndTransactionNumber();
+
+        $transactions = $this->create([
+            'price' => $data['total_amount'],
+            'date' => now(),
+            'status' => '1',
+            'type' => 'CASH',
+            'invoice_number' => 'INV-' . time(),
+            'reference_number' => $numberRefAndTran['reference_number'],
+            'transaction_number' => $numberRefAndTran['transaction_number'],
+            'user_id' => $data['pemungut_id'],
+            'pemungut_id' => $data['pemungut_id'],
+            'category_id' => $category_id,
+            'sub_district_id' => $data['sub_district_id'],
+        ]);
+
+        $pemungutTransaction = PemungutTransaction::where('pemungut_id', $data['pemungut_id'])
+            ->where('status', 0)
+            ->whereMonth('created_at', '=', now()->month)
+            ->first();
+
+        if ($pemungutTransaction) {
+            $pemungutTransaction->total += $data['total_amount'];
+            $pemungutTransaction->save();
+        } else {
+            PemungutTransaction::create([
+                'status' => 0,
+                'pemungut_id' => $data['pemungut_id'],
+                'total' => $data['total_amount'],
+                'date' => now(),
+            ]);
+        }
+
+        return [
+            'transaction' => new TransactionResource($transactions),
+        ];
+    }
+
+    public function storeTransactionInvoiceNonCash($data)
+    {
+        $line_items = $data['line_items'];
+        $masyarakat_id = $data['masyarakat_id'];
+
+        $masyarakat = User::find($masyarakat_id);
+
+        $numberRefAndTran = $this->generateReferenceAndTransactionNumber();
+
+        $doku = new DokuGenerateToken($data['method'], $data['uuid']);
+        $token = $doku->generateToken($line_items, $masyarakat, $data['total_amount']);
+
+        $transactions = $this->create([
+            'price' => $token['transaction']['total_amount'],
+            'date' => now(),
+            'status' => '0',
+            'type' => 'NONCASH',
+            'invoice_number' => $token['transaction']['invoice_number'],
+            'reference_number' => $numberRefAndTran['reference_number'],
+            'transaction_number' => $numberRefAndTran['transaction_number'],
+            'user_id' => $masyarakat_id,
+            'pemungut_id' => $data['pemungut_id'],
+            'category_id' => 1,
+            'sub_district_id' => $data['sub_district_id'],
+        ]);
+
+        $token['data']['merchant.transaction_id'] = $transactions['id'];
+
+
+        return [
+            'transaction' => $token['data'],
+            'message' => 'Silahkan lanjutkan pembayaran sesuai metode yang anda pilih!!',
+            'code' => $token['code'],
         ];
     }
 
@@ -206,13 +321,43 @@ class Transaction extends Model
 
     public function sumTransactionByType()
     {
-        $transactions = $this->selectRaw('type, SUM(price) as total')
+        $transactions = $this->selectRaw('type, SUM(price) as total, COUNT(type) as count')
             ->where(DB::raw('MONTH(transactions.date)'), '=', DB::raw('MONTH(CURRENT_DATE())'))
             ->groupBy('type', 'date')->get();
+
         $income = collect($transactions)->map(function ($item) {
-            return [strtolower($item['type']) => (int)$item['total']];
+            return [strtolower($item['type']) => (int)$item['total'] - ($item['count'] * 3500)];
         })->collapse();
 
         return $income;
+    }
+
+
+
+    public function updateTransactionAndInvoiceNonCash($invoice_id, $transaction_id)
+    {
+        Invoice::whereIn('id', $invoice_id)->update(['status' => 1]);
+
+        $transaction = Transaction::find($transaction_id);
+        $transaction->status = 1;
+        $transaction->save();
+
+        return $transaction;
+    }
+
+    public function getIncomeTambahanDataByDistrictId()
+    {
+        return $this->select(
+            DB::raw('SUM(transactions.price) as total_amount'),
+            DB::raw('MAX(created_at) as updated_at'),
+        )
+            ->whereIn('category_id', function ($query) {
+                $query->select('id')
+                    ->from('categories')
+                    ->whereIn('type', ['packet', 'unit', 'day'])
+                    ->where('district_id', auth()->user()->district_id);
+            })
+            ->where('status', 1)
+            ->first();
     }
 }

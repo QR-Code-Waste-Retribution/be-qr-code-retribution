@@ -27,7 +27,7 @@ class TransactionResource extends JsonResource
             "transaction_number" => $this->transaction_number,
             "user" => new UserResource($this->user),
             "pemungut_id" => $this->pemungut_id,
-            "category" => $this->category,
+            "category" => new CategoryResource($this->category),
             "created_at" => [
                 'date' => $this->created_at,
                 'formated_date' => date('d F Y', strtotime($this->created_at)),

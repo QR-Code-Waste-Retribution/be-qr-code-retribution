@@ -3,43 +3,25 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\CategoryResource;
-use App\Models\Category;
-use App\Models\User;
+use App\Models\PemungutTransaction;
 use Illuminate\Http\Request;
 
-class CategoriesController extends Controller
+class PemungutTransactionController extends Controller
 {
+
+    public $pemungut_transaction;
+    public function __construct()
+    {
+        $this->pemungut_transaction = new PemungutTransaction();
+    }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public $category;
-    public function __construct()
+    public function index()
     {
-        $this->category = new Category();
-    }
-
-    public function index(Request $request)
-    {
-        try {
-            $district_id = $request->district_id ?? 1;
-            $categories = CategoryResource::collection($this->category->getAllByDistrict($district_id));
-            return $this->successResponse(['categories' => $categories], 'Successfully to get all categories');
-        } catch (\Throwable $th) {
-            return $this->errorResponse([], $th->getMessage(), 500);
-        }
-    }
-
-    public function getCategoriesAdditional($district_id)
-    {
-        try {
-            $categories = CategoryResource::collection($this->category->allAddtionalByDistrictId($district_id));
-            return $this->successResponse(['categories' => $categories], 'Successfully to get all additional categories');
-        } catch (\Throwable $th) {
-            return $this->errorResponse([], $th->getMessage(), 500);
-        }
+        //
     }
 
     /**
@@ -60,7 +42,7 @@ class CategoriesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+     
     }
 
     /**
@@ -71,8 +53,12 @@ class CategoriesController extends Controller
      */
     public function show($id)
     {
-        $category_user = User::where('id', $id)->with('category')->get();
-        return $this->successResponse($category_user, "Successfully to get category");
+        try {
+            $pemungut_transaction = $this->pemungut_transaction->getDepositPemungutById($id);
+            return $this->successResponse($pemungut_transaction, "Berhasil mengambil data pendapatan pemungut");
+        } catch (\Throwable $th) {
+            return $this->errorResponse([], $th->getMessage(), 500);
+        }
     }
 
     /**
