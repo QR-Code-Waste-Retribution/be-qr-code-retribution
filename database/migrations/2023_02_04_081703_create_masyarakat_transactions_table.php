@@ -26,13 +26,19 @@ return new class extends Migration
             $table->unsignedBigInteger('pemungut_id')->nullable();
             $table->unsignedBigInteger('sub_district_id')->nullable();
             $table->unsignedBigInteger('category_id')->nullable();
+            $table->unsignedBigInteger('pemungut_transaction_id')->nullable();
+
             $table->timestamps();
 
             $table->foreign('user_id')
                 ->references('id')
                 ->on('users');
 
-            $table->foreign('pemungut_id')
+            $table->foreign('pemungut_transaction_id')
+                ->references('id')
+                ->on('masyarakat_transactions');
+
+                $table->foreign('pemungut_id')
                 ->references('id')
                 ->on('users');
 

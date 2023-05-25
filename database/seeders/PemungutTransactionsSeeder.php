@@ -39,8 +39,8 @@ class PemungutTransactionsSeeder extends Seeder
             }
 
             PemungutTransaction::create([
-                'status' => $i == 2 ? 1 : 0,
-                'pemungut_id' => $item->id,
+                'status' => fake()->randomElement([0, 1]),
+                'pemungut_id' => $item->pemungut_id,
                 'total' => (int) $item->price,
                 'date' => now(),
                 'masyarakat_transaction_id' => $item->id

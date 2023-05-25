@@ -38,6 +38,16 @@ class HomeController extends Controller
         $income_tambahan = $this->transactions->getIncomeTambahanDataByDistrictId();
         $invoice_monthly = $this->invoice->totalAmountUnpaidAndPaidInvoiceMonthly();
 
+        // return $invoice_monthly;
+        return [
+            'deposit' => $deposit,
+            'income' => $income,
+            'users' => $users,
+            'graph' => $graph,
+            'income_tambahan' => $income_tambahan,
+            'invoice_monthly' => $invoice_monthly,
+        ];
+
         return view('pages.home', compact('deposit', 'users', 'graph', 'invoice_monthly', 'income_tambahan', 'income'));
     }
 

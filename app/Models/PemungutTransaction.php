@@ -20,27 +20,34 @@ class PemungutTransaction extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function masyarakat_transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
     public function getDepositPemungut()
     {
-        $deposit = $this->select(
-            DB::raw("
-                CASE
-                    WHEN status = 0 THEN 'not_yet_deposited'
-                    WHEN status = 1 THEN 'already_deposited'
-                END as status_deposit,
-                SUM(total) as total_amount
-            "),
-            DB::raw('MAX(updated_at) as updated_at')
+        $deposit = $this->select("*"
+            // DB::raw("
+            //     CASE
+            //         WHEN status = 0 THEN 'not_yet_deposited'
+            //         WHEN status = 1 THEN 'already_deposited'
+            //     END as status_deposit,
+            //     SUM(total) as total_amount, 
+            // "),
+            // DB::raw('MAX(updated_at) as updated_at')
         )
+            ->with(['masyarakat_transactions'])
             ->whereIn('pemungut_id', function ($query) {
                 $query->select('id')
                     ->from('users')
                     ->where('district_id', auth()->user()->district_id);
             })
             ->whereRaw('MONTH(pemungut_transactions.updated_at) = MONTH(CURRENT_DATE())')
-            ->groupBy('pemungut_transactions.status')
+            // ->groupBy('pemungut_transactions.status')
             ->get();
 
+        return $deposit;
         return collect($deposit)->mapWithKeys(function ($item) {
             return [$item['status_deposit'] => [
                 'total' => $item['total_amount'],

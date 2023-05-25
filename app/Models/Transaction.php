@@ -29,6 +29,11 @@ class Transaction extends Model
         return $this->belongsTo(User::class, 'pemungut_id', 'id');
     }
 
+    public function invoice()
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
     public function category()
     {
         return $this->belongsTo(Category::class);
@@ -161,6 +166,14 @@ class Transaction extends Model
             $item['variants_count'] = $variantsCount[$item->id];
         }
 
+        $pemungutTransaction = PemungutTransaction::create([
+            'status' => 0,
+            'pemungut_id' => $data['pemungut_id'],
+            'total' => $data['total_amount'],
+            'date' => now(),
+        ]);
+
+
         $transactions = $this->create([
             'price' => $data['total_amount'],
             'date' => now(),
@@ -172,29 +185,12 @@ class Transaction extends Model
             'user_id' => $masyarakat_id,
             'pemungut_id' => $data['pemungut_id'],
             'category_id' => 1,
+            'pemungut_transaction_id' => $pemungutTransaction->id,
             'sub_district_id' => $data['sub_district_id'],
         ]);
 
         $invoice = Invoice::whereIn('id', $invoices_id);
         $invoice->update(['status' => 1, 'masyarakat_transaction_id' => $transactions->id]);
-
-        $pemungutTransaction = PemungutTransaction::where('pemungut_id', $data['pemungut_id'])
-            ->where('status', 0)
-            ->whereMonth('created_at', '=', now()->month)
-            ->first();
-
-        if ($pemungutTransaction) {
-            $pemungutTransaction->total += $data['total_amount'];
-            $pemungutTransaction->masyarakat_transaction_id = $transactions->id;
-            $pemungutTransaction->save();
-        } else {
-            PemungutTransaction::create([
-                'status' => 0,
-                'pemungut_id' => $data['pemungut_id'],
-                'total' => $data['total_amount'],
-                'date' => now(),
-            ]);
-        }
 
         return [
             'transaction' => new TransactionResource($transactions),
@@ -362,6 +358,7 @@ class Transaction extends Model
                     ->whereIn('type', ['packet', 'unit', 'day'])
                     ->where('district_id', auth()->user()->district_id);
             })
+            ->whereRaw('MONTH(masyarakat_transactions.updated_at) = MONTH(CURRENT_DATE())')
             ->where('status', 1)
             ->first();
     }

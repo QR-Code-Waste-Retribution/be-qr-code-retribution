@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
             UserCategorySeeder::class,
             TestSeeder::class,
             TransactionInvoiceSeeder::class,
-            PemungutTransactionsSeeder::class,
+            // PemungutTransactionsSeeder::class,
         ]);
 
     }

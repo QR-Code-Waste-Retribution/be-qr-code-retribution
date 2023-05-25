@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Invoice;
+use App\Models\PemungutTransaction;
 use App\Models\Transaction;
 use App\Models\User;
 use Carbon\Carbon;
@@ -19,15 +20,12 @@ class TransactionInvoiceSeeder extends Seeder
     public function run()
     {
         $number = 1;
-        $this->command->info("STATUS", JSON_PRETTY_PRINT);
         $users = User::with('category')->get();
-        // $break = false;
         foreach ($users as $user) {
-            // if ($break) break;
             foreach ($user->category as $category) {
                 $status = fake()->randomElement([0, 1]);
                 if ($status) {
-                    $transaction = $this->createDummyTransaction($number, $status, $user);
+                    $transaction = $this->createDummyTransaction($number, $status, $user, $category->price);
                     $number++;
                     Invoice::create([
                         'category_id' => $category->id,
@@ -37,8 +35,6 @@ class TransactionInvoiceSeeder extends Seeder
                         'masyarakat_transaction_id' => $transaction->id,
                         'status' => $status,
                     ]);
-                    // $break = true;
-                    // break;
                 } else {
                     Invoice::create([
                         'category_id' => $category->id,
@@ -53,7 +49,7 @@ class TransactionInvoiceSeeder extends Seeder
         }
     }
 
-    public function createDummyTransaction($number, $status, $user)
+    public function createDummyTransaction($number, $status, $user, $categoryPrice)
     {
         $randomInt = fake()->randomElement([0, 1]);
         $paymentMethod = ['CASH', 'NONCASH'];
@@ -61,8 +57,17 @@ class TransactionInvoiceSeeder extends Seeder
         $transaction_number = 'TRAN-' . date('Ymd') . '-' . substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 5) . '-' . substr(str_shuffle((string)time() . '1234567890'), 0, 7);
         $pemungut = User::inRandomOrder()->where('role_id', 2)->where('district_id', $user->district_id)->first();
 
+        if ($paymentMethod[$randomInt] == 'CASH') {
+            PemungutTransaction::create([
+                'status' => fake()->randomElement([0, 1]),
+                'pemungut_id' => $pemungut->id,
+                'total' => 0,
+                'date' => now(),
+            ]);
+        }
+
         $transaction = Transaction::create([
-            'price' => fake()->randomElement([10000, 20000, 30000, 40000, 50000]),
+            'price' => $categoryPrice,
             'status' => $status,
             'date' =>  Carbon::now()->subMonths(rand(0, 4))->format('Y-m-d'),
             'type' => $paymentMethod[$randomInt],

@@ -17,7 +17,6 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('status')->default(0);
             $table->unsignedBigInteger('pemungut_id');
-            $table->unsignedBigInteger('masyarakat_transaction_id')->nullable();
             $table->bigInteger('total');
             $table->dateTime('date');
             $table->timestamps();
@@ -27,9 +26,6 @@ return new class extends Migration
                 ->references('id')
                 ->on('users');
 
-            $table->foreign('masyarakat_transaction_id')
-                ->references('id')
-                ->on('masyarakat_transactions');
         });
     }
 
