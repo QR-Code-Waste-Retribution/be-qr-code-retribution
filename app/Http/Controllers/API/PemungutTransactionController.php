@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PemungutTransactionResource;
 use App\Models\PemungutTransaction;
 use Illuminate\Http\Request;
 
@@ -54,8 +55,8 @@ class PemungutTransactionController extends Controller
     public function show($id)
     {
         try {
-            $pemungut_transaction = $this->pemungut_transaction->getDepositPemungutById($id);
-            return $this->successResponse($pemungut_transaction, "Berhasil mengambil data pendapatan pemungut");
+            $pemungut_transaction = $this->pemungut_transaction->getHistoryTransactionOfPemungut($id);
+            return $this->successResponse(PemungutTransactionResource::collection($pemungut_transaction), "Berhasil mengambil data pendapatan pemungut");
         } catch (\Throwable $th) {
             return $this->errorResponse([], $th->getMessage(), 500);
         }

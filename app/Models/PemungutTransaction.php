@@ -25,6 +25,15 @@ class PemungutTransaction extends Model
         return $this->hasMany(Transaction::class);
     }
 
+    public static function getHistoryTransactionOfPemungut($pemungut_id)
+    {
+        $pemungut_transactions = self::where('pemungut_id', $pemungut_id)->with('masyarakat_transactions')
+            ->orderBy('created_at', 'DESC')
+            ->get();
+
+        return $pemungut_transactions;
+    }
+
     public function getDepositAdditionalDataByDistrictId()
     {
         $deposit = $this->select([
@@ -54,7 +63,7 @@ class PemungutTransaction extends Model
             ->groupBy('pemungut_transactions.status')
             ->get();
 
-            
+
         return collect($deposit)->mapWithKeys(function ($item) {
             return [
                 $item['status_deposit'] => [

@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class TransactionResource extends JsonResource
+class PemungutTransactionResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,19 +15,8 @@ class TransactionResource extends JsonResource
     public function toArray($request)
     {
         return [
-            "id" => $this->id, 
-            "price" => [
-                "normal_price" => $this->price,
-                "formated_price" => number_format($this->price, 2)
-            ],
+            "id" => $this->id,
             "status" => $this->status,
-            "date" => $this->date,
-            "type" => $this->type,
-            "reference_number" => $this->reference_number,
-            "transaction_number" => $this->transaction_number,
-            "user" => new UserResource($this->user),
-            "pemungut_id" => $this->pemungut_id,
-            // "category" => new CategoryResource($this->category),
             "created_at" => [
                 'date' => $this->created_at,
                 'formated_date' => date('d F Y', strtotime($this->created_at)),
@@ -35,7 +24,8 @@ class TransactionResource extends JsonResource
             "updated_at" => [
                 'date' => $this->updated_at,
                 'formated_date' => date('d F Y', strtotime($this->updated_at)),
-            ]
+            ],
+            'transaction' => TransactionResource::collection($this->masyarakat_transactions),
         ];
     }
 }
