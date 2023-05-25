@@ -25,34 +25,82 @@ class PemungutTransaction extends Model
         return $this->hasMany(Transaction::class);
     }
 
-    public function getDepositPemungut()
+    public function getDepositAdditionalDataByDistrictId()
     {
-        $deposit = $this->select("*"
-            // DB::raw("
-            //     CASE
-            //         WHEN status = 0 THEN 'not_yet_deposited'
-            //         WHEN status = 1 THEN 'already_deposited'
-            //     END as status_deposit,
-            //     SUM(total) as total_amount, 
-            // "),
-            // DB::raw('MAX(updated_at) as updated_at')
-        )
-            ->with(['masyarakat_transactions'])
-            ->whereIn('pemungut_id', function ($query) {
+        $deposit = $this->select([
+            DB::raw("
+                CASE
+                    WHEN pemungut_transactions.status = 0 THEN 'not_yet_deposited'
+                    WHEN pemungut_transactions.status = 1 THEN 'already_deposited'
+                END as status_deposit"),
+            DB::raw("SUM(masyarakat_transactions.price) as total_amount"),
+            DB::raw("MAX(pemungut_transactions.updated_at) as updated_at"),
+        ])
+            ->join('masyarakat_transactions', 'pemungut_transactions.id', '=', 'masyarakat_transactions.pemungut_transaction_id')
+            ->join('invoice', 'masyarakat_transactions.id', '=', 'invoice.masyarakat_transaction_id')
+            ->whereIn('invoice.category_id', function ($query) {
+                $query->select('id')
+                    ->from('categories')
+                    ->whereIn('type', ['PACKET', "UNIT", "DAY"])
+                    ->where('district_id', auth()->user()->district_id);
+            })
+            ->whereIn('pemungut_transactions.pemungut_id', function ($query) {
                 $query->select('id')
                     ->from('users')
+                    ->where('role_id', 2)
                     ->where('district_id', auth()->user()->district_id);
             })
             ->whereRaw('MONTH(pemungut_transactions.updated_at) = MONTH(CURRENT_DATE())')
-            // ->groupBy('pemungut_transactions.status')
+            ->groupBy('pemungut_transactions.status')
             ->get();
 
-        return $deposit;
+            
         return collect($deposit)->mapWithKeys(function ($item) {
-            return [$item['status_deposit'] => [
-                'total' => $item['total_amount'],
-                'date' =>  date('d F Y', strtotime($item['updated_at']))
-            ]];
+            return [
+                $item['status_deposit'] => [
+                    'total' => $item['total_amount'],
+                    'date' =>  date('d F Y', strtotime($item['updated_at']))
+                ]
+            ];
+        })->toArray();
+    }
+
+    public function getDepositMonthlyDataByDistrictId()
+    {
+        $deposit = $this->select([
+            DB::raw("
+                CASE
+                    WHEN pemungut_transactions.status = 0 THEN 'not_yet_deposited'
+                    WHEN pemungut_transactions.status = 1 THEN 'already_deposited'
+                END as status_deposit"),
+            DB::raw("SUM(masyarakat_transactions.price) as total_amount"),
+            DB::raw("MAX(pemungut_transactions.updated_at) as updated_at"),
+        ])
+            ->join('masyarakat_transactions', 'pemungut_transactions.id', '=', 'masyarakat_transactions.pemungut_transaction_id')
+            ->join('invoice', 'masyarakat_transactions.id', '=', 'invoice.masyarakat_transaction_id')
+            ->whereIn('invoice.category_id', function ($query) {
+                $query->select('id')
+                    ->from('categories')
+                    ->whereIn('type', ['MONTH'])
+                    ->where('district_id', auth()->user()->district_id);
+            })
+            ->whereIn('pemungut_transactions.pemungut_id', function ($query) {
+                $query->select('id')
+                    ->from('users')
+                    ->where('role_id', 2)
+                    ->where('district_id', auth()->user()->district_id);
+            })
+            ->whereRaw('MONTH(pemungut_transactions.updated_at) = MONTH(CURRENT_DATE())')
+            ->groupBy('pemungut_transactions.status')
+            ->get();
+
+        return collect($deposit)->mapWithKeys(function ($item) {
+            return [
+                $item['status_deposit'] => [
+                    'total' => $item['total_amount'],
+                    'date' =>  date('d F Y', strtotime($item['updated_at']))
+                ]
+            ];
         })->toArray();
     }
 

@@ -42,9 +42,8 @@ class UserCategorySeeder extends Seeder
 
                 $categories = Category::select("id")
                     ->where('price', '!=', 0)
-                    ->whereNotNull('parent_id')
                     ->where('district_id', $user->district_id)
-                    ->whereNotIn('type', ['DAY', 'PACKET', 'UNIT'])
+                    ->where('type', "MONTH")
                     ->inRandomOrder()
                     ->limit(1)
                     ->pluck('id')->toArray();

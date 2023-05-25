@@ -31,22 +31,28 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $deposit = $this->pemungut_transaction->getDepositPemungut();
+        // Get Already Deposit and Not Yet Deposited Monthly Categories
+        $deposit = $this->pemungut_transaction->getDepositMonthlyDataByDistrictId();
+
+        // Get CASH and NON CASH transctions total price
         $income = $this->transactions->sumTransactionByType();
+
         $users = $this->users->getAllCountOfUsersRole();
         $graph = $this->transactions->getIncomeData();
-        $income_tambahan = $this->transactions->getIncomeTambahanDataByDistrictId();
+
+        // Get Already Deposit and Not Yet Deposited Additional Categories
+        $income_tambahan = $this->pemungut_transaction->getDepositAdditionalDataByDistrictId();
+
         $invoice_monthly = $this->invoice->totalAmountUnpaidAndPaidInvoiceMonthly();
 
-        // return $invoice_monthly;
-        return [
-            'deposit' => $deposit,
-            'income' => $income,
-            'users' => $users,
-            'graph' => $graph,
-            'income_tambahan' => $income_tambahan,
-            'invoice_monthly' => $invoice_monthly,
-        ];
+        // return [
+        //     'deposit' => $deposit,
+        //     'income' => $income,
+        //     'users' => $users,
+        //     'graph' => $graph,
+        //     'income_tambahan' => $income_tambahan,
+        //     'invoice_monthly' => $invoice_monthly,
+        // ];
 
         return view('pages.home', compact('deposit', 'users', 'graph', 'invoice_monthly', 'income_tambahan', 'income'));
     }

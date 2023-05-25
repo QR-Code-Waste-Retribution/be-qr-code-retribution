@@ -25,7 +25,6 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('pemungut_id')->nullable();
             $table->unsignedBigInteger('sub_district_id')->nullable();
-            $table->unsignedBigInteger('category_id')->nullable();
             $table->unsignedBigInteger('pemungut_transaction_id')->nullable();
 
             $table->timestamps();
@@ -45,10 +44,6 @@ return new class extends Migration
             $table->foreign('sub_district_id')
                 ->references('id')
                 ->on('sub_districts');
-
-            $table->foreign('category_id')
-                ->references('id')
-                ->on('categories');
         });
     }
 

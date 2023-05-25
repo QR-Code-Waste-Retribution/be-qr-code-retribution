@@ -56,14 +56,15 @@ class TransactionInvoiceSeeder extends Seeder
         $reference_number = 'REF-' . date('Ymd') . '-' . substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 4) . '-' . substr(str_shuffle((string)time() . '1234567890'), 0, 7);
         $transaction_number = 'TRAN-' . date('Ymd') . '-' . substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 5) . '-' . substr(str_shuffle((string)time() . '1234567890'), 0, 7);
         $pemungut = User::inRandomOrder()->where('role_id', 2)->where('district_id', $user->district_id)->first();
-
+        $pemungutTransactionId = null;
         if ($paymentMethod[$randomInt] == 'CASH') {
-            PemungutTransaction::create([
+            $pemungutTransaction = PemungutTransaction::create([
                 'status' => fake()->randomElement([0, 1]),
                 'pemungut_id' => $pemungut->id,
                 'total' => 0,
                 'date' => now(),
             ]);
+            $pemungutTransactionId = $pemungutTransaction->id;
         }
 
         $transaction = Transaction::create([
@@ -77,7 +78,7 @@ class TransactionInvoiceSeeder extends Seeder
             'user_id' => $user->id,
             'pemungut_id' => $randomInt ? null : $pemungut->id,
             'sub_district_id' => $pemungut->sub_district_id,
-            'category_id' => Category::inRandomOrder()->where('district_id', $user->district_id)->first()->id,
+            'pemungut_transaction_id' => $pemungutTransactionId,
         ]);
 
         return $transaction;

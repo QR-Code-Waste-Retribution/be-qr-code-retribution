@@ -26,8 +26,9 @@ class TestSeeder extends Seeder
         $i = 1;
         foreach ($users as $user) {
             $categories = Category::inRandomOrder()->where('price', '!=', 0)
-            ->whereNotNull('parent_id')->where('district_id', $district_id)->limit($i)->get();
-    
+                ->where('type', "MONTH")
+                ->where('district_id', $district_id)->limit($i)->get();
+
             foreach ($categories as $category) {
                 DB::table('users_categories')->insert([
                     ['user_id' => $user->id, 'category_id' => $category->id, 'sub_district_id' => $sub_district_id, 'address' => fake()->address(), 'pemungut_id' => $pemungut->id],
@@ -46,8 +47,10 @@ class TestSeeder extends Seeder
         $i = 1;
         foreach ($users as $user) {
             $categories = Category::inRandomOrder()->where('price', '!=', 0)
-            ->whereNotNull('parent_id')->where('district_id', $district_id)->limit($i)->get();
-    
+                ->where('type', "MONTH")
+                ->where('district_id', $district_id)
+                ->limit($i)->get();
+
             foreach ($categories as $category) {
                 DB::table('users_categories')->insert([
                     ['user_id' => $user->id, 'category_id' => $category->id, 'sub_district_id' => $sub_district_id, 'address' => fake()->address(), 'pemungut_id' => $pemungut->id],
@@ -56,6 +59,5 @@ class TestSeeder extends Seeder
 
             $i++;
         }
-
     }
 }

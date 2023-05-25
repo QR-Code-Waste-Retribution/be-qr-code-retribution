@@ -24,7 +24,7 @@ class Transaction extends Model
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    public function pemungut()
+    public function pungut()
     {
         return $this->belongsTo(User::class, 'pemungut_id', 'id');
     }
@@ -322,9 +322,18 @@ class Transaction extends Model
 
     public function sumTransactionByType()
     {
-        $transactions = $this->selectRaw('type, SUM(price) as total, COUNT(type) as count')
-            ->where(DB::raw('MONTH(masyarakat_transactions.date)'), '=', DB::raw('MONTH(CURRENT_DATE())'))
-            ->groupBy('type', 'date')->get();
+        $transactions = $this->select('type')
+            ->selectRaw('SUM(price) as total')
+            ->selectRaw('COUNT(type) as count')
+            ->whereIn('user_id', function ($query) {
+                $query->select('id')
+                    ->from('users')
+                    ->where('role_id', 1)
+                    ->where('district_id', auth()->user()->district_id);
+            })
+            ->whereRaw('MONTH(date) = MONTH(CURRENT_DATE())')
+            ->groupBy('type', 'date')
+            ->get();
 
         $income = collect($transactions)->map(function ($item) {
             return [strtolower($item['type']) => (int)$item['total'] - ($item['count'] * 3500)];
@@ -346,20 +355,4 @@ class Transaction extends Model
         return $transaction;
     }
 
-    public function getIncomeTambahanDataByDistrictId()
-    {
-        return $this->select(
-            DB::raw('SUM(masyarakat_transactions.price) as total_amount'),
-            DB::raw('MAX(created_at) as updated_at'),
-        )
-            ->whereIn('category_id', function ($query) {
-                $query->select('id')
-                    ->from('categories')
-                    ->whereIn('type', ['packet', 'unit', 'day'])
-                    ->where('district_id', auth()->user()->district_id);
-            })
-            ->whereRaw('MONTH(masyarakat_transactions.updated_at) = MONTH(CURRENT_DATE())')
-            ->where('status', 1)
-            ->first();
-    }
 }
