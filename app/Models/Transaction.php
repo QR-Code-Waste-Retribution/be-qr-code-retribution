@@ -66,11 +66,11 @@ class Transaction extends Model
     public function getAllNonCashTransaction()
     {
         return SubDistrict::select(['id', 'name'])
-        ->with(['transactions' => function ($query) {
-            $query->selectRaw('sub_district_id, SUM(price) as total')
-                ->where('type', 'NONCASH')
-                ->groupBy('sub_district_id');
-        }])->where('district_id', auth()->user()->district_id)->get();
+            ->with(['transactions' => function ($query) {
+                $query->selectRaw('sub_district_id, SUM(price) as total')
+                    ->where('type', 'NONCASH')
+                    ->groupBy('sub_district_id');
+            }])->where('district_id', auth()->user()->district_id)->get();
     }
 
     public function getAllTransaction()
@@ -153,8 +153,6 @@ class Transaction extends Model
         $masyarakat_id = $data['masyarakat_id'];
         $numberRefAndTran = $this->generateReferenceAndTransactionNumber();
 
-        $invoice = Invoice::whereIn('id', $invoices_id);
-        $invoice->update(['status' => 1]);
 
         $invoice_parents = Invoice::whereIn('id', $parentsArray)->get();
 
@@ -177,6 +175,9 @@ class Transaction extends Model
             'sub_district_id' => $data['sub_district_id'],
         ]);
 
+        $invoice = Invoice::whereIn('id', $invoices_id);
+        $invoice->update(['status' => 1, 'masyarakat_transaction_id' => $transactions->id]);
+
         $pemungutTransaction = PemungutTransaction::where('pemungut_id', $data['pemungut_id'])
             ->where('status', 0)
             ->whereMonth('created_at', '=', now()->month)
@@ -184,6 +185,7 @@ class Transaction extends Model
 
         if ($pemungutTransaction) {
             $pemungutTransaction->total += $data['total_amount'];
+            $pemungutTransaction->masyarakat_transaction_id = $transactions->id;
             $pemungutTransaction->save();
         } else {
             PemungutTransaction::create([

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\PemungutTransaction;
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -17,24 +18,37 @@ class PemungutTransactionsSeeder extends Seeder
      */
     public function run()
     {
+        $masyarakat_transaction = Transaction::whereNotNull('pemungut_id')
+            ->where('type', 'CASH')
+            ->get();
 
-        $user = User::all()->where('role_id', 2);
+        $this->processTransactions($masyarakat_transaction);
+    }
 
-        foreach ($user as $item) {
-            for ($i = 0; $i < 3; $i++) {
-                $startOfMonth = Carbon::now()->startOfMonth();
-                $startOfRange = $startOfMonth->copy()->subMonths($i);
-                $endOfRange = $startOfMonth->copy()->subMonths($i - 1)->subDay();
-                $randomTimestamp = Carbon::createFromTimestamp(rand($startOfRange->timestamp, $endOfRange->timestamp));
-                $randomPrice = number_format(rand(10000, 99999), 2);
-                $randomPriceWithZeros = substr($randomPrice, 0, 2) . '000';
-                PemungutTransaction::create([
-                    'status' => $i == 2 ? 1 : 0,
-                    'pemungut_id' => $item->id,
-                    'total' => (int)$randomPriceWithZeros,
-                    'date' => $randomTimestamp,
-                ]);
-            }
+    function processTransactions($transactions, $index = 0, $i = 1)
+    {
+        if ($index >= count($transactions)) {
+            return; // Base case: stop recursion when all transactions have been processed
         }
+
+        $item = $transactions[$index];
+
+        if ($item->status) {
+            if ($i > 2) {
+                $i = 2;
+            }
+
+            PemungutTransaction::create([
+                'status' => $i == 2 ? 1 : 0,
+                'pemungut_id' => $item->id,
+                'total' => (int) $item->price,
+                'date' => now(),
+                'masyarakat_transaction_id' => $item->id
+            ]);
+
+            $i++;
+        }
+
+        $this->processTransactions($transactions, $index + 1, $i); // Recursive call
     }
 }

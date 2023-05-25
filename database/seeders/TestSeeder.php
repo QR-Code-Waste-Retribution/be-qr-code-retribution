@@ -30,7 +30,7 @@ class TestSeeder extends Seeder
     
             foreach ($categories as $category) {
                 DB::table('users_categories')->insert([
-                    ['user_id' => $user->id, 'category_id' => $category->id, 'sub_district_id' => $sub_district_id, 'address' => fake()->address()],
+                    ['user_id' => $user->id, 'category_id' => $category->id, 'sub_district_id' => $sub_district_id, 'address' => fake()->address(), 'pemungut_id' => $pemungut->id],
                 ]);
             }
 
@@ -50,7 +50,7 @@ class TestSeeder extends Seeder
     
             foreach ($categories as $category) {
                 DB::table('users_categories')->insert([
-                    ['user_id' => $user->id, 'category_id' => $category->id, 'sub_district_id' => $sub_district_id, 'address' => fake()->address()],
+                    ['user_id' => $user->id, 'category_id' => $category->id, 'sub_district_id' => $sub_district_id, 'address' => fake()->address(), 'pemungut_id' => $pemungut->id],
                 ]);
             }
 

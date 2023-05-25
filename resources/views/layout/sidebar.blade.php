@@ -169,7 +169,7 @@
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
                     <li class="dropdown-header">
                         <h6>{{ auth()->user()->name }}</h6>
-                        <span class="text-capitalize">{{ implode(' ', explode('_', auth()->user()->role->name)) }}</span>
+                        <span class="text-capitalize">{{ implode(' ', explode('_', auth()->user()->role->name)) . ' ' . auth()->user()->district->name }}</span>
                     </li>
                     <li>
                         <hr class="dropdown-divider">
