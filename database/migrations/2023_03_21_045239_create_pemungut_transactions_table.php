@@ -17,8 +17,7 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('status')->default(0);
             $table->unsignedBigInteger('pemungut_id');
-            $table->bigInteger('total');
-            $table->dateTime('date');
+            $table->string('date');
             $table->timestamps();
 
             

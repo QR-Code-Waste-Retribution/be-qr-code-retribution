@@ -83,7 +83,14 @@
                             <td><a class="" href="{{ route('transaction-cash.show', $item->id) }}"><span
                                         class="fw-semibold">{{ $item->name }}</span><br>
                                     Kec. {{ $item->sub_district->name }}</a></td>
-                            <td>Rp. {{ number_format(collect($item->pemungut_transactions)->sum('total')) }}</td>
+                            <td>Rp.
+                                {{ number_format(
+                                    $item->pemungut_transactions->sum(function ($user) {
+                                        return $user->masyarakat_transactions->sum('price');
+                                    }),
+                                    2,
+                                ) }}
+                            </td>
                             <td>{{ \App\Models\PemungutTransaction::getRangeArreas($item->pemungut_transactions) }}</td>
                             <td class="">
                                 @if (!(count($item->pemungut_transactions) <= 0))
@@ -93,7 +100,7 @@
                                         <span class="badge text-bg-success">Sudah Disetor</span>
                                     @endif
                                 @else
-                                    <span class="badge text-bg-danger">Belum ada</span>
+                                    <span class="badge text-bg-warning">Belum ada pemungutan</span>
                                 @endif
                             </td>
                         </tr>

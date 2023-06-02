@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\UserRole;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class PemungutTransactionResource extends JsonResource
@@ -15,17 +16,15 @@ class PemungutTransactionResource extends JsonResource
     public function toArray($request)
     {
         return [
-            "id" => $this->id,
-            "status" => $this->status,
-            "created_at" => [
-                'date' => $this->created_at,
-                'formated_date' => date('d F Y', strtotime($this->created_at)),
+            "price" => [
+                "normal_price" => $this->price,
+                "formated_price" => number_format($this->price, 2)
             ],
-            "updated_at" => [
+            "status" => intval($this->status),
+            "date" => [
                 'date' => $this->updated_at,
                 'formated_date' => date('d F Y', strtotime($this->updated_at)),
             ],
-            'transaction' => TransactionResource::collection($this->masyarakat_transactions),
         ];
     }
 }

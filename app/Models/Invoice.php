@@ -12,6 +12,8 @@ class Invoice extends Model
 
     protected $table = 'invoice';
 
+    protected $guarded = [];
+
     public $invoices_formatted = array();
 
     public function user()

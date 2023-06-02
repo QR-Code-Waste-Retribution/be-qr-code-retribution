@@ -15,11 +15,11 @@ return new class extends Migration
     {
         Schema::create('invoice', function (Blueprint $table) {
             $table->id();
-            $table->uuid('uuid_user');
+            $table->uuid('uuid_user')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('category_id');
             $table->unsignedBigInteger('masyarakat_transaction_id')->nullable();
             $table->bigInteger('price');
-            $table->unsignedBigInteger('user_id');
             $table->integer('status')->default(0);
             $table->timestamps();
 

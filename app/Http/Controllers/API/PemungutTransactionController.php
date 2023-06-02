@@ -56,7 +56,9 @@ class PemungutTransactionController extends Controller
     {
         try {
             $pemungut_transaction = $this->pemungut_transaction->getHistoryTransactionOfPemungut($id);
-            return $this->successResponse(PemungutTransactionResource::collection($pemungut_transaction), "Berhasil mengambil data pendapatan pemungut");
+            return $this->successResponse([
+                'deposit' => PemungutTransactionResource::collection($pemungut_transaction['deposit']),
+            ], "Berhasil mengambil data pendapatan pemungut");
         } catch (\Throwable $th) {
             return $this->errorResponse([], $th->getMessage(), 500);
         }

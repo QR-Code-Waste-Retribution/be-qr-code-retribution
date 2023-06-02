@@ -7,7 +7,6 @@ use App\Models\PemungutTransaction;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -38,9 +37,9 @@ class HomeController extends Controller
         $income = $this->transactions->sumTransactionByType();
 
         $users = $this->users->getAllCountOfUsersRole();
-        $graph = $this->transactions->getIncomeData();
+        $graph = $this->pemungut_transaction->getIncomeData();
 
-        // Get Already Deposit and Not Yet Deposited Additional Categories
+        // Retrive Already Deposit and Not Yet Deposited Additional Categories
         $income_tambahan = $this->pemungut_transaction->getDepositAdditionalDataByDistrictId();
 
         $invoice_monthly = $this->invoice->totalAmountUnpaidAndPaidInvoiceMonthly();

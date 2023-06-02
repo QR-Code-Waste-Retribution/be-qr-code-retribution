@@ -6,6 +6,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class TransactionResource extends JsonResource
 {
+
     /**
      * Transform the resource into an array.
      *
@@ -14,8 +15,10 @@ class TransactionResource extends JsonResource
      */
     public function toArray($request)
     {
+       
+
         return [
-            "id" => $this->id, 
+            "id" => $this->id,
             "price" => [
                 "normal_price" => $this->price,
                 "formated_price" => number_format($this->price, 2)

@@ -3,11 +3,11 @@
 namespace App\Models;
 
 use App\Http\Resources\FInvoiceResource;
+use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\TransactionResource;
 use App\Utils\DokuGenerateToken;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
 class Transaction extends Model
 {
@@ -31,7 +31,7 @@ class Transaction extends Model
 
     public function invoice()
     {
-        return $this->hasMany(Invoice::class);
+        return $this->hasMany(Invoice::class, 'masyarakat_transaction_id', 'id');
     }
 
     public function category()
@@ -166,11 +166,12 @@ class Transaction extends Model
             $item['variants_count'] = $variantsCount[$item->id];
         }
 
-        $pemungutTransaction = PemungutTransaction::create([
-            'status' => 0,
+        $pemungutTransaction = PemungutTransaction::updateOrCreate([
             'pemungut_id' => $data['pemungut_id'],
-            'total' => $data['total_amount'],
-            'date' => now(),
+            'status' => 0,
+            'date' => date('F Y', strtotime(now())),
+        ], [
+            'status' => 0,
         ]);
 
 
@@ -184,7 +185,6 @@ class Transaction extends Model
             'transaction_number' => $numberRefAndTran['transaction_number'],
             'user_id' => $masyarakat_id,
             'pemungut_id' => $data['pemungut_id'],
-            'category_id' => 1,
             'pemungut_transaction_id' => $pemungutTransaction->id,
             'sub_district_id' => $data['sub_district_id'],
         ]);
@@ -205,8 +205,17 @@ class Transaction extends Model
     {
         $category_id = $data['category_id'];
         $numberRefAndTran = $this->generateReferenceAndTransactionNumber();
+        
+        $pemungutTransaction = PemungutTransaction::updateOrCreate([
+            'pemungut_id' => $data['pemungut_id'],
+            'status' => 0,
+            'date' => date('F Y', strtotime(now())),
+        ], [
+            'status' => 0,
+        ]);
 
-        $transactions = $this->create([
+        
+        $transaction = $this->create([
             'price' => $data['total_amount'],
             'date' => now(),
             'status' => '1',
@@ -216,29 +225,22 @@ class Transaction extends Model
             'transaction_number' => $numberRefAndTran['transaction_number'],
             'user_id' => $data['pemungut_id'],
             'pemungut_id' => $data['pemungut_id'],
-            'category_id' => $category_id,
             'sub_district_id' => $data['sub_district_id'],
+            'pemungut_transaction_id' => $pemungutTransaction->id,
         ]);
 
-        $pemungutTransaction = PemungutTransaction::where('pemungut_id', $data['pemungut_id'])
-            ->where('status', 0)
-            ->whereMonth('created_at', '=', now()->month)
-            ->first();
-
-        if ($pemungutTransaction) {
-            $pemungutTransaction->total += $data['total_amount'];
-            $pemungutTransaction->save();
-        } else {
-            PemungutTransaction::create([
-                'status' => 0,
-                'pemungut_id' => $data['pemungut_id'],
-                'total' => $data['total_amount'],
-                'date' => now(),
-            ]);
-        }
-
+        $invoice = Invoice::create([
+            'category_id' => $category_id,
+            'price' => $data['total_amount'],
+            'user_id' => null,
+            'uuid_user' => null,
+            'masyarakat_transaction_id' => $transaction->id,
+            'status' => 1,
+        ]);
+        
         return [
-            'transaction' => new TransactionResource($transactions),
+            'transaction' => new TransactionResource($transaction),
+            'invoice' => InvoiceResource::collection(collect([$invoice])),
         ];
     }
 
@@ -288,7 +290,7 @@ class Transaction extends Model
     public function getMonth()
     {
         $month_array = array();
-        for ($i = 4; $i >= 0; $i--) {
+        for ($i = 11; $i >= 0; $i--) {
             $month_no = date('m', strtotime("-{$i} months"));
             $month_name = $this->getMonthName($month_no);
             $month_array[$month_no] = $month_name;
@@ -299,7 +301,15 @@ class Transaction extends Model
     public function getMonthlyIncomeCountPayment($month)
     {
         $current_year = date('Y');
-        $incomes = $this->whereMonth('date', $month)->whereYear('date', $current_year)->sum('price');
+        $incomes = $this->whereMonth('date', $month)
+            ->whereIn('sub_district_id', function ($query) {
+                $query->select('id')
+                    ->from('sub_districts')
+                    ->where('district_id', 1);
+            })
+            ->where('status', 1)
+            ->whereYear('date', $current_year)
+            ->sum('price');
         return $incomes;
     }
 
@@ -354,5 +364,4 @@ class Transaction extends Model
 
         return $transaction;
     }
-
 }

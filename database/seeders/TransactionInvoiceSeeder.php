@@ -58,12 +58,13 @@ class TransactionInvoiceSeeder extends Seeder
         $pemungut = User::inRandomOrder()->where('role_id', 2)->where('district_id', $user->district_id)->first();
         $pemungutTransactionId = null;
         if ($paymentMethod[$randomInt] == 'CASH') {
-            $pemungutTransaction = PemungutTransaction::create([
-                'status' => fake()->randomElement([0, 1]),
+            $pemungutTransaction = PemungutTransaction::updateOrCreate([
                 'pemungut_id' => $pemungut->id,
-                'total' => 0,
-                'date' => now(),
+                'status' => fake()->randomElement([0, 1]),
+            ], [
+                'date' => date('F Y', strtotime(now())),
             ]);
+
             $pemungutTransactionId = $pemungutTransaction->id;
         }
 

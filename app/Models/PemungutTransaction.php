@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 
 class PemungutTransaction extends Model
 {
@@ -31,7 +32,15 @@ class PemungutTransaction extends Model
             ->orderBy('created_at', 'DESC')
             ->get();
 
-        return $pemungut_transactions;
+        $masyarakat_transactions = $pemungut_transactions->pluck('masyarakat_transactions')->flatten();
+
+        return [
+            'deposit' => $masyarakat_transactions,
+            'deposit_status' => [
+                'already_deposited' => '',
+                'not_yet_deposited' => '',
+            ]
+        ];
     }
 
     public function getDepositAdditionalDataByDistrictId()
@@ -50,7 +59,7 @@ class PemungutTransaction extends Model
             ->whereIn('invoice.category_id', function ($query) {
                 $query->select('id')
                     ->from('categories')
-                    ->whereIn('type', ['PACKET', "UNIT", "DAY"])
+                    ->whereIn('type', ["PACKET", "UNIT", "DAY"])
                     ->where('district_id', auth()->user()->district_id);
             })
             ->whereIn('pemungut_transactions.pemungut_id', function ($query) {
@@ -132,29 +141,41 @@ class PemungutTransaction extends Model
         ];
     }
 
+    public function getPemungutTransactionsByStatus($status)
+    {
+        return $this->selectRaw('id, pemungut_id, date, status')
+            ->where(DB::raw('MONTH(pemungut_transactions.date)'), '<', DB::raw('MONTH(CURRENT_DATE())'))
+            ->where('status', $status)
+            ->groupBy('pemungut_id', 'status', 'date', 'id');
+    }
+
     public function getAllTransaction($sub_district, $search)
     {
         $pemungut_transactions = User::where('role_id', 2)
-            ->with(['pemungut_transactions' => function ($query) {
-                $query->selectRaw('id, pemungut_id, date, status, SUM(total) as total')
-                    ->where(DB::raw('MONTH(pemungut_transactions.date)'), '=', DB::raw('MONTH(CURRENT_DATE())'))
-                    ->groupBy('pemungut_id', 'status', 'date', 'id')
-                    ->union(
-                        PemungutTransaction::selectRaw('id, pemungut_id, date, status, SUM(total) as total')
-                            ->where(DB::raw('MONTH(pemungut_transactions.date)'), '<', DB::raw('MONTH(CURRENT_DATE())'))
-                            ->where('status', 0)
-                            ->groupBy('pemungut_id', 'status', 'date', 'id')
-                    );
-            },  'sub_district'])
+            ->with([
+                'pemungut_transactions' => function ($query) {
+                    $query->selectRaw('id, pemungut_id, date, status')
+                        ->where('status', 0)
+                        ->where(DB::raw('MONTH(pemungut_transactions.updated_at)'), '=', DB::raw('MONTH(CURRENT_DATE())'))
+                        ->groupBy('pemungut_id', 'status', 'date', 'id')
+                        ->union($this->getPemungutTransactionsByStatus(1));
+                },
+                'pemungut_transactions.masyarakat_transactions:id,pemungut_transaction_id,price', // Include the masyarakat_transaction relationship
+                'sub_district'
+            ])
             ->where('district_id', auth()->user()->district_id)
             ->where(function (Builder $query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%');
-            });
+            })
+            ->withCount(['pemungut_transactions' => function ($query) {
+                $query->where('status', 0);
+            }]);
 
         if ($sub_district && $sub_district != 'all') {
             $pemungut_transactions = $pemungut_transactions->where('sub_district_id', $sub_district);
         }
-
+        $pemungut_transactions = $pemungut_transactions
+            ->orderBy('pemungut_transactions_count', 'desc');
         $pemungut_transactions = $pemungut_transactions->paginate(10);
 
         return $pemungut_transactions;
@@ -162,37 +183,28 @@ class PemungutTransaction extends Model
 
     public function show($id)
     {
-        $data =  User::where('id', $id)->with(['pemungut_transactions' => function ($query) {
-            $query->selectRaw('id, pemungut_id, date, status, SUM(total) as total')
-                ->where(DB::raw('MONTH(pemungut_transactions.date)'), '=', DB::raw('MONTH(CURRENT_DATE())'))
-                ->groupBy('pemungut_id', 'status', 'date', 'id')
-                ->orderBy('pemungut_transactions.date', 'ASC')
-                ->union(
-                    PemungutTransaction::selectRaw('id, pemungut_id, date, status, SUM(total) as total')
-                        ->where(DB::raw('MONTH(pemungut_transactions.date)'), '<', DB::raw('MONTH(CURRENT_DATE())'))
-                        ->where('status', 0)
-                        ->groupBy('pemungut_id', 'status', 'date', 'id')
-                        ->orderBy('pemungut_transactions.date', 'ASC')
-                );
-        }, 'sub_district'])->first();
+        $data =  User::where('id', $id)->with([
+            'pemungut_transactions' => function ($query) {
+                $query->selectRaw('id, pemungut_id, date, status, updated_at')
+                    ->groupBy('pemungut_id', 'status', 'date', 'id')
+                    ->orderBy('pemungut_transactions.created_at', 'ASC');
+            },
+            'pemungut_transactions.masyarakat_transactions:id,price,pemungut_transaction_id,user_id,created_at', // Include the masyarakat_transaction relationship
+            'pemungut_transactions.masyarakat_transactions.user:id,name,gender', // Include the masyarakat_transaction relationship
+            'pemungut_transactions.masyarakat_transactions.invoice:id,masyarakat_transaction_id,category_id,price', // Include the masyarakat_transaction invoice relationship
+            'pemungut_transactions.masyarakat_transactions.invoice.category:id,name,type', // Include the masyarakat_transaction invoice relationship
+            'sub_district',
+        ])->first();
 
-        $data['total'] = collect($data['pemungut_transactions'])->sum('total');
-        $data['transaction_status'] = collect($data['pemungut_transactions'])->pluck('status')[0];
-        $data['transaction_id'] = collect($data['pemungut_transactions'])->pluck('id');
 
-        if (count($data['pemungut_transactions']) >= 2) {
-            $date = collect($data['pemungut_transactions'])
-                ->reverse()
-                ->pluck('date')
-                ->map(function ($item) {
-                    return ucfirst(date('F Y', strtotime($item)));
-                });
-            $data['transaction_date_in_arreas'] = $date->first() . ' - ' . $date->last();
-        } elseif (count($data['pemungut_transactions']) == 1) {
-            $data['transaction_date_in_arreas'] = date('F Y', strtotime(collect($data['pemungut_transactions'][0]['date'])->first()));
-        } else {
-            $data['transaction_date_in_arreas'] = 'Tidak Ada';
+        foreach ($data['pemungut_transactions'] as $item) {
+            if (!$item->status) {
+                $data['transaction_date_in_arreas'] .= date('F Y,', strtotime($item->updated_at));
+            }
         }
+
+        $arreas_transactions = Str::of($data['transaction_date_in_arreas'])->rtrim(',')->explode(',');
+        $data['transaction_date_in_arreas'] = $arreas_transactions->first() . ' - ' . $arreas_transactions->last();
 
         return $data;
     }
@@ -207,7 +219,10 @@ class PemungutTransaction extends Model
                 ->map(function ($item) {
                     return ucfirst(date('F Y', strtotime($item)));
                 });
-            $str = $date->first() . ' - ' . $date->last();
+            if ($date->first() == $date->last())
+                $str = $date->first();
+            else
+                $str = $date->first() . ' - ' . $date->last();
         } elseif (count($data) == 1) {
             $str = date('F Y', strtotime(collect($data[0]['date'])->first()));
         } else {
@@ -238,5 +253,34 @@ class PemungutTransaction extends Model
         return Invoice::select(DB::raw('SUM(price) as target'))
             ->where(DB::raw('MONTH(invoice.created_at)'), '=', DB::raw('MONTH(CURRENT_DATE())'))
             ->get();
+    }
+
+    public function getIncomeData()
+    {
+        $income = DB::table(function ($subquery) {
+            $subquery->selectRaw("DATE_FORMAT(pt.updated_at, '%b') AS month_name, SUM(mt.price) AS monthly_income_count")
+                ->from('pemungut_transactions as pt')
+                ->join('masyarakat_transactions as mt', 'mt.pemungut_transaction_id', '=', 'pt.id')
+                ->where('pt.status', 1)
+                ->whereIn('pt.pemungut_id', function ($query) {
+                    $query->select('id')
+                        ->from('users')
+                        ->where('district_id', 1)
+                        ->where('role_id', 2);
+                })
+                ->whereBetween('pt.updated_at', [
+                    DB::raw('DATE_SUB(CURRENT_DATE, INTERVAL 12 MONTH)'),
+                    DB::raw('CURRENT_DATE')
+                ])
+                ->groupBy('month_name', DB::raw('MONTH(pt.updated_at)'))
+                ->orderBy(DB::raw('MONTH(pt.updated_at)'));
+        }, 'monthly_incomes')
+            ->select('month_name', 'monthly_income_count')
+            ->get();
+
+        return [
+            'months' => $income->pluck('month_name'),
+            'income' => $income->pluck('monthly_income_count'),
+        ];
     }
 }
