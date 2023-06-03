@@ -3,7 +3,8 @@
 namespace App\Models;
 
 use App\Http\Resources\DepositPemungutResource;
-use DateTime;
+use App\Http\Resources\PemungutTransactionResource;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -28,18 +29,40 @@ class PemungutTransaction extends Model
 
     public static function getHistoryTransactionOfPemungut($pemungut_id)
     {
+
+        $month = Carbon::now()->format('Y-m');
+
         $pemungut_transactions = self::where('pemungut_id', $pemungut_id)->with('masyarakat_transactions')
+            ->whereRaw("DATE_FORMAT(updated_at, '%Y-%m') = '$month'")
+            ->union(
+                self::where('pemungut_id', $pemungut_id)->with('masyarakat_transactions')
+                ->whereRaw("DATE_FORMAT(updated_at, '%Y-%m') < '$month'")
+                ->where('status', 0)
+            )
             ->orderBy('created_at', 'DESC')
             ->get();
 
+        $date_transactions = $pemungut_transactions->pluck('date')->unique()->sort(function ($a, $b) {
+            $monthA = Carbon::createFromFormat('F Y', $a)->format('m');
+            $monthB = Carbon::createFromFormat('F Y', $b)->format('m');
+        
+            return $monthA <=> $monthB;
+        })->values();
+
         $masyarakat_transactions = $pemungut_transactions->pluck('masyarakat_transactions')->flatten();
 
+
+        $sumByStatus = $pemungut_transactions->groupBy('status')->map(function ($group) {
+            return $group->pluck('masyarakat_transactions')->flatten()->sum('price');
+        });
+
         return [
-            'deposit' => $masyarakat_transactions,
+            'deposits' => PemungutTransactionResource::collection($masyarakat_transactions),
             'deposit_status' => [
-                'already_deposited' => '',
-                'not_yet_deposited' => '',
-            ]
+                'already_deposited' => $sumByStatus[1] ?? 0,
+                'not_yet_deposited' => $sumByStatus[0] ?? 0,
+            ],
+            'deposit_arreas' => $date_transactions->first() . ' - ' . $date_transactions->last(),
         ];
     }
 

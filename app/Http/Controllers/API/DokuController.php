@@ -32,15 +32,16 @@ class DokuController extends Controller
 
                 $decodedBody = json_decode($notificationBody, true);
 
-                $transaction = Transaction::where("invoice_number", $decodedBody['order']['invoice_number'])->with(['user'])->first();
+                $transaction = Transaction::where("invoice_number", $decodedBody['order']['invoice_number'])->with(['user:id,name,uuid'])->first();
 
                 if ($transaction) {
-                    // $response = Http::post('http://localhost:6001/send-message', ['uuid' => $transaction->user->uuid, 'name' => 'Zico']);
-                    // $httpCode = $response->status();
+                    $response = Http::post('http://localhost:6001/send-message/va', ['uuid' => $transaction->user->uuid, 'name' => $transaction->user->name]);
+                    $httpCode = $response->status();
 
-                    // if ($httpCode == 200) {
+                    if ($httpCode == 200) {
                         $transaction->status = 1;
                         $transaction->save();
+                        
                         PaymentNotification::create([
                             'transaction_id' => $transaction->id,
                             'acquirer' => $decodedBody['acquirer']['id'],
@@ -49,17 +50,13 @@ class DokuController extends Controller
                             'original_request_id' => $decodedBody['virtual_account_info']['virtual_account_number'],
                             'date' => $decodedBody['transaction']['date'],
                         ]);
-                    // }
+                    }
 
                     return response('Websocket Not Working', 500)->header('Content-Type', 'text/plain');
                 } else {
                     return response('Not Found', 404)->header('Content-Type', 'text/plain');
                 }
-
-
                 return response('OK', 200)->header('Content-Type', 'text/plain');
-
-                // TODO: Do update the transaction status based on the `transaction.status`
             } else {
                 // TODO: Response with 400 errors for Invalid Signature
                 return response('Invalid Signature', 400)->header('Content-Type', 'text/plain');
