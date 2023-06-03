@@ -35,7 +35,7 @@ return new class extends Migration
 
             $table->foreign('pemungut_transaction_id')
                 ->references('id')
-                ->on('masyarakat_transactions');
+                ->on('pemungut_transactions');
 
             $table->foreign('pemungut_id')
                 ->references('id')

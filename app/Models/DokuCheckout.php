@@ -10,4 +10,10 @@ class DokuCheckout extends Model
     use HasFactory;
     
     protected $guarded = [];
+
+    public function insert(){
+        return $this->create([
+            
+        ]);
+    }
 }

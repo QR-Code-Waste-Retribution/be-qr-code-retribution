@@ -41,11 +41,12 @@ class DokuController extends Controller
                     if ($httpCode == 200) {
                         $transaction->status = 1;
                         $transaction->save();
-                        
+
                         PaymentNotification::create([
                             'transaction_id' => $transaction->id,
                             'acquirer' => $decodedBody['acquirer']['id'],
                             'channel' => $decodedBody['channel']['id'],
+                            'status' => $decodedBody['transaction']['status'],
                             'amount' => $decodedBody['order']['amount'],
                             'original_request_id' => $decodedBody['virtual_account_info']['virtual_account_number'],
                             'date' => $decodedBody['transaction']['date'],

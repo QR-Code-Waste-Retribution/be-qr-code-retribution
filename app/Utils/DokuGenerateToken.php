@@ -2,6 +2,8 @@
 
 namespace App\Utils;
 
+use App\Models\DokuCheckout;
+use App\Models\DokuDirectApi;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 
@@ -24,12 +26,18 @@ class DokuGenerateToken
 
     private $invoice_number;
 
+    private $doku_checkout;
+    private $doku_direct_api;
+
     public function __construct($method, $uuid)
     {
         $this->method = $method;
         $this->uuid = $uuid;
         $this->dokuMode = env('DOKU_MODE');
         $this->config = config('doku');
+
+        $this->doku_checkout = new DokuCheckout();
+        $this->doku_direct_api = new DokuDirectApi();
     }
 
     public function generateToken($lineItems, $customer, $total_amount)
@@ -49,7 +57,7 @@ class DokuGenerateToken
         $secretKey = env("DOKU_SECRET_KEY");
 
         $requestBody = $this->createRequestBody($lineItems, $customer, $total_amount);
-        
+
         $digestValue = base64_encode(hash('sha256', json_encode($requestBody), true));
 
         $componentSignature = "Client-Id:" . $clientId . "\n" .

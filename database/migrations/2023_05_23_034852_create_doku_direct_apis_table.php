@@ -23,7 +23,12 @@ return new class extends Migration
             $table->string('expired_date', 255);
             $table->string('created_date_utc', 255);
             $table->string('expired_date_utc', 255);
+            $table->unsignedBigInteger('masyarakat_transaction_id')->nullable();
             $table->timestamps();
+
+            $table->foreign('masyarakat_transaction_id')
+                ->references('id')
+                ->on('masyarakat_transactions');
         });
     }
 

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('channel');
             $table->bigInteger('amount');
             $table->string('original_request_id');
+            $table->string('status');
             $table->string('date');
             $table->unsignedBigInteger('masyarakat_transaction_id');
             $table->timestamps();

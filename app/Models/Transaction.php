@@ -205,7 +205,7 @@ class Transaction extends Model
     {
         $category_id = $data['category_id'];
         $numberRefAndTran = $this->generateReferenceAndTransactionNumber();
-        
+
         $pemungutTransaction = PemungutTransaction::updateOrCreate([
             'pemungut_id' => $data['pemungut_id'],
             'status' => 0,
@@ -214,7 +214,7 @@ class Transaction extends Model
             'status' => 0,
         ]);
 
-        
+
         $transaction = $this->create([
             'price' => $data['total_amount'],
             'date' => now(),
@@ -237,7 +237,7 @@ class Transaction extends Model
             'masyarakat_transaction_id' => $transaction->id,
             'status' => 1,
         ]);
-        
+
         return [
             'transaction' => new TransactionResource($transaction),
             'invoice' => InvoiceResource::collection(collect([$invoice])),
@@ -266,12 +266,38 @@ class Transaction extends Model
             'transaction_number' => $numberRefAndTran['transaction_number'],
             'user_id' => $masyarakat_id,
             'pemungut_id' => $data['pemungut_id'],
-            'category_id' => 1,
             'sub_district_id' => $data['sub_district_id'],
         ]);
 
-        $token['data']['merchant.transaction_id'] = $transactions['id'];
+        $doku_response = null;
 
+        if ($data['method'] == 'VIRTUAL_ACCOUNT') {
+            $doku_response = DokuDirectApi::create([
+                'invoice_number' => '',
+                'virtual_account_number' => '',
+                'how_to_pay_page' => '',
+                'how_to_pay_api' => '',
+                'created_date' => '',
+                'expired_date' => '',
+                'masyarakat_transaction_id' => $transactions['id']
+            ]);
+        }
+
+        if ($data['method'] == 'CHECKOUT') {    
+            $doku_response = DokuCheckout::create([
+                'currency' => '',
+                'session_id' => '',
+                'payment_method_types' => '',
+                'payment_due_date' => '',
+                'payment_token_id' => '',
+                'payment_url' => '',
+                'payment_expired_date' => '',
+                'uuid' => '',
+                'masyarakat_transaction_id' => $transactions['id']
+            ]);
+        }
+
+        $token['data']['merchant.transaction_id'] = $transactions['id'];
 
         return [
             'transaction' => $token['data'],
