@@ -268,27 +268,35 @@ class Transaction extends Model
         ]);
 
         if ($data['method'] == 'VIRTUAL_ACCOUNT') {
+            $virtual_account_info = $token['data']['virtual_account_info'];
+            $order = $token['data']['order'];
             DokuDirectApi::create([
-                'invoice_number' => '',
-                'virtual_account_number' => '',
-                'how_to_pay_page' => '',
-                'how_to_pay_api' => '',
-                'created_date' => '',
-                'expired_date' => '',
+                'invoice_number' => $order['invoice_number'],
+                'virtual_account_number' => $virtual_account_info['virtual_account_number'],
+                'how_to_pay_page' => $virtual_account_info['how_to_pay_page'],
+                'how_to_pay_api' => $virtual_account_info['how_to_pay_api'],
+                'created_date' => $virtual_account_info['created_date'],
+                'expired_date' => $virtual_account_info['created_date'],
+                'created_date_utc' => $virtual_account_info['created_date_utc'],
+                'created_date_utc' => $virtual_account_info['created_date_utc'],
                 'masyarakat_transaction_id' => $transactions['id']
             ]);
         }
 
-        if ($data['method'] == 'CHECKOUT') {    
+        if ($data['method'] == 'CHECKOUT') {  
+            $order = $token['data']['response']['order'];
+            $payment = $token['data']['response']['payment'];
+            $uuid = $token['data']['response'];
+
             DokuCheckout::create([
-                'currency' => '',
-                'session_id' => '',
-                'payment_method_types' => '',
-                'payment_due_date' => '',
-                'payment_token_id' => '',
-                'payment_url' => '',
-                'payment_expired_date' => '',
-                'uuid' => '',
+                'currency' => $order['currency'],
+                'session_id' => $order['session_id'],
+                'payment_method_types' => $payment['payment_method_types'],
+                'payment_due_date' => $payment['payment_due_date'],
+                'payment_token_id' => $payment['token_id'],
+                'payment_url' => $payment['url'],
+                'payment_expired_date' => $payment['expired_date'],
+                'uuid' => $uuid,
                 'masyarakat_transaction_id' => $transactions['id']
             ]);
         }
