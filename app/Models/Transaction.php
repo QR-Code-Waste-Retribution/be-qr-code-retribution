@@ -13,8 +13,6 @@ class Transaction extends Model
 {
     use HasFactory;
 
-
-
     protected $table = "masyarakat_transactions";
 
     protected $guarded = [];
@@ -269,10 +267,8 @@ class Transaction extends Model
             'sub_district_id' => $data['sub_district_id'],
         ]);
 
-        $doku_response = null;
-
         if ($data['method'] == 'VIRTUAL_ACCOUNT') {
-            $doku_response = DokuDirectApi::create([
+            DokuDirectApi::create([
                 'invoice_number' => '',
                 'virtual_account_number' => '',
                 'how_to_pay_page' => '',
@@ -284,7 +280,7 @@ class Transaction extends Model
         }
 
         if ($data['method'] == 'CHECKOUT') {    
-            $doku_response = DokuCheckout::create([
+            DokuCheckout::create([
                 'currency' => '',
                 'session_id' => '',
                 'payment_method_types' => '',
