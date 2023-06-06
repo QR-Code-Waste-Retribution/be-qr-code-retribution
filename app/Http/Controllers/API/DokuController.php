@@ -35,7 +35,7 @@ class DokuController extends Controller
                 $transaction = Transaction::where("invoice_number", $decodedBody['order']['invoice_number'])->with(['user:id,name,uuid'])->first();
 
                 if ($transaction) {
-                    $response = Http::post('http://localhost:6001/send-message/va', ['uuid' => $transaction->user->uuid, 'name' => $transaction->user->name]);
+                    $response = Http::post('http://localhost:8000/send-message/va', ['uuid' => $transaction->user->uuid, 'name' => $transaction->user->name]);
                     $httpCode = $response->status();
 
                     if ($httpCode == 200) {
@@ -53,7 +53,7 @@ class DokuController extends Controller
                         ]);
                     }
 
-                    return response('Websocket Not Working', 500)->header('Content-Type', 'text/plain');
+                    // return response('Websocket Not Working', 500)->header('Content-Type', 'text/plain');
                 } else {
                     return response('Not Found', 404)->header('Content-Type', 'text/plain');
                 }
