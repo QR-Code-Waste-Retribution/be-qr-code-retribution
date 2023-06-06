@@ -35,10 +35,12 @@ class DokuController extends Controller
                 $transaction = Transaction::where("invoice_number", $decodedBody['order']['invoice_number'])->with(['user:id,name,uuid'])->first();
 
                 if ($transaction) {
-                    $response = Http::post('http://localhost:8000/send-message/va', ['uuid' => $transaction->user->uuid, 'name' => $transaction->user->name]);
+                    $response = Http::post(env('WEBSOCKET_URL') . env('WEBSOCKET_PORT') . '/send-message/va', ['uuid' => $transaction->user->uuid, 'name' => $transaction->user->name]);
                     $httpCode = $response->status();
 
                     if ($httpCode == 200) {
+
+                        $transaction->invoice()->update(['status' => '1']);
                         $transaction->status = 1;
                         $transaction->save();
 

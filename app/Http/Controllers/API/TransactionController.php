@@ -119,7 +119,7 @@ class TransactionController extends Controller
             if ($validator->fails()) {
                 return $this->errorResponse($validator->errors(), 'Input tidak boleh ada yang kosong', 422);
             }
-
+            
             $transaction = $this->transaction->storeTransactionInvoiceNonCash($request->all());
             return $this->successResponse($transaction['transaction'], $transaction['message'], $transaction['code']);
         } catch (\Throwable $th) {

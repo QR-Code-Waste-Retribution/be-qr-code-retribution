@@ -267,7 +267,11 @@ class Transaction extends Model
             'sub_district_id' => $data['sub_district_id'],
         ]);
 
-        if ($data['method'] == 'VIRTUAL_ACCOUNT') {
+        $invoices_id = collect($line_items)->pluck('invoice_id');
+
+        Invoice::whereIn('id', $invoices_id)->update(['masyarakat_transaction_id' =>  1]);
+
+        if ($data['method']['payments'] == 'VIRTUAL_ACCOUNT') {
             $virtual_account_info = $token['data']['virtual_account_info'];
             $order = $token['data']['order'];
             DokuDirectApi::create([
@@ -283,7 +287,7 @@ class Transaction extends Model
             ]);
         }
 
-        if ($data['method'] == 'CHECKOUT') {  
+        if ($data['method']['payments'] == 'CHECKOUT') {  
             $order = $token['data']['response']['order'];
             $payment = $token['data']['response']['payment'];
             $uuid = $token['data']['response'];
