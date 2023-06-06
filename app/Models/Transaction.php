@@ -282,12 +282,12 @@ class Transaction extends Model
                 'created_date' => $virtual_account_info['created_date'],
                 'expired_date' => $virtual_account_info['created_date'],
                 'created_date_utc' => $virtual_account_info['created_date_utc'],
-                'created_date_utc' => $virtual_account_info['created_date_utc'],
+                'expired_date_utc' => $virtual_account_info['expired_date_utc'],
                 'masyarakat_transaction_id' => $transactions['id']
             ]);
         }
 
-        if ($data['method']['payments'] == 'CHECKOUT') {  
+        if ($data['method']['payments'] == 'CHECKOUT') {
             $order = $token['data']['response']['order'];
             $payment = $token['data']['response']['payment'];
             $uuid = $token['data']['response'];
