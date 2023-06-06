@@ -43,7 +43,7 @@ class DokuController extends Controller
                         $transaction->save();
 
                         PaymentNotification::create([
-                            'transaction_id' => $transaction->id,
+                            'masyarakat_transaction_id' => $transaction->id,
                             'acquirer' => $decodedBody['acquirer']['id'],
                             'channel' => $decodedBody['channel']['id'],
                             'status' => $decodedBody['transaction']['status'],
