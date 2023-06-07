@@ -269,7 +269,7 @@ class Transaction extends Model
 
         $invoices_id = collect($line_items)->pluck('invoice_id');
 
-        Invoice::whereIn('id', $invoices_id)->update(['masyarakat_transaction_id' =>  1]);
+        Invoice::whereIn('id', $invoices_id)->update(['masyarakat_transaction_id' =>  $transactions->id]);
 
         if ($data['method']['payments'] == 'VIRTUAL_ACCOUNT') {
             $virtual_account_info = $token['data']['virtual_account_info'];
