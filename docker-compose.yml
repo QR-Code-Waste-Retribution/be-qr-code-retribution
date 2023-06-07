@@ -18,6 +18,11 @@ services:
       XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
       XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
       IGNITION_LOCAL_SITES_PATH: '${PWD}'
+      DOKU_MODE: '${DOKU_MODE}'
+      DOKU_CLIENT_ID: '${DOKU_CLIENT_ID}'
+      DOKU_SECRET_KEY: '${DOKU_SECRET_KEY}'
+      WEBSOCKET_URL: '${WEBSOCKET_URL}'
+      WEBSOCKET_PORT: '${WEBSOCKET_PORT}'
     volumes:
       - '.:/var/www/html'
     networks:
