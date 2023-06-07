@@ -27,12 +27,14 @@ Route::post('login', [AuthController::class, 'login']);
 
 
 // User
-Route::put('user/change/{id}/password', [UserController::class, 'changePassword']);
-Route::put('user/edit/{id}/profile', [UserController::class, 'editProfile']);
-Route::get('user/all/{sub_district_id}', [UserController::class, 'getAllUserBySubDistrict']);
 
-// Auth
-Route::post('user/add', [AuthController::class, 'register']);
+Route::prefix('user')->group(function () {
+    Route::put('/change/{id}/password', [UserController::class, 'changePassword']);
+    Route::put('/edit/{id}/profile', [UserController::class, 'editProfile']);
+    Route::get('/all/{sub_district_id}', [UserController::class, 'getAllUserBySubDistrict']);
+    Route::post('/add', [AuthController::class, 'register']);
+});
+
 
 // Invoice
 Route::get('/invoice/users/all/{sub_district_id}', [InvoiceController::class, 'getAllUserForInvoicePaidAndUnpaid']);
@@ -41,11 +43,15 @@ Route::post('people/{uuid}/invoice', [InvoiceController::class, 'getInvoiceOfUse
 Route::resource('invoice', InvoiceController::class);
 
 // Transaction
-Route::get('/transaction/pemungut/{id}', [TransactionController::class, 'historyTransactionPemungut'])->name('transaction.history.pemungut');
-Route::get('/transaction/masyarakat/{id}', [TransactionController::class, 'getHistoryTransactionMasyarakat'])->name('transaction.history.masyarakat');
-Route::post('/transaction/store/non-cash', [TransactionController::class, 'storeNonCash'])->name('transaction.store.non-cash');
-Route::post('/transaction/store/additional', [TransactionController::class, 'storeAddtionalRetribution'])->name('transaction.store.additional');
-Route::put('/transaction/update/non-cash/status/{transaction_id}', [TransactionController::class, 'updateNonCashStatusAfterPayment'])->name('transaction.store.non-cash');
+
+Route::prefix('transaction')->group(function () {
+    Route::get('/pemungut/{id}', [TransactionController::class, 'historyTransactionPemungut'])->name('transaction.history.pemungut');
+    Route::get('/masyarakat/{id}', [TransactionController::class, 'getHistoryTransactionMasyarakat'])->name('transaction.history.masyarakat');
+    Route::post('/store/non-cash', [TransactionController::class, 'storeNonCash'])->name('transaction.store.non-cash');
+    Route::post('/store/additional', [TransactionController::class, 'storeAddtionalRetribution'])->name('transaction.store.additional');
+    Route::put('/update/non-cash/status/{transaction_id}', [TransactionController::class, 'updateNonCashStatusAfterPayment'])->name('transaction.store.non-cash');
+});
+
 Route::resource('transaction', TransactionController::class);
 
 // Pemungut Transaction
