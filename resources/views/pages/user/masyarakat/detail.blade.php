@@ -49,7 +49,7 @@
                             <tr>
                                 <th scope="row">{{ (request()->input('page', 1) - 1) * 10 + $loop->iteration }}</th>
                                 <td>
-                                    <a href="{{ route('masyarakat.show', $item->id) }}">
+                                    <a href="{{ route('') }}">
                                         <span class="fw-semibold">{{ $item->name }}</span>
                                         <br> 
                                         {{ $item->phoneNumber }}

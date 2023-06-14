@@ -40,7 +40,7 @@ class Invoice extends Model
             DB::raw('SUM(price) as total_amount'),
             DB::raw('MAX(updated_at) as updated_at')
         )
-            ->whereIn('user_id', function ($query){
+            ->whereIn('user_id', function ($query) {
                 $query->select('id')
                     ->from('users')
                     ->where('district_id', auth()->user()->district_id);
@@ -175,12 +175,17 @@ class Invoice extends Model
         return $invoice;
     }
 
-    public function allUserForInvoicePaidAndUnpaid($sub_district_id)
+    public function allUserForInvoicePaidAndUnpaid($pemungut_id)
     {
         $usersPaid = User::withCount(['invoices as invoiceCount' => function ($query) {
             $query->where('status', 1);
         }])
-            ->where('sub_district_id', $sub_district_id)
+            ->whereIn('id', function ($query) use ($pemungut_id) {
+                $query->select('user_id')
+                    ->distinct()
+                    ->from('users_categories')
+                    ->where('pemungut_id', $pemungut_id);
+            })
             ->groupBy('id')
             ->having('invoiceCount', '>', 0)
             ->get();
@@ -189,11 +194,15 @@ class Invoice extends Model
         $usersUnpaid = User::withCount(['invoices as invoiceCount' => function ($query) {
             $query->where('status', 0);
         }])
-            ->where('sub_district_id', $sub_district_id)
+            ->whereIn('id', function ($query) use ($pemungut_id) {
+                $query->select('user_id')
+                    ->distinct()
+                    ->from('users_categories')
+                    ->where('pemungut_id', $pemungut_id);
+            })
             ->groupBy('id')
             ->having('invoiceCount', '>', 0)
             ->get();
-
 
         return [
             'users.paid' => [

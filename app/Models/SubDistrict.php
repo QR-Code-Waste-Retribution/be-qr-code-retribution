@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
+use App\Http\Resources\SubDistrictResource;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
-use function GuzzleHttp\Promise\all;
 
 class SubDistrict extends Model
 {
@@ -13,11 +12,20 @@ class SubDistrict extends Model
 
     protected $guarded = [];
 
-    public static function getSubDistrictByDistrictUser(){
+    public static function getSubDistrictByDistrictUser()
+    {
         return self::all()->where('district_id', auth()->user()->district_id);
     }
 
-    public function transactions(){
+    public function getSubDistrictByDistrictUserAPI($district_id)
+    {
+        return [
+            'sub_districts' => SubDistrictResource::collection($this->all()->where('district_id', $district_id)),
+        ];
+    }
+
+    public function transactions()
+    {
         return $this->hasMany(Transaction::class);
     }
 }

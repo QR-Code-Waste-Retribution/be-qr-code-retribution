@@ -102,10 +102,10 @@ class UserController extends Controller
         }
     }
 
-    public function getAllUserBySubDistrict($sub_district_id)
+    public function getAllUserBySubDistrict($pemungut_id)
     {
         try {
-            $users = UserResource::collection($this->user->allUserBySubDistrict($sub_district_id));
+            $users = UserResource::collection($this->user->allUserBySubDistrict($pemungut_id));
             return $this->successResponse($users, "Successfully to get all users");
         } catch (\Throwable $th) {
             return $this->errorResponse([], $th->getMessage(), 500);

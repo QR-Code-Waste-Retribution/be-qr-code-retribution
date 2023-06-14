@@ -18,7 +18,7 @@
                 </a>
             </li><!-- End Search Icon-->
 
-            <li class="nav-item dropdown">
+            {{-- <li class="nav-item dropdown">
 
                 <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
                     <i class="bi bi-bell"></i>
@@ -157,7 +157,7 @@
 
                 </ul><!-- End Messages Dropdown Items -->
 
-            </li><!-- End Messages Nav -->
+            </li><!-- End Messages Nav --> --}}
 
             <li class="nav-item dropdown pe-3">
 
@@ -275,5 +275,17 @@
                 <span>Management Kategori</span>
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="{{ route('masyarakat.verification') }}">
+                <i class="bi bi-person"></i>
+                <span>Verifikasi Akun Masyarakat Baru</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="{{ route('category.index') }}">
+                <i class="bi bi-person"></i>
+                <span>Catatan Laporan</span>
+            </a>
+        </li>   
     </ul>
 </aside>

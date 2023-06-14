@@ -1304,12 +1304,27 @@ h6 {
   outline: none;
   border: none;
   cursor: pointer;
-
 }
 
 .button-primary:hover{
   color: #fff;
   background: #3e7923;
+}
+.button-danger{
+  width: 200px;
+  font-size: 14px;
+  padding: 10px 5px;
+  border-radius: 5px;
+  color: white;
+  background: #a63030;
+  outline: none;
+  border: none;
+  cursor: pointer;
+}
+
+.button-danger:hover{
+  color: #fff;
+  background: #792323;
 }
 
 .button-search{

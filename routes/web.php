@@ -37,8 +37,10 @@ Route::middleware(['auth', 'role:petugas_kabupaten'])->group(function () {
     Route::prefix('user')->group(function () {
 
         // Masyarakat
+        Route::get('/masyarakat/verification', [MasyarakatController::class, 'verificationCreate'])->name('masyarakat.verification');
+        Route::get('/masyarakat/verification/{pemungut_id}', [MasyarakatController::class, 'verificationDetail'])->name('masyarakat.verification.detail');
+        Route::post('/masyarakat/status', [MasyarakatController::class, 'changeStatusUser'])->name('masyarakat.status');
         Route::resource('masyarakat', MasyarakatController::class);
-        Route::post('masyarakat/status', [MasyarakatController::class, 'changeStatusUser'])->name('masyarakat.status');
 
         // Pemungut
         Route::resource('pemungut', PemungutController::class);
@@ -50,7 +52,7 @@ Route::middleware(['auth', 'role:petugas_kabupaten'])->group(function () {
 
     // Categories
     Route::resource('category', CategoryController::class);
-    Route::post('category/status', [CategoryController::class, 'changeStatusCategory']);
+    Route::post('/category/status', [CategoryController::class, 'changeStatusCategory']);
 
     // Cash Payment
     Route::put('transaction-cash/change/status', [CashPaymentController::class, 'changeDepositStatus'])->name('cash.payment.change.status');
