@@ -53,7 +53,11 @@
                     @foreach ($non_cash_payment as $item)
                         <tr>
                             <th scope="row">{{ $loop->iteration }}</th>
-                            <td><span class="">Kec. {{ $item->name }}</span></td>
+                            <td>
+                                <a href="">
+                                    <span class="">Kec. {{ $item->name }}</span>
+                                </a>
+                            </td>
                             @if (count($item->transactions))
                                 <td>Rp. {{ number_format((int)collect($item->transactions)->sum('total') - (count($item->transactions) * 3500), 2)  }}</td>
                             @else

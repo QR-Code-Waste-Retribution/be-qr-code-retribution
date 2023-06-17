@@ -282,7 +282,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link collapsed" href="{{ route('category.index') }}">
+            <a class="nav-link collapsed" href="{{ route('reports.index') }}">
                 <i class="bi bi-person"></i>
                 <span>Catatan Laporan</span>
             </a>

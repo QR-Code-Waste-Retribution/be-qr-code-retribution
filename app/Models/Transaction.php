@@ -6,6 +6,7 @@ use App\Http\Resources\FInvoiceResource;
 use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\TransactionResource;
 use App\Utils\DokuGenerateToken;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -64,6 +65,17 @@ class Transaction extends Model
     public static function getHistoryTransactionOfMasyarakat($masyarakat_id)
     {
         return self::where('user_id', $masyarakat_id)->orderBy('created_at', "DESC")->get();
+    }
+
+    public function getTransactionWithInvoiceByMasyarakat($id)
+    {
+        $transaction = $this->where('id', $id)->with(['invoice'])->first();
+
+        if (!$transaction) {
+            throw new Exception("Transaksi anda tidak ditemukan", 404);
+        }
+
+        return $transaction;
     }
 
     public function getAllNonCashTransaction()

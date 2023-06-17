@@ -112,15 +112,28 @@ class User extends Authenticatable
         return $this->hasMany(UserCategories::class, 'pemungut_id', 'id');
     }
 
+    public function masyarakat_category()
+    {
+        return $this->hasMany(UserCategories::class, 'user_id', 'id');
+    }
+
     public function getAllCountOfUsersRole()
     {
         return $this->selectRaw('role_id, count(*) as total')->where('district_id', auth()->user()->district_id)
             ->whereIn('role_id', [1, 2])->groupBy('role_id')->get();
     }
 
-    public function show($id){
+    public function show($id)
+    {
         return $this
-            ->with(['sub_district:id,name', 'district:id,name', 'category'])
+            ->with([
+                'sub_district:id,name',
+                'district:id,name',
+                'masyarakat_category:id,category_id,address,user_id,pemungut_id,sub_district_id',
+                'masyarakat_category.pemungut:id,name,phoneNumber',
+                'masyarakat_category.category:id,name,price,type',
+                'masyarakat_category.subdistrict:id,name',
+            ])
             ->where('id', $id)
             ->first();
     }
@@ -193,29 +206,33 @@ class User extends Authenticatable
                                 'user:id,name,phoneNumber',
                             ])
                             ->whereHas('user', function ($query) {
-                                $query->where('account_status', 0);
+                                $query->where('verification_status', 0);
                             });
                     },
                 ]
             )
             ->where('district_id', auth()->user()->district_id)
-            ->withCount(['pemungut_category' => function ($query) {
-                $query
-                    ->groupBy('user_id', 'pemungut_id')
-                    ->where('role_id', 2)
-                    ->with('user')->whereHas('user', function ($query) {
-                        $query->where('account_status', 0);
-                    });
-            }])
-            ->having('pemungut_category_count', '>', 0)
             ->where('role_id', 2);
 
-        
-        if($pemungut_id){
+        if ($pemungut_id) {
             return $results->where('id', $pemungut_id)->first();
         }
-            
-        
-        return $results->get();
+
+        $filteredResults = $results->paginate(10)->filter(function ($item) {
+            return $item->pemungut_category->count() > 0;
+        })->toArray();
+
+        return array_values($filteredResults);
+    }
+
+    public function changeVerficationStatusSelectedMasyarakat($masyarakat)
+    {
+
+        $allMasyarakatId = json_decode($masyarakat);
+
+        static::whereIn('id', $allMasyarakatId)
+            ->update([
+                'verification_status' => 1,
+            ]);
     }
 }

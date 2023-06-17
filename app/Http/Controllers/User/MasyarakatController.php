@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\VerificationForm;
 use App\Models\SubDistrict;
 use App\Models\User;
 use Exception;
@@ -27,8 +28,7 @@ class MasyarakatController extends Controller
     public function show($id)
     {
         $user = $this->user->show($id);
-        return $user;  
-        return view('pages.user.detail', compact('user'));
+        return view('pages.user.masyarakat.detail', compact('user'));
     }
 
     public function index(Request $request)
@@ -60,14 +60,31 @@ class MasyarakatController extends Controller
     {
         $pemungut = $this->user->allMasyarakatByPemungut($pemungut_id);
 
+        
         return view('pages.user.verification.detail', compact('pemungut'));
     }
-
+    
     public function verificationCreate()
     {
         $pemunguts = $this->user->allMasyarakatByPemungut();
-
+        
         return view('pages.user.verification.index', compact('pemunguts'));
+    }
+
+    public function changeStatusVerificationUser(VerificationForm $request)
+    {
+        try {
+            $input = $request->validated();
+
+            $this->user->changeVerficationStatusSelectedMasyarakat($input['selected_masyarakat_id']);
+
+            return redirect()->route('masyarakat.verification')->with([
+                'type' => 'success',
+                'status' => 'Berhasil mengubah status verifikasi masyarakat',
+            ]);
+        } catch (Exception $err) {
+            return $this->errorResponse([], 'Something went wrong');
+        }
     }
 
     public function changeStatusUser(Request $request)
@@ -82,6 +99,8 @@ class MasyarakatController extends Controller
             return $this->errorResponse([], 'Something went wrong');
         }
     }
+
+
 
     /**
      * Remove the specified resource from storage.

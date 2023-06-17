@@ -1,22 +1,19 @@
 @extends('layout.app')
 
 @section('css')
-
 @endsection
-
 @php
-    $button = false;
+    $button = true;
     $page_subtitle = true;
 @endphp
 
-@section('page_title', 'VERIFIKASI AKUN MASYARAKAT')
+@section('page_title', 'CATATAN LAPORAN - Setoran ke Kas Daerah')
+@section('page_subtitle',
+    'Anda dapat melihat dan menambahkan catatan terkait penyetoran iuran retribusi ke Dinas
+    Pendapatan')
+@section('breadcrumb_title', 'Catatan Laporan')
+@section('button_text', 'Tambah Catatan baru')
 
-@section('page_subtitle')
-    Anda dapat melihat data akun masyarakat yang baru terdaftar di sistem retribusi sampah Kabupaten Toba
-    <br>Lakukan verifikasi akun masyarakat
-@endsection
-
-@section('breadcrumb_title', 'User')
 
 @section('body')
     <div class="col-lg-12">
@@ -28,27 +25,30 @@
                         <button type="submit" title="Search"><i class="bi bi-search"></i></button>
                     </form>
                 </div>
-                <x-sub-district-dropdown col="3" />
             </div>
             <div class="col-12 mt-4">
                 <table class="table fs-7 table-hover">
                     <thead>
                         <tr>
                             <th scope="col">#</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Kecamatan</th>
+                            <th scope="col">Nama Setoran</th>
+                            <th scope="col">Jumlah</th>
+                            <th scope="col">Tanggal</th>
+                            <th scope="col">Catatan</th>
+                            <th scope="col">Bukti Bayar</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($pemunguts as $item)
+                        @foreach ($report as $item)
                             <tr>
                                 <th scope="row">{{ $loop->iteration }}</th>
-                                <td>
-                                    <a href="{{ route('masyarakat.verification.detail', $item['id']) }}">
-                                        {{ $item['name'] }} <br> <span class="fst-italic" style="font-size: 12px">{{ $item['phoneNumber'] }}</span>
-                                    </a>
+                                <td>{{ $item->name }}</td>
+                                <td>Rp {{ number_format($item->price, 2) }}</td>
+                                <td>{{ $item->reports_date }}</td>
+                                <td>{{ $item->notes }}</td>
+                                <td><img src="https://imgv2-1-f.scribdassets.com/img/document/262678770/original/f989a7f8fe/1684204078?v=1"
+                                        style="width: 100px">
                                 </td>
-                                <td>Kec. {{ $item['sub_district']['name'] }}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -57,7 +57,6 @@
         </div>
     </div>
 @endsection
-
 @section('javascript')
-
+    <script src="{{ asset('assets/js/category.js') }}"></script>
 @endsection

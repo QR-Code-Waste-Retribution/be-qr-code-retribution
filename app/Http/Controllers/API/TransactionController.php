@@ -4,9 +4,11 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\TransactionResource;
+use App\Http\Resources\TransactionWithInvoiceResource;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Throwable;
 
 class TransactionController extends Controller
 {
@@ -19,32 +21,6 @@ class TransactionController extends Controller
         $this->middleware('uuid')->only('storeNonCash');
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         try {
@@ -119,7 +95,7 @@ class TransactionController extends Controller
             if ($validator->fails()) {
                 return $this->errorResponse($validator->errors(), 'Input tidak boleh ada yang kosong', 422);
             }
-            
+
             $transaction = $this->transaction->storeTransactionInvoiceNonCash($request->all());
             return $this->successResponse($transaction['transaction'], $transaction['message'], $transaction['code']);
         } catch (\Throwable $th) {
@@ -172,49 +148,18 @@ class TransactionController extends Controller
             return $this->errorResponse($th->getMessage(), 'Something Went error');
         }
     }
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+
     public function show($id)
     {
-        //
-    }
+        try {
+            $transactions = $this->transaction->getTransactionWithInvoiceByMasyarakat($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+            return $this->successResponse(
+                new TransactionWithInvoiceResource($transactions),
+                'Berhasil mengambil data transaksi'
+            );
+        } catch (Throwable $th) {
+            return $this->errorResponse([], $th->getMessage(), $th->getCode());
+        }
     }
 }

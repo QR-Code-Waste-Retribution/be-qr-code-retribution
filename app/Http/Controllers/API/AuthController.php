@@ -82,6 +82,10 @@ class AuthController extends Controller
   {
     $user = auth()->user();
 
+    if (!$user->verification_status) {
+      return $this->errorResponse([], "Akun anda belum teverifikasi!!", 403);
+    }
+
     return $this->successResponse([
       'access_token' => $_token->createToken('qr_code_retribution')->accessToken,
       'credential_token' => $_token->createToken('qr_code_retribution')->token,

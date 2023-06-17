@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('masyarakat_transactions', function (Blueprint $table) {
             $table->id();
             $table->integer('price');
-            $table->string('status'); // [0 EXPIRED] || [1 PENDING] || [2 SUCCESS]
+            $table->string('status'); // [0 EXPIRED] || [1 PENDING] || [2 SUCCESS] || [3 CANCELLED]
             $table->string('date');
             $table->enum('type', ["CASH", "NONCASH"]);
             $table->string('invoice_number')->unique();

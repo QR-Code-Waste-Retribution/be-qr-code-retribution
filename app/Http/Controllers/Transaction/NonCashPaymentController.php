@@ -26,7 +26,7 @@ class NonCashPaymentController extends Controller
     {
         $non_cash_payment = $this->transaction->getAllNonCashTransaction();
 
-        return view('pages.transaction.noncash-payment', compact('non_cash_payment'));
+        return view('pages.transaction.noncash.noncash-payment', compact('non_cash_payment'));
     }
 
     

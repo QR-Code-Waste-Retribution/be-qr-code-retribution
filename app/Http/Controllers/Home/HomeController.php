@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Home;
 
+use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use App\Models\PemungutTransaction;
 use App\Models\Transaction;
@@ -30,6 +31,8 @@ class HomeController extends Controller
      */
     public function index()
     {
+        echo phpinfo();
+        die;
         // Get Already Deposit and Not Yet Deposited Monthly Categories
         $deposit = $this->pemungut_transaction->getDepositMonthlyDataByDistrictId();
 

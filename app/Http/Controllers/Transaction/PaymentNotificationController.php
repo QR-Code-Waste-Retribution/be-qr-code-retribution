@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Transaction;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePaymentNotificationRequest;
 use App\Http\Requests\UpdatePaymentNotificationRequest;
 use App\Models\PaymentNotification;
