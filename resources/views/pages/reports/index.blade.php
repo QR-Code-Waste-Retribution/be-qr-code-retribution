@@ -20,9 +20,21 @@
         <div class="row box-container">
             <div class="col-12 d-flex justify-content-between">
                 <div class="search-bar">
-                    <form class="search-form d-flex align-items-center" method="POST" action="#">
-                        <input type="text" name="query" placeholder="Search" title="Enter search keyword">
-                        <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+                    <form method="GET" action="{{ route('category.index') }}">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="search-bar">
+                                <div class="search-form d-flex align-items-center">
+                                    <input type="text" name="search" placeholder="Cari nama setoran" title="Enter search keyword"
+                                        value="{{ request()->input('search') }}">
+                                    <button type="button" title="Search"><i class="bi bi-search"></i></button>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <button type="submit" title="Search"
+                                    class="btn button-search btn-primary fs-7 px-3 py-2 my-2"><i class="bi bi-search"></i>&nbsp;
+                                    Search</button>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -43,10 +55,10 @@
                             <tr>
                                 <th scope="row">{{ $loop->iteration }}</th>
                                 <td>{{ $item->name }}</td>
-                                <td>Rp {{ number_format($item->price, 2) }}</td>
+                                <td>Rp. {{ number_format($item->price, 2) }}</td>
                                 <td>{{ $item->reports_date }}</td>
                                 <td>{{ $item->notes }}</td>
-                                <td><img src="https://imgv2-1-f.scribdassets.com/img/document/262678770/original/f989a7f8fe/1684204078?v=1"
+                                <td><img src="{{ asset($item->payment_file_url) }}"
                                         style="width: 100px">
                                 </td>
                             </tr>

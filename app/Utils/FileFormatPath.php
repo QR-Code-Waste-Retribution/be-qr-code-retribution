@@ -4,6 +4,7 @@ namespace App\Utils;
 
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Spatie\PdfToImage\Pdf;
 use Illuminate\Support\Str;
 use Imagick;
 
@@ -40,22 +41,27 @@ class FileFormatPath
     public function storeFile()
     {
         try {
-            // $fileName = $this->getFileName();
-            // $folderPath = $this->getPath();
-            // Storage::putFileAs($folderPath, $this->file, $fileName);
+            $fileName = $this->getFileName();
+            $folderPath = $this->getPath();
 
-            $imgExt = new Imagick();
-            $imgExt->readImage(public_path('assets/79216-zico-andreas-aritonang-ol-surat-perjanjian-kerja.pdf'));
-            $imgExt->writeImages('pdf_image_doc.jpg', true);
-            // $this->convertPdfToImage($folderPath);
+            Storage::putFileAs($folderPath, $this->file, $fileName);
 
-            // return $folderPath . $fileName;
+            // $fullPathFile = storage_path("app/public". $folderPath . $fileName);
+
+            // $this->convertPdfToImage($fullPathFile);
+
+            return $folderPath . $fileName;
         } catch (\Throwable $e) {
-            return $e;
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
     public function convertPdfToImage($pdfPath)
     {
+        $pdf = new Pdf($pdfPath);
+
+        $imagePath = public_path('/assets/reports/') . time() . '.jpg';
+        $pdf->setPage(1)
+            ->saveImage($imagePath);
     }
 }

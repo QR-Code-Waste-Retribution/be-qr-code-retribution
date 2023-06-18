@@ -42,7 +42,7 @@ window.addEventListener("load", function () {
             item.checked = checkboxAll.checked;
 
             if (checkboxAll.checked) {
-                selectedMasyarakat = [item.getAttribute("data-id")];
+                selectedMasyarakat = [item.getAttribute("data-id"), ...selectedMasyarakat];
             } else {
                 selectedMasyarakat = [];
             }

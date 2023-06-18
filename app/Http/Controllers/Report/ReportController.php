@@ -35,8 +35,7 @@ class ReportController extends Controller
      */
     public function create()
     {
-        echo phpinfo();
-        // return view('pages.reports.create');
+        return view('pages.reports.create');
     }
 
     /**
@@ -47,9 +46,7 @@ class ReportController extends Controller
      */
     public function store(StoreReportRequest $request)
     {   
-        $report = $this->report->storeReport($request);
-
-        return $report;
+        $this->report->storeReport($request);
         
         return redirect()->route('reports.index')->with([
             'type' => 'success',

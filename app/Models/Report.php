@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Utils\FileFormatPath;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Throwable;
 
 class Report extends Model
@@ -20,24 +21,27 @@ class Report extends Model
 
     public function storeReport($request)
     {
-        try{
+        try {
             $input = $request->validated();
-    
-            $file = $request->file('image');
-            $fileFormatPath = new FileFormatPath('reports', $file);
-    
-            // $this->create([
-            //     'name' => $input['reports_name'],
-            //     'price' => $input['price'],
-            //     'notes' => $input['notes'],
-            //     'payment_image' => $fileFormatPath->storeFile(),
-            //     'reports_date' => $input['date'],
-            // ]);
 
-            return $fileFormatPath->storeFile();
+            $file = $request->file('image');
+
+            $fileFormatPath = new FileFormatPath('reports', $file);
+
+            $this->create([
+                'name' => $input['reports_name'],
+                'price' => $input['price'],
+                'notes' => $input['notes'],
+                'payment_file' => $fileFormatPath->storeFile(),
+                'reports_date' => $input['date'],
+            ]);
         } catch (Throwable $e) {
-            dump($e->getMessage());
-            die();
+            return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+    public function getPaymentFileUrlAttribute()
+    {
+        return 'storage/' . $this->payment_file;
     }
 }

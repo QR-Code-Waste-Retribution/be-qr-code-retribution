@@ -23,7 +23,7 @@ class CashPaymentController extends Controller
 
     public function export()
     {
-        return Excel::download(new PaymentExport('CASH'), 'cash.xlsx');
+        return Excel::download(new PaymentExport('CASH'), 'PEMBAYARAN TUNAI.xlsx');
     }
     /**
      * Display a listing of the resource.

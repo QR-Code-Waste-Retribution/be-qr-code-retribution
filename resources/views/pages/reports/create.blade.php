@@ -49,8 +49,8 @@
                 @enderror
             </div>
             <div class="col-12">
-                <label for="inputEmail4" class="form-label fs-7">Bukti Bayar</label>
-                <input type="file" class="form-control fs-7 @error('image') is-invalid @enderror" name="image"
+                <label for="inputEmail4" class="form-label fs-7">Bukti Bayar (.png, .jpg)</label>
+                <input type="file" class="form-control fs-7 @error('image') is-invalid @enderror" name="image" accept="image/*"
                     id="inputEmail4" placeholder="Jumlah">
                 @error('image')
                     <div class="invalid-feedback fs-7">{{ $message }}</div>
