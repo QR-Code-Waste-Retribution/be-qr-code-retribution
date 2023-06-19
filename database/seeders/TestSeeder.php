@@ -17,7 +17,7 @@ class TestSeeder extends Seeder
      */
     public function run()
     {
-        $pemungut = User::find(302);
+        $pemungut = User::where('username', 'pemungut_toba')->first();
         $sub_district_id = $pemungut->sub_district_id;
         $district_id = $pemungut->district_id;
 
@@ -38,7 +38,7 @@ class TestSeeder extends Seeder
             $i++;
         }
 
-        $pemungut = User::find(307);
+        $pemungut = User::where('username', 'pemungut_simalungun')->first();
         $sub_district_id = $pemungut->sub_district_id;
         $district_id = $pemungut->district_id;
 
