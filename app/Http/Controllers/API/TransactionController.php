@@ -78,7 +78,7 @@ class TransactionController extends Controller
 
     public function storeNonCash(Request $request)
     {
-        try {
+        // try {
             $validator = Validator::make($request->all(), [
                 "line_items" => 'required',
                 "total_amount" =>  'required',
@@ -98,9 +98,9 @@ class TransactionController extends Controller
 
             $transaction = $this->transaction->storeTransactionInvoiceNonCash($request->all());
             return $this->successResponse($transaction['transaction'], $transaction['message'], $transaction['code']);
-        } catch (\Throwable $th) {
-            return $this->errorResponse($th->getMessage(), 'Something Went error');
-        }
+        // } catch (\Throwable $th) {
+        //     return $this->errorResponse($th->getMessage(), 'Something Went error');
+        // }
     }
 
 
