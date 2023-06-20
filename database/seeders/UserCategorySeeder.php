@@ -42,8 +42,8 @@ class UserCategorySeeder extends Seeder
 
                 $categories = Category::select("id")
                     ->where('price', '!=', 0)
+                    ->whereNotNull('parent_id')
                     ->where('district_id', $user->district_id)
-                    ->where('type', "MONTH")
                     ->inRandomOrder()
                     ->limit(1)
                     ->pluck('id')->toArray();
@@ -61,18 +61,18 @@ class UserCategorySeeder extends Seeder
                     ->limit(1)->first();
 
                 if ($pemungut == null) {
-                    // $this->command->info("Continue PEMUNGUT " . $i);
+                    $this->command->info("Continue PEMUNGUT " . $i);
                     $i--;
                     continue;
                 }
 
                 if (in_array($sub_district[0], $sub_district_user)) {
-                    // $this->command->info("Category with sub district provided already exist [$i]");
+                    $this->command->info("Category with sub district provided already exist [$i]");
                     $i--;
                     continue;
                 }
 
-                // $this->command->info(json_encode($pemungut->id . " $i", JSON_PRETTY_PRINT));
+                $this->command->info(json_encode($pemungut->id . " $i", JSON_PRETTY_PRINT));
                 array_push($sub_district_user, $sub_district);
 
                 DB::table('users_categories')->insert([

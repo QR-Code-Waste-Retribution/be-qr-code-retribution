@@ -41,9 +41,7 @@ class PemungutTransactionsSeeder extends Seeder
             PemungutTransaction::create([
                 'status' => fake()->randomElement([0, 1]),
                 'pemungut_id' => $item->pemungut_id,
-                'total' => (int) $item->price,
-                'date' => now(),
-                'masyarakat_transaction_id' => $item->id
+                'date' => date('F Y', strtotime(now())),
             ]);
 
             $i++;
