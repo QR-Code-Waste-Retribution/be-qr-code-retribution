@@ -39,7 +39,7 @@ class UserController extends Controller
 
             $user->save();
 
-            return $this->successResponse($user, 'Berhasil mengubah profil anda', 200);
+            return $this->successResponse(new UserResource($user), 'Berhasil mengubah profil anda', 200);
         } catch (\Throwable $err) {
             return $this->errorResponse('', $err->getMessage(), 401);
         }
