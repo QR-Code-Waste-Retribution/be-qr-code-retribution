@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Category;
 
+use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Exception;
 use Illuminate\Http\Request;
@@ -15,14 +16,18 @@ class CategoryController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    
+
     public function index(Request $request)
     {
 
         $search = $request->search ?? '';
         $categories = Category::where('district_id', auth()->user()->district_id)
             ->where('name', 'like', '%' . $search . '%')
+            ->where('price', '!=', '0')
             ->paginate(10);
+
+        // return $categories;
+
         return view('pages.category.index', compact('categories'));
     }
 

@@ -8,7 +8,8 @@
 @endphp
 
 @section('page_title', 'DATA TRANSAKSI - Pembayaran Non-Tunai')
-@section('page_subtitle', 'Anda dapat melihat iuran retribusi sampah yang sudah di bayarkan oleh masyarakat di tiap
+@section('page_subtitle',
+    'Anda dapat melihat iuran retribusi sampah yang sudah di bayarkan oleh masyarakat di tiap
     kecamatan secara non-tunai')
 @section('breadcrumb_title', 'Data Transaksi')
 
@@ -18,26 +19,6 @@
             <div class="col-md-6">
                 <a class="button-primary text-center px-4" href="{{ route('transaction-noncash.export') }}">Download Excel
                     &nbsp;<i class="bi bi-download"></i></a>
-            </div>
-            <div class="col-md-6">
-                <div class="row">
-                    {{-- <div class="col-6">
-                        <label for="" class="form-label fs-7 fw-medium">Pilih Bulan</label>
-                        <select class="form-select fs-7" aria-label="Default select example">
-                            <option value="1" selected>Januari</option>
-                            <option value="2">Februari</option>
-                            <option value="3">March</option>
-                        </select>
-                    </div>
-                    <div class="col-6">
-                        <label for="" class="form-label fs-7 fw-medium">Pilih Kecamatan</label>
-                        <select class="form-select fs-7" aria-label="Default select example">
-                            <option value="0" selected>Semua</option>
-                            <option value="1">One</option>
-                            <option value="2">Two</option>
-                        </select>
-                    </div> --}}
-                </div>
             </div>
         </div>
         <div class="col-12 mt-4">
@@ -50,17 +31,35 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @php
+                        $total_price_transactions = 0;
+                    @endphp
                     @foreach ($non_cash_payment as $item)
                         <tr>
                             <th scope="row">{{ $loop->iteration }}</th>
-                            <td><span class="">Kec. {{ $item->name }}</span></td>
+                            <td>
+                                <a href="">
+                                    <span class="">Kec. {{ $item->name }}</span>
+                                </a>
+                            </td>
                             @if (count($item->transactions))
-                                <td>Rp. {{ number_format((int)collect($item->transactions)->sum('total') - (count($item->transactions) * 3500), 2)  }}</td>
+                                @php
+                                    $price = (int) collect($item->transactions)->sum('total') - count($item->transactions) * 3500;
+                                    $total_price_transactions += $price;
+                                @endphp
+                                <td>Rp.
+                                    {{ number_format($price, 2) }}
+                                </td>
                             @else
                                 <td>Rp. 0</td>
                             @endif
                         </tr>
                     @endforeach
+                    <tr class="fw-bold">
+                        <td></td>
+                        <td>Total</td>
+                        <td>Rp. {{ number_format($total_price_transactions, 2) }}</td>
+                    </tr>
                 </tbody>
             </table>
         </div>

@@ -27,8 +27,9 @@ class UserSeeder extends Seeder
             'sub_district_id' => 2,
             'district_id' => 1,  
             'role_id' => 3,
-            'status' => 1,
+            'account_status' => 1,
             'remember_token' => Str::random(10),
+            'verification_status' => 1,
         ];
         $pemungut_toba = [
             'uuid' => fake()->uuid(), 
@@ -42,8 +43,9 @@ class UserSeeder extends Seeder
             'sub_district_id' => 2,
             'district_id' => 1,  
             'role_id' => 2,
-            'status' => 1,
+            'account_status' => 1,
             'remember_token' => Str::random(10),
+            'verification_status' => 1,
         ];
         $masyarakatA_toba = [
             'uuid' => fake()->uuid(), 
@@ -57,8 +59,9 @@ class UserSeeder extends Seeder
             'sub_district_id' => 2,
             'district_id' => 1,  
             'role_id' => 1,
-            'status' => 1,
+            'account_status' => 1,
             'remember_token' => Str::random(10),
+            'verification_status' => 1,
         ];
         $masyarakatB_toba = [
             'uuid' => fake()->uuid(), 
@@ -72,8 +75,9 @@ class UserSeeder extends Seeder
             'sub_district_id' => 2,
             'district_id' => 1,  
             'role_id' => 1,
-            'status' => 1,
+            'account_status' => 1,
             'remember_token' => Str::random(10),
+            'verification_status' => 1,
         ];
         $masyarakatC_toba = [
             'uuid' => fake()->uuid(), 
@@ -87,8 +91,9 @@ class UserSeeder extends Seeder
             'sub_district_id' => 2,
             'district_id' => 1,  
             'role_id' => 1,
-            'status' => 1,
+            'account_status' => 1,
             'remember_token' => Str::random(10),
+            'verification_status' => 1,
         ];
 
 
@@ -104,8 +109,9 @@ class UserSeeder extends Seeder
             'sub_district_id' => 10,
             'district_id' => 2,  
             'role_id' => 3,
-            'status' => 1,
+            'account_status' => 1,
             'remember_token' => Str::random(10),
+            'verification_status' => 1,
         ];
         $pemungut_sima = [
             'uuid' => fake()->uuid(), 
@@ -119,8 +125,9 @@ class UserSeeder extends Seeder
             'sub_district_id' => 10,
             'district_id' => 2,  
             'role_id' => 2,
-            'status' => 1,
+            'account_status' => 1,
             'remember_token' => Str::random(10),
+            'verification_status' => 1,
         ];
         $masyarakatA_sima = [
             'uuid' => fake()->uuid(), 
@@ -134,8 +141,9 @@ class UserSeeder extends Seeder
             'sub_district_id' => 10,
             'district_id' => 2,  
             'role_id' => 1,
-            'status' => 1,
+            'account_status' => 1,
             'remember_token' => Str::random(10),
+            'verification_status' => 1,
         ];
         $masyarakatB_sima = [
             'uuid' => fake()->uuid(), 
@@ -149,8 +157,9 @@ class UserSeeder extends Seeder
             'sub_district_id' => 10,
             'district_id' => 2,  
             'role_id' => 1,
-            'status' => 1,
+            'account_status' => 1,
             'remember_token' => Str::random(10),
+            'verification_status' => 1,
         ];
         $masyarakatC_sima = [
             'uuid' => fake()->uuid(), 
@@ -164,8 +173,9 @@ class UserSeeder extends Seeder
             'sub_district_id' => 10,
             'district_id' => 2,  
             'role_id' => 1,
-            'status' => 1,
+            'account_status' => 1,
             'remember_token' => Str::random(10),
+            'verification_status' => 1,
         ];
 
         User::create($petugas_toba);

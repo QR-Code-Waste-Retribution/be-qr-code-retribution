@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\VerificationForm;
 use App\Models\SubDistrict;
 use App\Models\User;
 use Exception;
@@ -16,6 +17,20 @@ class MasyarakatController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+    public $user;
+
+    public function __construct()
+    {
+        $this->user = new User();
+    }
+
+    public function show($id)
+    {
+        $user = $this->user->show($id);
+        return view('pages.user.masyarakat.detail', compact('user'));
+    }
+
     public function index(Request $request)
     {
         $search = $request->search ?? '';
@@ -41,78 +56,51 @@ class MasyarakatController extends Controller
         return view('pages.user.masyarakat.index', compact('masyarakat', 'sub_districts'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function verificationDetail($pemungut_id)
     {
-        //
+        $pemungut = $this->user->allMasyarakatByPemungut($pemungut_id);
+
+        
+        return view('pages.user.verification.detail', compact('pemungut'));
+    }
+    
+    public function verificationCreate()
+    {
+        $pemunguts = $this->user->allMasyarakatByPemungut();
+        
+        return view('pages.user.verification.index', compact('pemunguts'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function changeStatusVerificationUser(VerificationForm $request)
     {
-        // $validator = Validator::make($request->all(), [
-        //     'query' => 'required',
-        //     'sub_district' => 'required|integer',
-        // ], [
-        //     'required' => 'Input :attribute tidak boleh kosong',
-        // ]);
-    }
+        try {
+            $input = $request->validated();
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
+            $this->user->changeVerficationStatusSelectedMasyarakat($input['selected_masyarakat_id']);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
+            return redirect()->route('masyarakat.verification')->with([
+                'type' => 'success',
+                'status' => 'Berhasil mengubah status verifikasi masyarakat',
+            ]);
+        } catch (Exception $err) {
+            return $this->errorResponse([], 'Something went wrong');
+        }
     }
 
     public function changeStatusUser(Request $request)
     {
         try {
             $user = User::find($request->user_id);
-            $user->status = !$user->status;
+            $user->status = $user->status == 1 ? 0 : 1;
             $user->save();
 
-            return $this->successResponse($user, 'Success to change user status');
+            return $this->successResponse($user, 'Berhasil mengubah status ' . $user->name);
         } catch (Exception $err) {
             return $this->errorResponse([], 'Something went wrong');
         }
     }
+
+
 
     /**
      * Remove the specified resource from storage.

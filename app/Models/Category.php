@@ -36,18 +36,30 @@ class Category extends Model
         return $this->belongsTo(District::class);
     }
 
-    public function getAllByDistrict($district_id){
+    public function getAllByDistrict($district_id)
+    {
         return $this
             ->all()
             ->where('district_id', $district_id)
             ->whereNotNull('parent_id');
     }
 
-    public function allAddtionalByDistrictId($district_id){
+    public function allAddtionalByDistrictId($district_id)
+    {
         return $this
             ->whereIn('type', ['packet', 'unit', 'day'])
             ->where('district_id', $district_id)
             ->where('price', '!=', 0)->get();
     }
 
+    public function getTypeTranslationAttribute()
+    {
+        $translations = [
+            'MONTH' => 'BULAN',
+            'DAY' => 'HARI',
+            'PACKET' => 'PAKET',
+        ];
+
+        return $translations[$this->type] ?? '';
+    }
 }

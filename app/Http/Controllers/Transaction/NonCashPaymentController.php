@@ -26,13 +26,13 @@ class NonCashPaymentController extends Controller
     {
         $non_cash_payment = $this->transaction->getAllNonCashTransaction();
 
-        return view('pages.transaction.noncash-payment', compact('non_cash_payment'));
+        return view('pages.transaction.noncash.noncash-payment', compact('non_cash_payment'));
     }
 
     
     public function export()
     {
-        return Excel::download(new PaymentExport('NONCASH'), 'non_cash.xlsx');
+        return Excel::download(new PaymentExport('NONCASH'), 'PEMBAYARAN NON TUNAI.xlsx');
     }
 
 

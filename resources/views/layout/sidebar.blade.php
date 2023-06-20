@@ -4,7 +4,7 @@
     <div class="d-flex align-items-center justify-content-between">
         <a href="{{ route('dashboard') }}" class="logo d-flex align-items-center">
             <img src="{{ asset('assets/img/logo_toba.png') }}" alt="">
-            <span class="d-none d-lg-block">Retribusi Sampah</span>
+            <span class="d-none d-lg-block">SiPAIAS</span>
         </a>
         <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
@@ -18,7 +18,7 @@
                 </a>
             </li><!-- End Search Icon-->
 
-            <li class="nav-item dropdown">
+            {{-- <li class="nav-item dropdown">
 
                 <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
                     <i class="bi bi-bell"></i>
@@ -157,7 +157,7 @@
 
                 </ul><!-- End Messages Dropdown Items -->
 
-            </li><!-- End Messages Nav -->
+            </li><!-- End Messages Nav --> --}}
 
             <li class="nav-item dropdown pe-3">
 
@@ -169,7 +169,7 @@
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
                     <li class="dropdown-header">
                         <h6>{{ auth()->user()->name }}</h6>
-                        <span class="text-capitalize">{{ implode(' ', explode('_', auth()->user()->role->name)) }}</span>
+                        <span class="text-capitalize">{{ implode(' ', explode('_', auth()->user()->role->name)) . ' ' . auth()->user()->district->name }}</span>
                     </li>
                     <li>
                         <hr class="dropdown-divider">
@@ -275,5 +275,17 @@
                 <span>Management Kategori</span>
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="{{ route('masyarakat.verification') }}">
+                <i class="bi bi-person"></i>
+                <span>Verifikasi Akun Masyarakat Baru</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="{{ route('reports.index') }}">
+                <i class="bi bi-person"></i>
+                <span>Catatan Laporan</span>
+            </a>
+        </li>   
     </ul>
 </aside>

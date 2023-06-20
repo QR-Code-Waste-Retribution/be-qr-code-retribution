@@ -17,7 +17,7 @@ class TestSeeder extends Seeder
      */
     public function run()
     {
-        $pemungut = User::find(302);
+        $pemungut = User::where('username', 'pemungut_toba')->first();
         $sub_district_id = $pemungut->sub_district_id;
         $district_id = $pemungut->district_id;
 
@@ -26,18 +26,19 @@ class TestSeeder extends Seeder
         $i = 1;
         foreach ($users as $user) {
             $categories = Category::inRandomOrder()->where('price', '!=', 0)
-            ->whereNotNull('parent_id')->where('district_id', $district_id)->limit($i)->get();
-    
+                ->where('type', "MONTH")
+                ->where('district_id', $district_id)->limit($i)->get();
+
             foreach ($categories as $category) {
                 DB::table('users_categories')->insert([
-                    ['user_id' => $user->id, 'category_id' => $category->id, 'sub_district_id' => $sub_district_id, 'address' => fake()->address()],
+                    ['user_id' => $user->id, 'category_id' => $category->id, 'sub_district_id' => $sub_district_id, 'address' => fake()->address(), 'pemungut_id' => $pemungut->id],
                 ]);
             }
 
             $i++;
         }
 
-        $pemungut = User::find(307);
+        $pemungut = User::where('username', 'pemungut_simalungun')->first();
         $sub_district_id = $pemungut->sub_district_id;
         $district_id = $pemungut->district_id;
 
@@ -46,16 +47,17 @@ class TestSeeder extends Seeder
         $i = 1;
         foreach ($users as $user) {
             $categories = Category::inRandomOrder()->where('price', '!=', 0)
-            ->whereNotNull('parent_id')->where('district_id', $district_id)->limit($i)->get();
-    
+                ->where('type', "MONTH")
+                ->where('district_id', $district_id)
+                ->limit($i)->get();
+
             foreach ($categories as $category) {
                 DB::table('users_categories')->insert([
-                    ['user_id' => $user->id, 'category_id' => $category->id, 'sub_district_id' => $sub_district_id, 'address' => fake()->address()],
+                    ['user_id' => $user->id, 'category_id' => $category->id, 'sub_district_id' => $sub_district_id, 'address' => fake()->address(), 'pemungut_id' => $pemungut->id],
                 ]);
             }
 
             $i++;
         }
-
     }
 }
