@@ -21,15 +21,14 @@ class DatabaseSeeder extends Seeder
             RolesSeeder::class,
         ]);
 
-        User::factory(300)->create();
+        // User::factory(300)->create();
         $this->call([
             UserSeeder::class,
             CategorySeeder::class,
         ]);
-        // Transaction::factory(300)->create();
 
         $this->call([
-            UserCategorySeeder::class,
+            // UserCategorySeeder::class,
             TestSeeder::class,
             TransactionInvoiceSeeder::class,
             PemungutTransactionsSeeder::class,
