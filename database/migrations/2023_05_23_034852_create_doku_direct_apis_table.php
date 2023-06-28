@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('doku_direct_apis', function (Blueprint $table) {
             $table->id();
+
             $table->string('invoice_number', 255);
             $table->string('virtual_account_number', 255);
             $table->string('how_to_pay_page', 255);
@@ -23,6 +24,8 @@ return new class extends Migration
             $table->string('expired_date', 255);
             $table->string('created_date_utc', 255);
             $table->string('expired_date_utc', 255);
+            $table->string('bank_name', 255);
+            $table->string('bank_name_short', 255);
             $table->unsignedBigInteger('masyarakat_transaction_id')->nullable();
             $table->timestamps();
 

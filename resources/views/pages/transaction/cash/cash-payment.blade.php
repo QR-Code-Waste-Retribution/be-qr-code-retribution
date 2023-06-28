@@ -24,9 +24,23 @@
                                 <i class="bi bi-currency-dollar"></i>
                             </div>
                             <div class="ps-3">
-                                <h6 class="fs-4">Rp.
-                                    {{ number_format($invoice_monthly['unpaid']['total'] ?? 0 + $invoice_monthly['paid']['total'] ?? 0, 2) }}
-                                    -,</h6>
+                                @if (!isset($invoice_monthly['unpaid']) && isset($invoice_monthly['paid']))
+                                    <h6 class="fs-4">Rp.
+                                        {{ number_format($invoice_monthly['paid']['total'] ?? 0, 2) }}
+                                        -,</h6>
+                                @elseif(!isset($invoice_monthly['paid']) && isset($invoice_monthly['unpaid']))
+                                    <h6 class="fs-4">Rp.
+                                        {{ number_format($invoice_monthly['unpaid']['total'] ?? 0, 2) }}
+                                        -,</h6>
+                                @elseif(!isset($invoice_monthly['paid']) && !isset($invoice_monthly['unpaid']))
+                                    <h6 class="fs-4">Rp.
+                                        {{ 0 }}
+                                        -,</h6>
+                                @else
+                                    <h6 class="fs-4">Rp. 
+                                        {{ number_format($invoice_monthly['unpaid']['total'] ?? 0 + $invoice_monthly['paid']['total'] ?? 0, 2) }}
+                                        -,</h6>
+                                @endif
                                 <span class="text-success small pt-1 fw-bold"></span><span
                                     class="text-muted small pt-2 ps-1">21 Februari 2023</span>
                             </div>

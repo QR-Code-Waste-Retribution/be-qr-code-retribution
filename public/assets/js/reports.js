@@ -1,12 +1,11 @@
 window.addEventListener("load", function () {
-    var priceInput = document.getElementById("price");
+    const selectPemungut = document.getElementById('select_pemungut');
+    const inputPrice = document.getElementById('price');
 
-    priceInput.addEventListener("change", function () {
-        // formatPrice();
-    });
+    selectPemungut.addEventListener('change', function(e) { 
+        const option = selectPemungut.querySelector(`[value*='${e.target.value}']`);
+        const price = option.getAttribute('data-price') ?? 0;
 
-    // function formatPrice() {
-    //     var inputPrice = +document.getElementById("price").value;
-    //     priceInput.value = inputPrice.toLocaleString();
-    // }
+        inputPrice.value = price;
+    })
 });

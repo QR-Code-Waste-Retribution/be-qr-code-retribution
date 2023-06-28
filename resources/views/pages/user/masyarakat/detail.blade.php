@@ -66,7 +66,7 @@
                     <tr>
                         <th scope="row">{{ $loop->iteration }}</th>
                         <td>{{ $item->category->name }}</td>
-                        <td>{{ $item->category->price }}</td>
+                        <td>Rp. {{ number_format($item->category->price, 2) }}</td>
                         <td>
                             <span class="badge bg-primary">{{ $item->category->type_translation }}</span>
                         </td>

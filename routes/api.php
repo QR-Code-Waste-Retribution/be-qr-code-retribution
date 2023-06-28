@@ -51,6 +51,8 @@ Route::name('api.')->group(function () {
         Route::get('/pemungut/{id}', [TransactionController::class, 'historyTransactionPemungut'])->name('transaction.history.pemungut');
         Route::get('/masyarakat/{id}', [TransactionController::class, 'getHistoryTransactionMasyarakat'])->name('transaction.history.masyarakat');
         Route::post('/store/non-cash', [TransactionController::class, 'storeNonCash'])->name('transaction.store.non-cash');
+        Route::post('/store/non-cash/checkout', [TransactionController::class, 'storeNonCashCheckout'])->name('transaction.store.checkout');
+        Route::post('/store/non-cash/directapi', [TransactionController::class, 'storeNonCashDirectApi'])->name('transaction.store.direct-api');
         Route::post('/store/additional', [TransactionController::class, 'storeAddtionalRetribution'])->name('transaction.store.additional');
         Route::put('/update/non-cash/status/{transaction_id}', [TransactionController::class, 'updateNonCashStatusAfterPayment'])->name('transaction.store.update.non-cash');
     });

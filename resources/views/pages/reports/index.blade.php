@@ -44,6 +44,7 @@
                         <tr>
                             <th scope="col">#</th>
                             <th scope="col">Nama Setoran</th>
+                            <th scope="col">Pemungut</th>
                             <th scope="col">Jumlah</th>
                             <th scope="col">Tanggal</th>
                             <th scope="col">Catatan</th>
@@ -55,6 +56,7 @@
                             <tr>
                                 <th scope="row">{{ $loop->iteration }}</th>
                                 <td>{{ $item->name }}</td>
+                                <td>{{ $item->user->name }} <br> <span class="fs-8 fst-italic">{{ $item->user->phoneNumber }}</span></td>
                                 <td>Rp. {{ number_format($item->price, 2) }}</td>
                                 <td>{{ $item->reports_date }}</td>
                                 <td>{{ $item->notes }}</td>

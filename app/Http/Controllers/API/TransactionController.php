@@ -78,7 +78,7 @@ class TransactionController extends Controller
 
     public function storeNonCash(Request $request)
     {
-        // try {
+        try {
             $validator = Validator::make($request->all(), [
                 "line_items" => 'required',
                 "total_amount" =>  'required',
@@ -98,10 +98,69 @@ class TransactionController extends Controller
 
             $transaction = $this->transaction->storeTransactionInvoiceNonCash($request->all());
             return $this->successResponse($transaction['transaction'], $transaction['message'], $transaction['code']);
-        // } catch (\Throwable $th) {
-        //     return $this->errorResponse($th->getMessage(), 'Something Went error');
-        // }
+        } catch (\Throwable $th) {
+            return $this->errorResponse($th->getMessage(), 'Something Went error');
+        }
     }
+
+
+    public function storeNonCashCheckout(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                "line_items" => 'required',
+                "total_amount" =>  'required',
+                "masyarakat_id" =>  'required',
+                "pemungut_id" =>  'nullable',
+                "category_id" =>  'nullable',
+                "sub_district_id" =>  'required',
+                "type" => 'required',
+                "method" => 'nullable',
+            ], [
+                'required' => 'Input :attribute tidak boleh kosong',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->errorResponse($validator->errors(), 'Input tidak boleh ada yang kosong', 422);
+            }
+
+            $transaction = $this->transaction->storeTransactionInvoiceNonCash($request->all());
+            return $this->successResponse($transaction['transaction'], $transaction['message'], $transaction['code']);
+        } catch (\Throwable $th) {
+            return $this->errorResponse($th->getMessage(), 'Something Went error');
+        }
+    }
+
+
+    public function storeNonCashDirectApi(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                "line_items" => 'required',
+                "total_amount" =>  'required',
+                "masyarakat_id" =>  'required',
+                "pemungut_id" =>  'nullable',
+                "category_id" =>  'nullable',
+                "sub_district_id" =>  'required',
+                "type" => 'required',
+                "method" => 'nullable',
+            ], [
+                'required' => 'Input :attribute tidak boleh kosong',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->errorResponse($validator->errors(), 'Input tidak boleh ada yang kosong', 422);
+            }
+
+            $transaction = $this->transaction->storeTransactionInvoiceNonCashDirectApi($request->all());
+            return $this->successResponse($transaction['transaction'], $transaction['message'], $transaction['code']);
+        } catch (\Throwable $th) {
+            return $this->errorResponse($th->getMessage(), 'Something Went error');
+        }
+    }
+
+
+    
 
 
     public function historyTransactionPemungut($id)

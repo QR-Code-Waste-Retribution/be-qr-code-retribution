@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Category;
+use App\Models\Invoice;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -17,7 +19,7 @@ class UserSeeder extends Seeder
     {
         $petugas_toba = [
             'uuid' => fake()->uuid(), 
-            'name' => 'Zico Andreas Aritonang',
+            'name' => 'Petugas Toba',
             'username' => 'petugas_toba',
             'password' => bcrypt('password'),
             'nik' => '217356253165323',
@@ -33,7 +35,7 @@ class UserSeeder extends Seeder
         ];
         $pemungut_toba = [
             'uuid' => fake()->uuid(), 
-            'name' => 'Pemungut A',
+            'name' => 'Sahat Gurning',
             'username' => 'pemungut_toba',
             'password' => bcrypt('password'),
             'nik' => '217356253165324',
@@ -49,8 +51,8 @@ class UserSeeder extends Seeder
         ];
         $masyarakatA_toba = [
             'uuid' => fake()->uuid(), 
-            'name' => 'Zico',
-            'username' => 'masyarakatA_toba',
+            'name' => 'Nelson',
+            'username' => 'nelson',
             'password' => bcrypt('password'),
             'nik' => '217356253165325',
             'gender' => 'Laki-Laki',
@@ -65,8 +67,8 @@ class UserSeeder extends Seeder
         ];
         $masyarakatB_toba = [
             'uuid' => fake()->uuid(), 
-            'name' => 'Andreas',
-            'username' => 'masyarakatB_toba',
+            'name' => 'Anda',
+            'username' => 'anda',
             'password' => bcrypt('password'),
             'nik' => '217356253165326',
             'gender' => 'Laki-Laki',

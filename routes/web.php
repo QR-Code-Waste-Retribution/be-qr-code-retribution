@@ -66,10 +66,11 @@ Route::middleware(['auth', 'role:petugas_kabupaten'])->group(function () {
 
     // Non Cash Payment
     Route::get('transaction-noncash/export', [NonCashPaymentController::class, 'export'])->name('transaction-noncash.export');
-    Route::resource('transaction-noncash', NonCashPaymentController::class);
+    Route::get('transaction-noncash/{sub_district_id}', [NonCashPaymentController::class, 'showNonCashTransactionBySubDistrictId'])->name('transaction-noncash.sub_district_id');
+    Route::resource('transaction-noncash', NonCashPaymentController::class)->only(['index']);
 
     // Reports 
-    Route::resource('reports', ReportController::class);
+    Route::resource('reports',  ReportController::class);
 });
 
 

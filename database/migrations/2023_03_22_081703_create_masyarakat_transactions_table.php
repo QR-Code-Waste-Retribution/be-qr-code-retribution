@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->integer('price');
             $table->string('status'); // [0 EXPIRED] || [1 PENDING] || [2 SUCCESS] || [3 CANCELLED]
+            $table->integer('verification_status')->default(0);
             $table->string('date');
             $table->enum('type', ["CASH", "NONCASH"]);
             $table->string('invoice_number')->unique();

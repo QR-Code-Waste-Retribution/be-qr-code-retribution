@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreReportRequest;
 use App\Http\Requests\UpdateReportRequest;
 use App\Models\Report;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ReportController extends Controller
@@ -35,7 +36,13 @@ class ReportController extends Controller
      */
     public function create()
     {
-        return view('pages.reports.create');
+        $pemungut = User::where('district_id', auth()->user()->district_id)
+            ->with('pemungut_transactions', function($query){
+                $query->where('status', 1)
+                    ->withSum('masyarakat_transactions', 'price');
+            })
+            ->where('role_id', 2)->get();
+        return view('pages.reports.create', compact('pemungut'));
     }
 
     /**
@@ -52,50 +59,5 @@ class ReportController extends Controller
             'type' => 'success',
             'status' => 'Berhasil menambahkan laporan baru',
         ]);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Report  $report
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Report $report)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Report  $report
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Report $report)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateReportRequest  $request
-     * @param  \App\Models\Report  $report
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateReportRequest $request, Report $report)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Report  $report
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Report $report)
-    {
-        //
     }
 }

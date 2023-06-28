@@ -25,10 +25,16 @@ class StoreReportRequest extends FormRequest
     {
         return [
             'reports_name' => 'required',
-            'price' => 'required',
+            'price' => ['required', 'numeric',  function ($attribute, $value, $fail) {
+                if ($value <= 0) {
+                    $fail('Input jumlah setoran tidak boleh kurang dari dan sama dengan Rp. 0');
+                }
+            }],
             'date' => 'required',
             'image' => 'required',
-            'notes' => 'nullable'
+            'notes' => 'nullable',
+            'pemungut_id' => 'required',
+            'sts_no' => 'required',
         ];
     }
 
@@ -37,8 +43,11 @@ class StoreReportRequest extends FormRequest
         return [
             'reports_name.required' => 'Input nama setoran tidak boleh kosong',
             'price.required' => 'Input jumlah setoran tidak boleh kosong',
+            'price.min' => 'Input jumlah setoran tidak boleh kurang dari Rp. 0',
             'date.required' => 'Input tanggal tidak boleh kosong',
             'image.required' => 'Bukti bayar tidak boleh kosong',
+            'pemungut_id.required' => 'Pemungut tidak boleh kosong',
+            'sts_no.required' => 'Nomor STS tidak boleh kosong',
         ];
     }
 }

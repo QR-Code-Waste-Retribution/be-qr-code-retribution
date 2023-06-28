@@ -16,7 +16,12 @@ class Report extends Model
 
     public function showAll()
     {
-        return $this->paginate(10);
+        return $this->with(['user:id,name,phoneNumber'])->paginate(10);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'pemungut_id', 'id');
     }
 
     public function storeReport($request)
@@ -28,12 +33,14 @@ class Report extends Model
 
             $fileFormatPath = new FileFormatPath('reports', $file);
 
-            $this->create([
+            $report = $this->create([
                 'name' => $input['reports_name'],
                 'price' => $input['price'],
                 'notes' => $input['notes'],
                 'payment_file' => $fileFormatPath->storeFile(),
                 'reports_date' => $input['date'],
+                'sts_no' => $input['sts_no'],
+                'pemungut_id' => $input['pemungut_id'],
             ]);
         } catch (Throwable $e) {
             return response()->json(['error' => $e->getMessage()], 500);

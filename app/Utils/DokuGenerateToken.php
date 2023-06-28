@@ -26,18 +26,12 @@ class DokuGenerateToken
 
     private $invoice_number;
 
-    private $doku_checkout;
-    private $doku_direct_api;
-
     public function __construct($method, $uuid)
     {
         $this->method = $method;
         $this->uuid = $uuid;
         $this->dokuMode = env('DOKU_MODE');
         $this->config = config('doku');
-
-        $this->doku_checkout = new DokuCheckout();
-        $this->doku_direct_api = new DokuDirectApi();
     }
 
     public function generateToken($lineItems, $customer, $total_amount)
@@ -65,7 +59,6 @@ class DokuGenerateToken
             "Request-Timestamp:" . $requestDate . "\n" .
             "Request-Target:" . $targetPath . "\n" .
             "Digest:" . $digestValue;
-
 
         $signature = base64_encode(hash_hmac('sha256', $componentSignature, $secretKey, true));
 

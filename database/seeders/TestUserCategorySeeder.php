@@ -8,7 +8,7 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class UserCategorySeeder extends Seeder
+class TestUserCategorySeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -56,7 +56,7 @@ class UserCategorySeeder extends Seeder
                 ->pluck('id')->toArray();
 
             $pemungut = User::select("id", "sub_district_id")
-                ->where('sub_district_id', $sub_district[0])
+                ->where('sub_district_id', $user->district_id == 1 ? 2 : 10)
                 ->where('role_id', 2)
                 ->inRandomOrder()
                 ->limit(1)->first();

@@ -181,7 +181,7 @@
                             <span>My Profile</span>
                         </a>
                     </li>
-                    <li>
+                    {{-- <li>
                         <hr class="dropdown-divider">
                     </li>
 
@@ -200,7 +200,7 @@
                             <i class="bi bi-question-circle"></i>
                             <span>Need Help?</span>
                         </a>
-                    </li>
+                    </li> --}}
                     <li>
                         <hr class="dropdown-divider">
                     </li>

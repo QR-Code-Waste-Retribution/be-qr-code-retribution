@@ -38,7 +38,8 @@
                         <tr>
                             <th scope="row">{{ $loop->iteration }}</th>
                             <td>
-                                <a href="">
+                                <a
+                                    href="{{ route('transaction-noncash.sub_district_id', $item->id) }}">
                                     <span class="">Kec. {{ $item->name }}</span>
                                 </a>
                             </td>

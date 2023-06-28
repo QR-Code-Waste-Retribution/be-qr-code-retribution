@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('price');
             $table->string('notes');
+            $table->string('sts_no');
+            $table->string('pemungut_id');
             $table->string('payment_file');
             $table->date('reports_date');
             $table->timestamps();
