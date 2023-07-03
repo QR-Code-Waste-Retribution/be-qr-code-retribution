@@ -14,9 +14,10 @@ use Illuminate\Support\Facades\Validator;
 class AuthController extends Controller
 {
   public $user;
+
   public function __construct()
   {
-    $this->middleware('auth:api', ['except' => ['login', 'register']]);
+    $this->middleware('auth:api', ['except' => ['login', 'register', 'forgetPassword']]);
     $this->user = new User();
   }
 
@@ -92,5 +93,27 @@ class AuthController extends Controller
       'token_type' => 'bearer',
       'user' => new UserResource($user),
     ], "Berhasil masuk ke aplikasi !!");
+  }
+
+
+  public function forgetPassword(Request $request)
+  {
+    try { 
+      $validator = Validator::make($request->all(), [
+        "email" => "required",
+      ], [
+        'required' => ':attribute tidak boleh kosong',
+      ]);
+
+      if ($validator->fails()) {
+        return $this->errorResponse($validator->errors(), 'Input tidak boleh ada yang kosong', 422);
+      }
+
+      $this->user->forgetPassword($validator);
+
+      return $this->successResponse([], 'Berhasil mengirim kode otp');
+    } catch (\Throwable $th) {
+      return $this->errorResponse([], $th->getMessage(), $th->getCode() ?? 500);
+    }
   }
 }

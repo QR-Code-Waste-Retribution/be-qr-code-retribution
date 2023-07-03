@@ -25,7 +25,7 @@ class PemungutRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'username' => 'required',
+            'username' => 'required|unique:users',
             'kecamatan' => 'required',
             'jenis_kelamin' => 'required',
             'nomor_telepon' => 'required',

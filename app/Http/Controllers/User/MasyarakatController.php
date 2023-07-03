@@ -60,14 +60,14 @@ class MasyarakatController extends Controller
     {
         $pemungut = $this->user->allMasyarakatByPemungut($pemungut_id);
 
-        
+
         return view('pages.user.verification.detail', compact('pemungut'));
     }
-    
+
     public function verificationCreate()
     {
         $pemunguts = $this->user->allMasyarakatByPemungut();
-        
+
         return view('pages.user.verification.index', compact('pemunguts'));
     }
 
@@ -97,6 +97,19 @@ class MasyarakatController extends Controller
             return $this->successResponse($user, 'Berhasil mengubah status ' . $user->name);
         } catch (Exception $err) {
             return $this->errorResponse([], 'Something went wrong');
+        }
+    }
+
+    public function exportAllQRCodeImage()
+    {
+        try {
+            $users = User::select('id', 'uuid', 'name', 'address')
+                ->where('district_id', auth()->user()->district_id)
+                ->where('role_id', 1)
+                ->get();
+            return view('pages.user.masyarakat.qrcode', compact('users'));
+        } catch (Exception $err) {
+            return $this->errorResponse($err->getMessage(), 'Something went wrong');
         }
     }
 

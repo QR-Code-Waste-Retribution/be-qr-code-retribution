@@ -9,8 +9,6 @@ use App\Http\Controllers\API\SubDistrictController;
 use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\User\MasyarakatController;
-use App\Http\Controllers\User\PemungutController;
-use App\Models\PemungutTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -25,12 +23,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::name('api.')->group(function () {
-
+    
     Route::post('login', [AuthController::class, 'login']);
     
     // User
     
     Route::prefix('user')->group(function () {
+        Route::post('/forget-password', [AuthController::class, 'forgetPassword']);
         Route::put('/status/change', [MasyarakatController::class, 'changeStatusUser']);
         Route::put('/change/{id}/password', [UserController::class, 'changePassword']);
         Route::put('/edit/{id}/profile', [UserController::class, 'editProfile']);

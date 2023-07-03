@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use App\Http\Resources\UserResource;
+use Exception;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
 use Laravel\Passport\HasApiTokens;
+use Throwable;
 
 class User extends Authenticatable
 {
@@ -234,5 +236,18 @@ class User extends Authenticatable
             ->update([
                 'verification_status' => 1,
             ]);
+    }
+
+    public function forgetPassword($validator)
+    {
+        $input = $validator->validated();
+
+        if (!$user = User::where('email', $input['email'])->first()) {
+            throw new Exception("Email yang anda masukkan tidak ada", 404);
+        } 
+
+        $user->remember_token = strval(random_int(100000, 999999));
+        $user->save();
+
     }
 }

@@ -15,8 +15,6 @@ class TransactionResource extends JsonResource
      */
     public function toArray($request)
     {
-       
-
         return [
             "id" => $this->id,
             "price" => [
@@ -38,7 +36,7 @@ class TransactionResource extends JsonResource
             "updated_at" => [
                 'date' => $this->updated_at,
                 'formated_date' => date('d F Y', strtotime($this->updated_at)),
-            ]
+            ],
         ];
     }
 }

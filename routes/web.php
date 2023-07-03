@@ -41,6 +41,7 @@ Route::middleware(['auth', 'role:petugas_kabupaten'])->group(function () {
     Route::prefix('user')->group(function () {
 
         // Masyarakat
+        Route::get('/masyarakat/all/qrcode', [MasyarakatController::class, 'exportAllQRCodeImage'])->name('masyarakat.qrcode');
         Route::get('/masyarakat/verification', [MasyarakatController::class, 'verificationCreate'])->name('masyarakat.verification');
         Route::get('/masyarakat/verification/{pemungut_id}', [MasyarakatController::class, 'verificationDetail'])->name('masyarakat.verification.detail');
         Route::post('/masyarakat/verification/', [MasyarakatController::class, 'changeStatusVerificationUser'])->name('masyarakat.verification.detail.store');
