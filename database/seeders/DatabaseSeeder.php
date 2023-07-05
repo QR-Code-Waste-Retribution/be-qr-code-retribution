@@ -24,15 +24,15 @@ class DatabaseSeeder extends Seeder
         // User::factory(300)->create();
         $this->call([
             UserSeeder::class,
-            CategorySeeder::class,
+            CategoryTobaSeeder::class,
         ]);
 
         $this->call([
             // UserCategorySeeder::class,
-            TestUserCategorySeeder::class,
-            TestSeeder::class,
-            TransactionInvoiceSeeder::class,
-            PemungutTransactionsSeeder::class,
+            // TestUserCategorySeeder::class,
+            // TestSeeder::class,
+            // TransactionInvoiceSeeder::class,
+            // PemungutTransactionsSeeder::class,
         ]);
 
     }

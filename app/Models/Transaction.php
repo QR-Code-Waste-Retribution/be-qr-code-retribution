@@ -353,23 +353,23 @@ class Transaction extends Model
             ]);
         }
 
-        if ($data['method']['payments'] == 'CHECKOUT') {
-            $order = $token['data']['response']['order'];
-            $payment = $token['data']['response']['payment'];
-            $uuid = $token['data']['response']['uuid'];
+        // if ($data['method']['payments'] == 'CHECKOUT') {
+        //     $order = $token['data']['response']['order'];
+        //     $payment = $token['data']['response']['payment'];
+        //     $uuid = $token['data']['response']['uuid'];
 
-            DokuCheckout::create([
-                'currency' => $order['currency'],
-                'session_id' => $order['session_id'],
-                'payment_method_types' => json_encode($payment['payment_method_types']),
-                'payment_due_date' => $payment['payment_due_date'],
-                'payment_token_id' => $payment['token_id'],
-                'payment_url' => $payment['url'],
-                'payment_expired_date' => $payment['expired_date'],
-                'uuid' => $uuid,
-                'masyarakat_transaction_id' => $transactions->id
-            ]);
-        }
+        //     DokuCheckout::create([
+        //         'currency' => $order['currency'],
+        //         'session_id' => $order['session_id'],
+        //         'payment_method_types' => json_encode($payment['payment_method_types']),
+        //         'payment_due_date' => $payment['payment_due_date'],
+        //         'payment_token_id' => $payment['token_id'],
+        //         'payment_url' => $payment['url'],
+        //         'payment_expired_date' => $payment['expired_date'],
+        //         'uuid' => $uuid,
+        //         'masyarakat_transaction_id' => $transactions->id
+        //     ]);
+        // }
 
         $token['data']['merchant.transaction_id'] = $transactions['id'];
 

@@ -17,7 +17,6 @@
                     style="width: 220px">
                     {!! QrCode::size(150)->generate($item->uuid) !!}
                     <p style="font-size: 16px" class="text-center fw-bold mt-2 mb-0">{{ $item->name }}</p>
-                    <p style="font-size: 12px" class="text-center fw-semibold fst-italic m-0">{{ $item->address }}</p>
                 </div>
             @endforeach
         </div>
