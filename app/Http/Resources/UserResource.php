@@ -30,10 +30,11 @@ class UserResource extends JsonResource
             'district' => new DistrictResource($this->district),
             'sub_district' => new SubDistrictResource($this->sub_district),
             'role_id' => $this->role_id,
-            'status' => $this->status,
+            'account_status' => $this->account_status,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'role' => new RoleResource($this->role),
+            'category' => CategoryResource::collection($this->category) ?? null,
         ];
     }
 }

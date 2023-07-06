@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PaymentNotification;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class DokuController extends Controller
 {
@@ -31,25 +32,34 @@ class DokuController extends Controller
 
                 $decodedBody = json_decode($notificationBody, true);
 
-                $transaction = Transaction::where("invoice_number", $decodedBody['order']['invoice_number'])->first();
+                $transaction = Transaction::where("invoice_number", $decodedBody['order']['invoice_number'])->with(['user:id,name,uuid'])->first();
 
                 if ($transaction) {
-                    PaymentNotification::create([
-                        'transaction_id' => $transaction->id,
-                        'acquirer' => $decodedBody['acquirer']['id'],
-                        'channel' => $decodedBody['channel']['id'],
-                        'amount' => $decodedBody['order']['amount'],
-                        'original_request_id' => $decodedBody['virtual_account_info']['virtual_account_number'],
-                        'date' => $decodedBody['transaction']['date'],
-                    ]);
+                    $response = Http::post(env('WEBSOCKET_URL') . ':' .  env('WEBSOCKET_PORT') . '/send-message/va', ['uuid' => $transaction->user->uuid, 'name' => $transaction->user->name]);
+                    $httpCode = $response->status();
+
+                    if ($httpCode == 200) {
+
+                        $transaction->invoice()->update(['status' => '1']);
+                        $transaction->status = 1;
+                        $transaction->save();
+
+                        PaymentNotification::create([
+                            'masyarakat_transaction_id' => $transaction->id,
+                            'acquirer' => $decodedBody['acquirer']['id'],
+                            'channel' => $decodedBody['channel']['id'],
+                            'status' => $decodedBody['transaction']['status'],
+                            'amount' => $decodedBody['order']['amount'],
+                            'original_request_id' => $decodedBody['virtual_account_info']['virtual_account_number'],
+                            'date' => $decodedBody['transaction']['date'],
+                        ]);
+                    }
+
+                    // return response('Websocket Not Working', 500)->header('Content-Type', 'text/plain');
                 } else {
                     return response('Not Found', 404)->header('Content-Type', 'text/plain');
                 }
-
-
                 return response('OK', 200)->header('Content-Type', 'text/plain');
-
-                // TODO: Do update the transaction status based on the `transaction.status`
             } else {
                 // TODO: Response with 400 errors for Invalid Signature
                 return response('Invalid Signature', 400)->header('Content-Type', 'text/plain');

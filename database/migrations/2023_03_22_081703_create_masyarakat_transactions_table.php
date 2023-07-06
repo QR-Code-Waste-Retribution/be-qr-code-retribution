@@ -13,10 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('transactions', function (Blueprint $table) {
+        Schema::create('masyarakat_transactions', function (Blueprint $table) {
             $table->id();
             $table->integer('price');
-            $table->string('status');
+            $table->string('status'); // [0 EXPIRED] || [1 PENDING] || [2 SUCCESS] || [3 CANCELLED]
+            $table->integer('verification_status')->default(0);
             $table->string('date');
             $table->enum('type', ["CASH", "NONCASH"]);
             $table->string('invoice_number')->unique();
@@ -25,12 +26,17 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('pemungut_id')->nullable();
             $table->unsignedBigInteger('sub_district_id')->nullable();
-            $table->unsignedBigInteger('category_id');
+            $table->unsignedBigInteger('pemungut_transaction_id')->nullable();
+
             $table->timestamps();
 
             $table->foreign('user_id')
                 ->references('id')
                 ->on('users');
+
+            $table->foreign('pemungut_transaction_id')
+                ->references('id')
+                ->on('pemungut_transactions');
 
             $table->foreign('pemungut_id')
                 ->references('id')
@@ -39,10 +45,6 @@ return new class extends Migration
             $table->foreign('sub_district_id')
                 ->references('id')
                 ->on('sub_districts');
-
-            $table->foreign('category_id')
-                ->references('id')
-                ->on('categories');
         });
     }
 

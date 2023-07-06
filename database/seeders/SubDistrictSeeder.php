@@ -16,26 +16,27 @@ class SubDistrictSeeder extends Seeder
     public function run()
     {
         $kecamatan_kab_toba = [
-            "Aek Nabara", "Balige", "Bonatua Lunasi", 
-            "Habinsaran", "Lumban Julu", "Porsea", 
-            "Siantar Narumonda", "Sigumpar", "Torgamba"
+            "Balige", "Tampahan", "Laguboti", "Habinsaran", "Borbor", "Nassau", 
+            "Silaen", "Sigumpar", "Porsea", "Pintu Pohan Meranti", "Siantar Narumonda", 
+            "Parmaksian", "Lumban Julu", "Uluan", "Ajibata", "Bonatua Lunasi", "TPA Pintu Bosi Laguboti", 
+            "Perumahan DL Sitorus"
         ];
         
-        $kecamatan_kab_simalungun = [
-            "Bandar", "Bandar Huluan", "Bandar Masilam", "Bosar Maligas", 
-            "Dolog Masagal", "Dolok Batunanggar", "Dolok Panribuan", "Dolok Pardamean", 
-            "Dolok Silau", "Girsang Sipangan Bolon", "Gunung Malela", "Gunung Maligas", 
-            "Haranggaol Horison", "Hatonduhan", "Huta Bayu Raja", "Jawa Maraja Bah Jambi", 
-            "Jorlang Hataran", "Panei", "Panombeian Panei", "Pematang Bandar", "Pematang Sidamanik", 
-            "Pematang Silima Huta", "Purba", "Raya", "Raya Kahean", "Siantar", "Sidamanik", 
-            "Silau Kahean", "Silimakuta", "Tanah Jawa", "Tapian Dolok", "Ujung Padang"
-        ];
+        // $kecamatan_kab_simalungun = [
+        //     "Siantar", "Gunung Malela", "Gunung Maligas", "Bandar", "Bosar Maligas", 
+        //     "Pematang Bandar", "Ujung Padang", "Bandar Masilam", "Dolok Batu Nanggar", 
+        //     "Tapian Dolok", "Bandar Huluan", "Tanah Jawa", "Hatonduhan", "Hutabayuraja", 
+        //     "Jawamaraja Bahjambi", "Girsang Sipangan Bolon", "Dolok Panribuan",
+        //     "Jorlang Hataran", "Sidamanik", "Pamatang Sidamanik", "Dolok Pardamean", 
+        //     "Silimakuta", "Pamatang Silimakuta", "Haranggaol Horison", "Dolok Silau", 
+        //     "Purba", "Raya", "Raya Kahean", "Silau Kahean", "Panei", "Panombeian Panei"
+        // ];
 
-        $kecamatan_kab_samosir = [
-            "Harian", "Nainggolan", "Onan Runggu", "Palipi", 
-            "Pangururan", "Ronggur Nihuta", "Sianjur Mulamula", 
-            "Simanindo", "Sitiotio"
-        ];
+        // $kecamatan_kab_samosir = [
+        //     "Harian", "Nainggolan", "Onan Runggu", "Palipi", 
+        //     "Pangururan", "Ronggur Nihuta", "Sianjur Mulamula", 
+        //     "Simanindo", "Sitio-tio"
+        // ];
 
 
         foreach ($kecamatan_kab_toba as $item) {
@@ -45,19 +46,19 @@ class SubDistrictSeeder extends Seeder
             ]);
         }
 
-        foreach ($kecamatan_kab_simalungun as $item) {
-            SubDistrict::create([
-                'name' => $item,
-                'district_id' => 2,
-            ]);
-        }
+        // foreach ($kecamatan_kab_simalungun as $item) {
+        //     SubDistrict::create([
+        //         'name' => $item,
+        //         'district_id' => 2,
+        //     ]);
+        // }
 
-        foreach ($kecamatan_kab_simalungun as $item) {
-            SubDistrict::create([
-                'name' => $item,
-                'district_id' => 3,
-            ]);
-        }
+        // foreach ($kecamatan_kab_samosir as $item) {
+        //     SubDistrict::create([
+        //         'name' => $item,
+        //         'district_id' => 3,
+        //     ]);
+        // }
 
 
         

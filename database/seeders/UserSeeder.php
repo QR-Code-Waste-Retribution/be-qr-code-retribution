@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class UserSeeder extends Seeder
 {
@@ -15,54 +15,75 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        $petugas = [
-            'uuid' => fake()->uuid(), 
-            'name' => 'Zico Andreas Aritonang',
-            'username' => 'petugas',
+        $users = config('users_masterdata')['users'];
+
+        foreach ($users['pemungut'] as $item) {
+            User::create([
+                'uuid' => fake()->uuid(),
+                'name' => $item['name'],
+                'username' => strtolower(implode('_', explode(' ', $item['name']))),
+                'password' => bcrypt('password'),
+                'nik' => time() + random_int(100000, 999999),
+                'gender' => $item['gender'],
+                'address' => $item['address'],
+                'phoneNumber' => $item['phoneNumber'],
+                'sub_district_id' => $item['sub_district_id'],
+                'district_id' => 1,
+                'role_id' => 2,
+                'account_status' => 1,
+                'remember_token' => strval(random_int(100000, 999999)),
+                'verification_status' => 1,
+            ]);
+        }
+
+        foreach ($users['masyarakat'] as $item) {
+            $username = strtolower(implode('_', explode(' ', $item['name'])));
+            if(!$find = User::where('username', $username)->first()){
+                $user = User::create([
+                    'uuid' => fake()->uuid(),
+                    'name' => $item['name'],
+                    'username' => $username,
+                    'password' => bcrypt('password'),
+                    'nik' => time() + random_int(100000, 999999),
+                    'gender' => $item['gender'],
+                    'address' => $item['address'],
+                    'phoneNumber' => $item['phoneNumber'],
+                    'sub_district_id' => $item['sub_district_id'],
+                    'district_id' => $item['district_id'],
+                    'role_id' => 1,
+                    'account_status' => 1,
+                    'remember_token' => strval(random_int(100000, 999999)),
+                    'verification_status' => 1,
+                ]);
+    
+                DB::table('users_categories')->insert([
+                    [
+                        'user_id' => $user->id, 
+                        'category_id' => $item['category_id'], 
+                        'sub_district_id' => $item['sub_district_id'], 
+                        'address' => isset($item['address']) ? $item['address'] : $item['address_uc'],
+                        'pemungut_id' => $item['pemungut_id']
+                    ],
+                ]);
+            }
+        }
+
+        $petugas_toba = [
+            'uuid' => fake()->uuid(),
+            'name' => 'Petugas Toba',
+            'username' => 'petugas_toba',
             'password' => bcrypt('password'),
             'nik' => '217356253165323',
             'gender' => 'Laki-Laki',
             'address' => fake()->address(),
             'phoneNumber' => fake()->phoneNumber(),
-            'sub_district_id' => 25,
-            'district_id' => 2,  
+            'sub_district_id' => 2,
+            'district_id' => 1,
             'role_id' => 3,
-            'status' => 1,
-            'remember_token' => Str::random(10),
+            'account_status' => 1,
+            'remember_token' => strval(random_int(100000, 999999)),
+            'verification_status' => 1,
         ];
-        $admin = [
-            'uuid' => fake()->uuid(), 
-            'name' => 'Pemungut A',
-            'username' => 'pemungut',
-            'password' => bcrypt('password'),
-            'nik' => '217356253165324',
-            'gender' => 'Laki-Laki',
-            'address' => fake()->address(),
-            'phoneNumber' => fake()->phoneNumber(),
-            'sub_district_id' => 25,
-            'district_id' => 2,  
-            'role_id' => 2,
-            'status' => 1,
-            'remember_token' => Str::random(10),
-        ];
-        $masyarakat = [
-            'uuid' => fake()->uuid(), 
-            'name' => 'Linux',
-            'username' => 'masyarakat',
-            'password' => bcrypt('password'),
-            'nik' => '217356253165325',
-            'gender' => 'Laki-Laki',
-            'address' => fake()->address(),
-            'phoneNumber' => fake()->phoneNumber(),
-            'sub_district_id' => 25,
-            'district_id' => 2,  
-            'role_id' => 1,
-            'status' => 1,
-            'remember_token' => Str::random(10),
-        ];
-
-        User::create($petugas);
-        User::create($admin);
-        User::create($masyarakat);
+        User::create($petugas_toba);
     }
 }

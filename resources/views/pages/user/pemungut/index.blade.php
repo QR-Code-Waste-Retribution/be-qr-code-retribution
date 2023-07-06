@@ -69,11 +69,11 @@
                                                     <input
                                                         class="form-check-input d-flex flex-column switch-activated statusCheckChecked"
                                                         type="checkbox" id="statusCheckChecked"
-                                                        @if ($item->status) checked @endif
+                                                        @if ($item->account_status) checked @endif
                                                         data-user-id="{{ $item->id }}">
                                                 </div>
                                                 <p class="fs-9 m-0" id="text-status-{{ $item->id }}">
-                                                    @if ($item->status)
+                                                    @if ($item->account_status)
                                                         Active
                                                     @else
                                                         Inactive

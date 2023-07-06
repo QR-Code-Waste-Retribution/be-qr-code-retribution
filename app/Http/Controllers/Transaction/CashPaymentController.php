@@ -6,10 +6,7 @@ use App\Export\PaymentExport;
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use App\Models\PemungutTransaction;
-use App\Models\User;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -26,7 +23,7 @@ class CashPaymentController extends Controller
 
     public function export()
     {
-        return Excel::download(new PaymentExport('CASH'), 'cash.xlsx');
+        return Excel::download(new PaymentExport('CASH'), 'PEMBAYARAN TUNAI.xlsx');
     }
     /**
      * Display a listing of the resource.
@@ -41,15 +38,14 @@ class CashPaymentController extends Controller
         $invoice_monthly = $this->invoice->totalAmountUnpaidAndPaidInvoiceMonthly();
 
         $pemungut_transactions = $this->pemungut_transactions->getAllTransaction($sub_district, $search);
-        // $targetIncome = $this->pemungut_transactions->getIncomeData();
 
-        // return $targetIncome;
         return view('pages.transaction.cash.cash-payment', compact('pemungut_transactions', 'invoice_monthly'));
     }
 
     public function show($id)
     {
         $cash = $this->pemungut_transactions->show($id);
+        // return $cash;
         return view('pages.transaction.cash.detail', compact('cash'));
     }
 

@@ -2,12 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\Category;
 use App\Models\Invoice;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class InvoiceSeeder extends Seeder
 {
@@ -18,23 +16,22 @@ class InvoiceSeeder extends Seeder
      */
     public function run()
     {
-        $users = User::with('category')->get();
+        $users = User::where('district_id', 1)
+            ->where('role_id', 1)
+            ->with(['category'])
+            ->get();
+
         foreach ($users as $user) {
             foreach ($user->category as $category) {
-                $invoice = Invoice::create([
-                    'category_id' => $category->id,
+                Invoice::create([
+                    'category_id' => $category->pivot->category_id,
                     'price' => $category->price,
                     'user_id' => $user->id,
                     'uuid_user' => $user->uuid,
+                    'masyarakat_transaction_id' => null,
                     'status' => 0,
                 ]);
-            }   
+            }
         }
     }
 }
-
-// $price = 0;
-// foreach ($user->category as $category) {
-//     $price += $category->price;
-// }   
-// $this->command->info(json_encode(number_format($price, 2), JSON_PRETTY_PRINT)); 

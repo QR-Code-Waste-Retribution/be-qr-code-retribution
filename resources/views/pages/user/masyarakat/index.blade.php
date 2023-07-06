@@ -25,7 +25,7 @@
                                 <button type="button" title="Search"><i class="bi bi-search"></i></button>
                             </div>
                         </div>
-                        
+
                         <x-sub-district-dropdown col="3" />
                     </div>
                     <div class="d-flex justify-content-end">
@@ -35,6 +35,11 @@
                 </form>
             </div>
             <hr>
+
+            <div class="col-12">
+                <a class="button-primary text-center my-2 px-4" href="{{ route('masyarakat.qrcode') }}"><i
+                        class="bi bi-plus-circle-fill"></i>&nbsp; Lihat Semua QR Code</a>
+            </div>
             <div class="col-12 mt-4">
                 <table class="table fs-7 table-hover">
                     <thead>
@@ -42,44 +47,20 @@
                             <th scope="col">#</th>
                             <th scope="col" class="w-50">Nama</th>
                             <th scope="col">Alamat</th>
-                            <th scope="col">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($masyarakat as $key => $item)
                             <tr>
                                 <th scope="row">{{ (request()->input('page', 1) - 1) * 10 + $loop->iteration }}</th>
-                                <td><span class="fw-semibold">{{ $item->name }}</span><br> {{ $item->phoneNumber }}
+                                <td>
+                                    <a href="{{ route('masyarakat.show', $item->id) }}">
+                                        <span class="fw-semibold">{{ $item->name }}</span>
+                                        <br>
+                                        {{ $item->phoneNumber }}
+                                    </a>
                                 </td>
                                 <td>Kec. {{ $item->sub_district->name }}</td>
-                                <td>
-                                    <div class="d-flex gap-2">
-                                        {{-- <button class="btn button btn-warning fs-7">Edit</button> --}}
-                                        <div class="d-flex flex-column align-items-center justify-content-center"
-                                            style="width: 60px;">
-                                            <div class="text-center">
-                                                <div class="form-check form-switch">
-                                                    <input
-                                                        class="form-check-input d-flex flex-column switch-activated statusCheckChecked"
-                                                        type="checkbox" id="statusCheckChecked"
-                                                        @if ($item->status) checked @endif
-                                                        data-user-id="{{ $item->id }}">
-                                                </div>
-                                                <p class="fs-9 m-0" id="text-status-{{ $item->id }}">
-                                                    @if ($item->status)
-                                                        Active
-                                                    @else
-                                                        Inactive
-                                                    @endif
-                                                </p>
-                                            </div>
-                                            <div class="spinner-border d-none" id="spinnder-border-{{ $item->id }}"
-                                                style="width: 1.5rem; height: 1.5rem;" role="status">
-                                                <span class="visually-hidden">Loading...</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
                             </tr>
                         @endforeach
                     </tbody>

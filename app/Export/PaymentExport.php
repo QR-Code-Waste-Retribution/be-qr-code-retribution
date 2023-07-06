@@ -13,46 +13,70 @@ class PaymentExport implements FromCollection, WithHeadings, WithMapping
     public $type;
 
 
-    public function __construct($type) {
-        $this->type = $type;
+    public function __construct($type)
+    {
+        $this->type = $type; // CASH | NONCASH
     }
 
     public function collection()
     {
-        return Transaction::select('id', 'reference_number', 'transaction_number', 'user_id', 'pemungut_id', 'sub_district_id', 'price', 'category_id', 'status', 'created_at')->where('type', $this->type)->get();
+        return Transaction::select(
+            'id',
+            'reference_number',
+            'transaction_number',
+            'user_id',
+            'pemungut_id',
+            'sub_district_id',
+            'price',
+            'status',
+            'created_at'
+        )->where('type', $this->type)
+            ->whereIn('sub_district_id', function ($query) {
+                $query->select('id')->from('sub_districts')->where('district_id', auth()->user()->district_id);
+            })
+            ->get();
     }
 
     public function headings(): array
     {
-        return [
+        $headings = [
             '#',
             'Nomor Referensi',
             'Nomor Transaksi',
             'Nama Customer',
             'NIK Customer',
-            'Nama Pemungut',
             'Kecamatan',
             'Total Harga',
-            'Kategori',
             'Status',
             'Tanggal Pembayaran',
         ];
+
+        if ($this->type == "CASH") array_splice(
+            $headings,
+            5,
+            0,
+            'Nama Pemungut'
+        );
+
+        return $headings;
     }
 
     public function map($item): array
     {
-        return [
+        $values = [
             ++$this->numRows,
             $item->reference_number,
             $item->transaction_number,
             $item->user->name,
             $item->user->nik,
-            $item->pemungut->name,
-            $item->sub_district->name,
+            "Kec. " . $item->sub_district->name,
             $item->price,
-            $item->category->name,
             $item->status ? 'Lunas' : 'Belum Lunas',
             $item->created_at,
         ];
+
+        if ($this->type == "CASH") array_splice($values, 5, 0, $item->pemungut->name);
+
+        return $values;
     }
 }

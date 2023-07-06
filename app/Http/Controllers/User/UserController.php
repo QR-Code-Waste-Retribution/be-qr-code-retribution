@@ -1,29 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\User;
 
-use App\Models\Invoice;
-use App\Models\PemungutTransaction;
-use App\Models\Transaction;
+use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
-class HomeController extends Controller
+class UserController extends Controller
 {
-    public $transactions;
-    public $users;
-    public $invoice;
-    public $pemungut_transaction;
-
-
-    public function __construct()
-    {
-        $this->transactions = new Transaction();
-        $this->pemungut_transaction = new PemungutTransaction();
-        $this->users = new User();
-        $this->invoice = new Invoice();
-    }
     /**
      * Display a listing of the resource.
      *
@@ -31,20 +15,8 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $deposit = $this->pemungut_transaction->getDepositPemungut();
-        $income = $this->transactions->sumTransactionByType();
-        $users = $this->users->getAllCountOfUsersRole();
-        $graph = $this->transactions->getIncomeData();
-        $income_tambahan = $this->transactions->getIncomeTambahanDataByDistrictId();
-        $invoice_monthly = $this->invoice->totalAmountUnpaidAndPaidInvoiceMonthly();
-
-        return view('pages.home', compact('deposit', 'users', 'graph', 'invoice_monthly', 'income_tambahan', 'income'));
-    }
-
-    public function income()
-    {
-        $transactions = $this->transactions->getAllTransaction();
-        return view('pages.dashboard.income', compact('transactions'));
+        $user = User::with('role')->get();
+        return view('pages.user.index', compact('user'));
     }
 
     /**
@@ -55,6 +27,26 @@ class HomeController extends Controller
     public function create()
     {
         //
+    }
+
+    /**
+     * Display a listing of Masyarakat data.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getAllMasyarakat()
+    {
+        return view('pages.user.masyarakat.index');
+    }
+
+    /**
+     * Display a listing of Masyarakat data.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getAllPemungut()
+    {
+        return view('pages.user.pemungut.index');
     }
 
     /**

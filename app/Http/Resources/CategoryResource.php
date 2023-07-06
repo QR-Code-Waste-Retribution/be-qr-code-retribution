@@ -20,7 +20,7 @@ class CategoryResource extends JsonResource
             "description" => $this->description,
             "price" => $this->price,
             "status" => $this->status ? 'active' : 'non-active',
-            "type" => "MONTH",
+            "type" => $this->type,
             "parent_id" => 43,
             "district" => new DistrictResource($this->district),
             "created_at" => [
