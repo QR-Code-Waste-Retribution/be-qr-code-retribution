@@ -36,8 +36,8 @@ class PemungutTransaction extends Model
             ->whereRaw("DATE_FORMAT(updated_at, '%Y-%m') = '$month'")
             ->union(
                 self::where('pemungut_id', $pemungut_id)->with('masyarakat_transactions')
-                ->whereRaw("DATE_FORMAT(updated_at, '%Y-%m') < '$month'")
-                ->where('status', 0)
+                    ->whereRaw("DATE_FORMAT(updated_at, '%Y-%m') < '$month'")
+                    ->where('status', 0)
             )
             ->orderBy('created_at', 'DESC')
             ->get();
@@ -45,7 +45,7 @@ class PemungutTransaction extends Model
         $date_transactions = $pemungut_transactions->pluck('date')->unique()->sort(function ($a, $b) {
             $monthA = Carbon::createFromFormat('F Y', $a)->format('m');
             $monthB = Carbon::createFromFormat('F Y', $b)->format('m');
-        
+
             return $monthA <=> $monthB;
         })->values();
 
@@ -95,15 +95,25 @@ class PemungutTransaction extends Model
             ->groupBy('pemungut_transactions.status')
             ->get();
 
+        $response = [
+            'already_deposited' => [
+                'total' => 0,
+                'date' =>  null,
+            ],
+            'not_yet_deposited' => [
+                'total' => 0,
+                'date' =>  null,
+            ],
+        ];
 
-        return collect($deposit)->mapWithKeys(function ($item) {
-            return [
-                $item['status_deposit'] => [
-                    'total' => $item['total_amount'],
-                    'date' =>  date('d F Y', strtotime($item['updated_at']))
-                ]
+        foreach ($deposit as $item) {
+            $response[$item['status_deposit']] = [
+                'total' => $item['total_amount'],
+                'date' =>  date('d F Y', strtotime($item['updated_at']))
             ];
-        })->toArray();
+        }
+
+        return $response;
     }
 
     public function getDepositMonthlyDataByDistrictId()

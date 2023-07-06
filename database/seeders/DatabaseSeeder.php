@@ -19,12 +19,13 @@ class DatabaseSeeder extends Seeder
             DistrictSeeder::class,
             SubDistrictSeeder::class,
             RolesSeeder::class,
+            CategoryTobaSeeder::class,
         ]);
 
         // User::factory(300)->create();
         $this->call([
             UserSeeder::class,
-            CategoryTobaSeeder::class,
+            InvoiceSeeder::class,
         ]);
 
         $this->call([

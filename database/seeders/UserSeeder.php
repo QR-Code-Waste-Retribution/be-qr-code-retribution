@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class UserSeeder extends Seeder
 {
@@ -15,7 +16,7 @@ class UserSeeder extends Seeder
     public function run()
     {
         $users = config('users_masterdata')['users'];
-        
+
         foreach ($users['pemungut'] as $item) {
             User::create([
                 'uuid' => fake()->uuid(),
@@ -34,24 +35,37 @@ class UserSeeder extends Seeder
                 'verification_status' => 1,
             ]);
         }
-        
+
         foreach ($users['masyarakat'] as $item) {
-            User::create([
-                'uuid' => fake()->uuid(),
-                'name' => $item['name'],
-                'username' => $item['username'],
-                'password' => bcrypt('password'),
-                'nik' => time() + random_int(100000, 999999),
-                'gender' => $item['gender'],
-                'address' => $item['address'],
-                'phoneNumber' => $item['phoneNumber'],
-                'sub_district_id' => $item['sub_district_id'],
-                'district_id' => $item['district_id'],
-                'role_id' => 1,
-                'account_status' => 1,
-                'remember_token' => strval(random_int(100000, 999999)),
-                'verification_status' => 1,
-            ]);
+            $username = strtolower(implode('_', explode(' ', $item['name'])));
+            if(!$find = User::where('username', $username)->first()){
+                $user = User::create([
+                    'uuid' => fake()->uuid(),
+                    'name' => $item['name'],
+                    'username' => $username,
+                    'password' => bcrypt('password'),
+                    'nik' => time() + random_int(100000, 999999),
+                    'gender' => $item['gender'],
+                    'address' => $item['address'],
+                    'phoneNumber' => $item['phoneNumber'],
+                    'sub_district_id' => $item['sub_district_id'],
+                    'district_id' => $item['district_id'],
+                    'role_id' => 1,
+                    'account_status' => 1,
+                    'remember_token' => strval(random_int(100000, 999999)),
+                    'verification_status' => 1,
+                ]);
+    
+                DB::table('users_categories')->insert([
+                    [
+                        'user_id' => $user->id, 
+                        'category_id' => $item['category_id'], 
+                        'sub_district_id' => $item['sub_district_id'], 
+                        'address' => isset($item['address']) ? $item['address'] : $item['address_uc'],
+                        'pemungut_id' => $item['pemungut_id']
+                    ],
+                ]);
+            }
         }
 
         $petugas_toba = [

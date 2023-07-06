@@ -63,7 +63,7 @@
                                             <h6 class="fs-4">Rp.
                                                 {{ number_format($invoice_monthly['unpaid']['total'] ?? 0, 2) }} -,</h6>
                                             <span class="text-success small pt-1 fw-bold"></span><span
-                                                class="text-muted small pt-2 ps-1">{{ $invoice_monthly['unpaid']['date'] ?? "-" }}</span>
+                                                class="text-muted small pt-2 ps-1">{{ $invoice_monthly['unpaid']['date'] ?? '-' }}</span>
 
                                         </div>
                                     </div>
@@ -92,11 +92,12 @@
                                         </div>
                                         <div class="ps-3">
                                             <h6 class="fs-4">Rp.
-                                                {{ number_format($income_tambahan->total_amount ?? 0, 2) }} -,</h6>
+                                                {{ number_format($income_tambahan['already_deposited']['total'] ?? 0, 2) }}
+                                                -,</h6>
                                             <span class="text-success small pt-1 fw-bold"></span><span
                                                 class="text-muted small pt-2 ps-1">
-                                                @if (isset($income_tambahan->total_amount))
-                                                    {{ date('d F Y', strtotime($income_tambahan->updated_at)) }}
+                                                @if (isset($income_tambahan['already_deposited']['total']))
+                                                    {{ date('d F Y', strtotime($income_tambahan['already_deposited']['date'])) }}
                                                 @endif
                                             </span>
 
@@ -151,7 +152,8 @@
                                             <span class="text-success small pt-1 fw-bold"></span> <span
                                                 class="text-muted small pt-2">Sudah Disetor</span>
                                             <h6 class="fs-5">Rp.
-                                                {{ number_format($deposit['already_deposited']['total'] ?? 0, 2) }} -,</h6>
+                                                {{ number_format($income_tambahan['already_deposited']['total'] ?? (0 + $deposit['already_deposited']['total'] ?? 0), 2) }}
+                                                -,</h6>
                                             <span class="text-success small pt-1 fw-bold"></span> <span
                                                 class="text-muted small pt-2">21
                                                 Februari 2023</span>
@@ -167,7 +169,7 @@
                                             <span class="text-success small pt-1 fw-bold"></span> <span
                                                 class="text-muted small pt-2">Belum Disetor</span>
                                             <h6 class="fs-5">Rp.
-                                                {{ number_format($deposit['not_yet_deposited']['total'] ?? 0, 2) }} -,</h6>
+                                                {{ number_format($income_tambahan['not_yet_deposited']['total'] ?? 0 + $deposit['not_yet_deposited']['total'] ?? 0, 2) }} -,</h6>
                                             <span class="text-success small pt-1 fw-bold"></span> <span
                                                 class="text-muted small pt-2">21
                                                 Februari 2023</span>

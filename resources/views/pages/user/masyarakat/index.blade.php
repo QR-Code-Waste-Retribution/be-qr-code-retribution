@@ -25,7 +25,7 @@
                                 <button type="button" title="Search"><i class="bi bi-search"></i></button>
                             </div>
                         </div>
-                        
+
                         <x-sub-district-dropdown col="3" />
                     </div>
                     <div class="d-flex justify-content-end">
@@ -35,6 +35,11 @@
                 </form>
             </div>
             <hr>
+
+            <div class="col-12">
+                <a class="button-primary text-center my-2 px-4" href="{{ route('masyarakat.qrcode') }}"><i
+                        class="bi bi-plus-circle-fill"></i>&nbsp; Lihat Semua QR Code</a>
+            </div>
             <div class="col-12 mt-4">
                 <table class="table fs-7 table-hover">
                     <thead>
@@ -51,7 +56,7 @@
                                 <td>
                                     <a href="{{ route('masyarakat.show', $item->id) }}">
                                         <span class="fw-semibold">{{ $item->name }}</span>
-                                        <br> 
+                                        <br>
                                         {{ $item->phoneNumber }}
                                     </a>
                                 </td>

@@ -519,8 +519,8 @@ class Transaction extends Model
                     ->where('role_id', 1)
                     ->where('district_id', auth()->user()->district_id);
             })
-            ->whereRaw('MONTH(date) = MONTH(CURRENT_DATE())')
-            ->groupBy('type', 'date')
+            ->whereRaw('MONTH(created_at) = MONTH(CURRENT_DATE())')
+            ->groupBy('type', 'created_at')
             ->get();
 
         $income = collect($transactions)->map(function ($item) {
