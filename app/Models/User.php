@@ -153,7 +153,7 @@ class User extends Authenticatable
                     ->where('pemungut_id', $pemungut_id);
             })
             ->withCount(['category'])
-            ->get();
+            ->paginate(10);
     }
 
     public function registerUser($validator)
