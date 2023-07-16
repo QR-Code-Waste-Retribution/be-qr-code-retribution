@@ -31,6 +31,7 @@ class DokuGenerateToken
         $this->method = $method;
         $this->uuid = $uuid;
         $this->dokuMode = env('DOKU_MODE');
+        // die($this->dokuMode);
         $this->config = config('doku');
     }
 

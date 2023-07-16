@@ -7,6 +7,7 @@ use App\Http\Controllers\Report\ReportController;
 
 use App\Http\Controllers\Transaction\CashPaymentController;
 use App\Http\Controllers\Transaction\NonCashPaymentController;
+use App\Http\Controllers\Transaction\NonCashPaymentWaitingController;
 
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\MasyarakatController;
@@ -69,6 +70,10 @@ Route::middleware(['auth', 'role:petugas_kabupaten'])->group(function () {
     Route::get('transaction-noncash/export', [NonCashPaymentController::class, 'export'])->name('transaction-noncash.export');
     Route::get('transaction-noncash/{sub_district_id}', [NonCashPaymentController::class, 'showNonCashTransactionBySubDistrictId'])->name('transaction-noncash.sub_district_id');
     Route::resource('transaction-noncash', NonCashPaymentController::class)->only(['index']);
+    Route::resource('transaction-noncash-waiting/{payment_via}/payment', NonCashPaymentWaitingController::class);
+    Route::post('transaction-noncash-waiting/{payment_via}/payment/confirmation/selected', [NonCashPaymentWaitingController::class, 'confirmation_selected']);
+    
+
 
     // Reports 
     Route::resource('reports',  ReportController::class);

@@ -573,4 +573,22 @@ class Transaction extends Model
             ->where(DB::raw('MONTH(masyarakat_transactions.created_at)'), '=', DB::raw('MONTH(CURRENT_DATE())'))
             ->get();
     }
+    
+    public function transactionVirtualAccount()
+    {
+        return $this->with(['directApi'])
+            ->whereHas('directApi')
+            ->where('status', 1)
+            ->where('verification_status', 0)
+            ->get();
+    }
+
+    public function transactionQRIS()
+    {
+        return $this->with(['checkout'])
+            ->whereHas('checkout')
+            ->where('status', 0)
+            ->where('verification_status', 0)
+            ->get();
+    }
 }

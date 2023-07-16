@@ -12,6 +12,9 @@
         <div class="row">
             <div class="col-8 d-flex justify-content-start align-items-start flex-column">
                 <h1>@yield('page_title')</h1>
+                @if ($transaction_page_title ?? false)
+                    <p class="mt-1 fs-2 fw-semibold text-success">@yield('transaction_page_title')</p>
+                @endif
                 @if ($page_subtitle ?? false)
                     <p class="mt-1 fs-7">@yield('page_subtitle')</p>
                 @endif

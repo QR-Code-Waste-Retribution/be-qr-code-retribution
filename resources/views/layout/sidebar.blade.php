@@ -258,16 +258,46 @@
             </a>
             <ul id="components-nav-transaction" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                 <li>
-                    <a href="{{ route('transaction-cash.index') }}">
-                        <i class="bi bi-circle"></i><span>Pembayaran Tunai</span>
+                    <a class="nav-link collapsed" data-bs-target="#components-nav-non-confirmation" data-bs-toggle="collapse"
+                        href="#">
+                        <i class="bi bi-menu-button-wide"></i><span>Menunggu konfirmasi</span><i
+                            class="bi bi-chevron-down ms-auto"></i>
                     </a>
+                    <ul id="components-nav-non-confirmation" class="nav-content collapse ">
+                        <li>
+                            <a href="{{ route('transaction-cash.index') }}">
+                                <i class="bi bi-circle"></i><span>Pembayaran Tunai</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="transaction-noncash-waiting/{{$payment_via = 'virtual_account'}}/payment">
+                                <i class="bi bi-circle"></i><span>Pembayaran Non-Tunai</span>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
+
                 <li>
-                    <a href="{{ route('transaction-noncash.index') }}">
-                        <i class="bi bi-circle"></i><span>Pembayaran Non-Tunai</span>
+                    <a class="nav-link collapsed" data-bs-target="#components-nav-accepted" data-bs-toggle="collapse"
+                        href="#">
+                        <i class="bi bi-menu-button-wide"></i><span>Sudah diterima</span><i
+                            class="bi bi-chevron-down ms-auto"></i>
                     </a>
+                    <ul id="components-nav-accepted" class="nav-content collapse ">
+                        <li>
+                            <a href="{{ route('transaction-cash.index') }}">
+                                <i class="bi bi-circle"></i><span>Pembayaran Tunai</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('transaction-noncash.index') }}">
+                                <i class="bi bi-circle"></i><span>Pembayaran Non-Tunai</span>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
             </ul>
+
         </li>
         <li class="nav-item">
             <a class="nav-link collapsed" href="{{ route('category.index') }}">
