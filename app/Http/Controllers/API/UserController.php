@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -105,8 +106,8 @@ class UserController extends Controller
     public function getAllUserBySubDistrict($pemungut_id)
     {
         try {
-            $users = UserResource::collection($this->user->allUserBySubDistrict($pemungut_id));
-            return $this->successResponse($users, "Successfully to get all users");
+            $users = new UserCollection($this->user->allUserBySubDistrict($pemungut_id));
+            return $this->successResponse($users->response()->getData(), "Successfully to get all users");
         } catch (\Throwable $th) {
             return $this->errorResponse([], $th->getMessage(), 500);
         }
