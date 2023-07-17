@@ -77,15 +77,27 @@ class UserController extends Controller
         return $this->successResponse($user, 'Berhasil mengubah password anda', 200);
     }
 
+    public function getDetailMasyarakat($id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return $this->errorResponse([], "User tidak ditemukan", 401);
+        }
+
+        $user = $user->where('id', $id)->first();
+
+        return $this->successResponse(new UserResource($user), 'Berhasil mengambil data', 200);
+
+    }
+
     public function editMasyarakatProfile(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'username' => 'required',
             'nik' => 'required',
             'phoneNumber' => 'required',
             'category_id' => 'required',
-            'sub_district_id' => 'required',
             'address' => 'required',
         ], [
             'required' => 'Input :attribute tidak boleh kosong',

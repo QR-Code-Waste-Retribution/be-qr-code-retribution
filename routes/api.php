@@ -29,6 +29,7 @@ Route::name('api.')->group(function () {
     // User
     
     Route::prefix('user')->group(function () {
+        Route::get('/{user_id}', [UserController::class, 'getDetailMasyarakat']);
         Route::post('/forget-password', [AuthController::class, 'forgetPassword']);
         Route::put('/status/change', [MasyarakatController::class, 'changeStatusUser']);
         Route::put('/change/{id}/password', [UserController::class, 'changePassword']);

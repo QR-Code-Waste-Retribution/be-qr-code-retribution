@@ -61,7 +61,7 @@ class AuthController extends Controller
         "district_id" => "required",
         "sub_district_id" => "required",
         "category_id" => "required",
-        "address" => "required",
+      "address" => "required",
         "pemungut_id" => "required",
       ], [
         'required' => 'Input :attribute tidak boleh kosong',
