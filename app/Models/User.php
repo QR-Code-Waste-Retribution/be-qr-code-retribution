@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use App\Http\Resources\UserResource;
+use App\Utils\SendMessageToEmail;
 use Exception;
+use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -244,10 +246,29 @@ class User extends Authenticatable
 
         if (!$user = User::where('email', $input['email'])->first()) {
             throw new Exception("Email yang anda masukkan tidak ada", 404);
-        } 
+        }
 
         $user->remember_token = strval(random_int(100000, 999999));
         $user->save();
 
+        SendMessageToEmail::sendToUser('email.index', $input['email'], [
+            'message' => 'Harap masukkan kode ini dalam waktu [waktu] menit untuk menyelesaikan proses verifikasi.',
+            'subject' => 'Kode OTP untuk Lupa Password SIAPAIAS',
+            'data' => [
+                'token' => $user->remember_token,
+            ],
+        ]);
+    }
+
+    public function checkOTP($validator){
+        $input = $validator->validated();
+
+        if (!$user = User::where('email', $input['email'])->first()) {
+            throw new Exception("Email yang anda masukkan tidak ada", 404);
+        }
+
+        if(!$check = $user->remember_token == $input['otp_code']){
+            throw new Exception("Kode OTP yang anda masukkan tidak sesuai", 400);
+        }
     }
 }

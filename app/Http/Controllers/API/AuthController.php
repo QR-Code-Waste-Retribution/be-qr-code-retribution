@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
+use App\Http\Utils\SendMessageToEmail;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ class AuthController extends Controller
 
   public function __construct()
   {
-    $this->middleware('auth:api', ['except' => ['login', 'register', 'forgetPassword']]);
+    $this->middleware('auth:api', ['except' => ['login', 'register', 'forgetPassword', 'checkOTP']]);
     $this->user = new User();
   }
 
@@ -61,7 +62,7 @@ class AuthController extends Controller
         "district_id" => "required",
         "sub_district_id" => "required",
         "category_id" => "required",
-      "address" => "required",
+        "address" => "required",
         "pemungut_id" => "required",
       ], [
         'required' => 'Input :attribute tidak boleh kosong',
@@ -98,7 +99,7 @@ class AuthController extends Controller
 
   public function forgetPassword(Request $request)
   {
-    try { 
+    try {
       $validator = Validator::make($request->all(), [
         "email" => "required",
       ], [
@@ -112,6 +113,28 @@ class AuthController extends Controller
       $this->user->forgetPassword($validator);
 
       return $this->successResponse([], 'Berhasil mengirim kode otp');
+    } catch (\Throwable $th) {
+      return $this->errorResponse([], $th->getMessage(), $th->getCode() ?? 500);
+    }
+  }
+
+  public function checkOTP(Request $request)
+  {
+    try {
+      $validator = Validator::make($request->all(), [
+        "email" => "required",
+        "otp_code" => "required",
+      ], [
+        'required' => ':attribute tidak boleh kosong',
+      ]);
+
+      if ($validator->fails()) {
+        return $this->errorResponse($validator->errors(), 'Input tidak boleh ada yang kosong', 400);
+      }
+
+      $this->user->checkOTP($validator);
+
+      return $this->successResponse([], 'OTP yang anda masukkan sudah sesuai');
     } catch (\Throwable $th) {
       return $this->errorResponse([], $th->getMessage(), $th->getCode() ?? 500);
     }

@@ -50,14 +50,14 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'old_password' => 'required',
-            'password' => 'required|confirmed', // attr: password_confirmation
+            'password' => 'required|confirmed|min:8', // attr: password_confirmation
         ], [
             'required' => 'Input :attribute tidak boleh kosong',
             'confirmed' => 'Input :attribute harus sama',
         ]);
 
         if ($validator->fails()) {
-            return $this->errorResponse($validator->errors(), 'Input tidak boleh ada yang kosong', 422);
+            return $this->errorResponse($validator->errors(), 'Input harus valid', 422);
         }
 
         $user = User::find($id);
