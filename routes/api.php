@@ -29,10 +29,12 @@ Route::name('api.')->group(function () {
     // User
     
     Route::prefix('user')->group(function () {
-        Route::post('/otp/checks', [AuthController::class, 'checkOTP'])->name('user.check.otp');
+        Route::post('/otp/check', [AuthController::class, 'checkOTP'])->name('user.check.otp');
         Route::post('/forget-password', [AuthController::class, 'forgetPassword']);
+        Route::put('/forget-password/change', [AuthController::class, 'changePassword']);
 
         Route::get('/{user_id}', [UserController::class, 'getDetailMasyarakat']);
+        Route::put('/edit/{user_id}', [UserController::class, 'editMasyarakatProfile']);
         Route::put('/status/change', [MasyarakatController::class, 'changeStatusUser']);
         
         Route::put('/change/{id}/password', [UserController::class, 'changePassword']);

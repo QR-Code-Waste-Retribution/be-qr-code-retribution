@@ -88,30 +88,30 @@ class UserController extends Controller
         $user = $user->where('id', $id)->first();
 
         return $this->successResponse(new UserResource($user), 'Berhasil mengambil data', 200);
-
     }
 
     public function editMasyarakatProfile(Request $request, $id)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'nik' => 'required',
-            'phoneNumber' => 'required',
-            'category_id' => 'required',
-            'address' => 'required',
-        ], [
-            'required' => 'Input :attribute tidak boleh kosong',
-            'confirmed' => 'Input :attribute harus sama',
-        ]);
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required',
+                'nik' => 'required',
+                'phoneNumber' => 'required',
+                'categories' => 'required|array',
+            ], [
+                'required' => 'Input :attribute tidak boleh kosong',
+                'confirmed' => 'Input :attribute harus sama',
+            ]);
 
-        if ($validator->fails()) {
-            return $this->errorResponse($validator->errors(), 'Input tidak boleh ada yang kosong', 422);
-        }
+            if ($validator->fails()) {
+                return $this->errorResponse($validator->errors(), 'Input tidak boleh ada yang kosong', 422);
+            }
 
-        $user = User::find($id);
+            $user = $this->user->updateMasyarakatData($validator, $id);
 
-        if (!$user) {
-            return $this->errorResponse([], "User tidak ditemukan", 401);
+            return $this->successResponse($user, 'Berhasil mengubah data', 200);
+        } catch (\Throwable $err) {
+            return $this->errorResponse('', $err->getMessage(), 401);
         }
     }
 
