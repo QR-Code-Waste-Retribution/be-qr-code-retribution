@@ -84,7 +84,15 @@
                                     <input type="checkbox" class="form-check select-items" onclick="check_item(event)" value="{{$item->id}}">
                                 </td>
                                 <td data-bs-toggle="modal" data-bs-target="#modal_detail_{{$item->id}}"><a class="fw-semibold link-dark" href="#"> {{$item->pemungut->name}} </a></td>
-                                <td>{{$item->category}}</td>
+                                <td>
+                                    @if ($item->invoice)
+                                        @foreach ($item->invoice as $invoice)
+                                            @if ($invoice)
+                                                {{$invoice->category->first()->name}}
+                                            @endif
+                                        @endforeach
+                                    @endif
+                                </td>
                                 <td>{{$item->user->name}}</td>
                                 <td>{{'Rp '.number_format($item->price, 0)}}</td>
                                 <td>
@@ -130,7 +138,7 @@
                                                 :
                                             </div>
                                             <div class="col-md-7">
-                                                Lorem ipsum dolor sit amet.
+                                                {{$item->user->name}}
                                             </div>
                                         </div>
                                         <div class="row py-1 text-center">
@@ -141,7 +149,13 @@
                                                 :
                                             </div>
                                             <div class="col-md-7">
-                                               Lorem ipsum dolor sit amet.
+                                                @if ($item->invoice)
+                                                @foreach ($item->invoice as $invoice)
+                                                    @if ($invoice)
+                                                        {{$invoice->category->first()->name}}
+                                                    @endif
+                                                @endforeach
+                                            @endif
                                             </div>
                                         </div>
                                         <div class="row py-1 text-center">
@@ -174,7 +188,7 @@
                                                 :
                                             </div>
                                             <div class="col-md-7">
-                                                {{$item->user->name}}
+                                                {{$item->pemungut->name}}
                                             </div>
                                         </div>
                                         <div class="row py-1 text-center">

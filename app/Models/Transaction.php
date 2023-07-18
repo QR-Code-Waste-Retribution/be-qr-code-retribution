@@ -577,6 +577,7 @@ class Transaction extends Model
     public function transactionVirtualAccount()
     {
         return $this->with(['directApi'])
+            ->with(['invoice.category'])
             ->whereHas('directApi')
             ->where('status', 1)
             ->where('verification_status', 0)
@@ -586,6 +587,7 @@ class Transaction extends Model
     public function transactionQRIS()
     {
         return $this->with(['checkout'])
+            ->with(['invoice.category'])
             ->whereHas('checkout')
             ->where('status', 0)
             ->where('verification_status', 0)
