@@ -14,7 +14,7 @@ class CategoryResource extends JsonResource
      */
     public function toArray($request)
     {
-        return [
+        $data = [
             "id" => $this->id,
             "name" => $this->name,
             "description" => $this->description,
@@ -32,5 +32,10 @@ class CategoryResource extends JsonResource
                 'formated_date' => date('d F Y', strtotime($this->updated_at)),
             ]
         ];
+
+        if(isset($this->pivot)){
+            $data['address'] = $this->pivot->address;
+        }
+        return $data;
     }
 }

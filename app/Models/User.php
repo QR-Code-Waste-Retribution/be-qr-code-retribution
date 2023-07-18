@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use App\Http\Resources\UserResource;
+use App\Utils\SendMessageToEmail;
 use Exception;
+use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -181,9 +183,9 @@ class User extends Authenticatable
 
         $user = User::find($stored_user->id);
 
-        $category = Category::select("id")
-            ->where($input['category_id'])
-            ->get();
+        $category = Category::select("id", "price")
+            ->where('id', $input['category_id'])
+            ->first();
 
         Invoice::create([
             'uuid_user' => $user->uuid,
@@ -244,10 +246,65 @@ class User extends Authenticatable
 
         if (!$user = User::where('email', $input['email'])->first()) {
             throw new Exception("Email yang anda masukkan tidak ada", 404);
-        } 
+        }
 
         $user->remember_token = strval(random_int(100000, 999999));
         $user->save();
 
+        SendMessageToEmail::sendToUser('email.index', $input['email'], [
+            'message' => 'Harap masukkan kode ini dalam waktu [waktu] menit untuk menyelesaikan proses verifikasi.',
+            'subject' => 'Kode OTP untuk Lupa Password SIAPAIAS',
+            'data' => [
+                'token' => $user->remember_token,
+            ],
+        ]);
+    }
+
+    public function checkOTP($validator)
+    {
+        $input = $validator->validated();
+
+        if (!$user = User::where('email', $input['email'])->first()) {
+            throw new Exception("Email yang anda masukkan tidak ada", 404);
+        }
+
+        if (!$check = $user->remember_token == $input['otp_code']) {
+            throw new Exception("Kode OTP yang anda masukkan tidak sesuai", 400);
+        }
+    }
+
+    public function updateMasyarakatData($validator, $id)
+    {
+        $input = $validator->validated();
+
+        $user = User::find($id);
+
+        if (!$user) {
+            throw new Exception("User tidak ditemukan", 401);
+        }
+
+        $user->name = $input['name'];
+        $user->phone_number = $input['phoneNumber'];
+        $user->nik = $input['nik'];
+
+        // $user->save();
+
+        $filterCategories = collect($input['categories'])->filter(function ($item) use ($user) {
+            return !collect($user->category)->pluck('id')->contains($item['id']);
+        })->values()->all();
+
+        $arrayCategories = array();
+
+        foreach ($filterCategories as $item) {
+            array_push($arrayCategories, [
+                'user_id' =>  $user->id,
+                'category_id' => $item['id'],
+                'sub_district_id' => $user->sub_district_id,
+                'pemungut_id' => $input['pemungut_id'],
+                'address' => $input['address'],
+            ]);
+        }
+
+        UserCategories::insert($arrayCategories);
     }
 }

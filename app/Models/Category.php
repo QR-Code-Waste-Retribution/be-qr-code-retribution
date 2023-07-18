@@ -39,9 +39,9 @@ class Category extends Model
     public function getAllByDistrict($district_id)
     {
         return $this
-            ->all()
             ->where('district_id', $district_id)
-            ->whereNotNull('parent_id');
+            ->whereNull('parent_id')
+            ->get();
     }
 
     public function allAddtionalByDistrictId($district_id)
