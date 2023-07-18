@@ -91,12 +91,12 @@ class MasyarakatController extends Controller
     {
         try {
             $user = User::find($request->user_id);
-            $user->status = $user->status == 1 ? 0 : 1;
+            $user->account_status = $user->account_status == 1 ? 0 : 1;
             $user->save();
 
             return $this->successResponse($user, 'Berhasil mengubah status ' . $user->name);
         } catch (Exception $err) {
-            return $this->errorResponse([], 'Something went wrong');
+            return $this->errorResponse($err->getMessage(), 'Something went wrong', 500);
         }
     }
 

@@ -4,10 +4,12 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
+use App\Http\Utils\SendMessageToEmail;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 
@@ -17,7 +19,7 @@ class AuthController extends Controller
 
   public function __construct()
   {
-    $this->middleware('auth:api', ['except' => ['login', 'register', 'forgetPassword']]);
+    $this->middleware('auth:api', ['except' => ['login', 'register', 'forgetPassword', 'checkOTP', 'changePassword']]);
     $this->user = new User();
   }
 
@@ -54,21 +56,30 @@ class AuthController extends Controller
     try {
       $validator = Validator::make($request->all(), [
         "name" => "required",
-        "nik" => "nullable",
-        "username" => "required",
+        "nik" => "unique:users",
+        "username" => "required|unique:users",
+        "email" => "required|unique:users",
         "gender" => "required",
-        "phoneNumber" => "required",
+        "phoneNumber" => "required|unique:users",
         "district_id" => "required",
         "sub_district_id" => "required",
         "category_id" => "required",
         "address" => "required",
         "pemungut_id" => "required",
       ], [
-        'required' => 'Input :attribute tidak boleh kosong',
+        'required' => ':attribute tidak boleh kosong',
+        'phoneNumber.required' => 'nomor telepon tidak boleh kosong',
+        'name.required' => 'nama tidak boleh kosong',
+        'required' => ':attribute tidak boleh kosong',
+        'unique' => ':attribute sudah digunakan',
+        'phoneNumber.unique' => 'nomor telepon sudah digunakan',
       ]);
 
       if ($validator->fails()) {
-        return $this->errorResponse($validator->errors(), 'Input tidak boleh ada yang kosong', 422);
+        $errors = collect($validator->errors())->map(function ($value) {
+          return $value[0];
+        })->toArray();
+        return $this->errorResponse($errors, 'Input tidak boleh ada yang kosong', 422);
       }
 
       $user = $this->user->registerUser($validator);
@@ -98,7 +109,7 @@ class AuthController extends Controller
 
   public function forgetPassword(Request $request)
   {
-    try { 
+    try {
       $validator = Validator::make($request->all(), [
         "email" => "required",
       ], [
@@ -112,6 +123,56 @@ class AuthController extends Controller
       $this->user->forgetPassword($validator);
 
       return $this->successResponse([], 'Berhasil mengirim kode otp');
+    } catch (\Throwable $th) {
+      return $this->errorResponse([], $th->getMessage(), $th->getCode() ?? 500);
+    }
+  }
+
+
+  public function changePassword(Request $request)
+  {
+    $validator = Validator::make($request->all(), [
+      'email' => 'required', // attr: password_confirmation
+      'password' => 'required|confirmed|min:8', // attr: password_confirmation
+    ], [
+      'required' => 'Input :attribute tidak boleh kosong',
+      'confirmed' => 'Input :attribute harus sama',
+    ]);
+
+    if ($validator->fails()) {
+      return $this->errorResponse($validator->errors(), 'Input harus valid', 422);
+    }
+
+    $user = User::where('email', $request->email);
+
+    if (!$user) {
+      return $this->errorResponse([], "User tidak ditemukan", 401);
+    }
+
+    $user->update([
+      'password' => Hash::make($request->password),
+    ]);
+
+    return $this->successResponse($user, 'Berhasil mengubah password anda', 200);
+  }
+
+  public function checkOTP(Request $request)
+  {
+    try {
+      $validator = Validator::make($request->all(), [
+        "email" => "required",
+        "otp_code" => "required",
+      ], [
+        'required' => ':attribute tidak boleh kosong',
+      ]);
+
+      if ($validator->fails()) {
+        return $this->errorResponse($validator->errors(), 'Input tidak boleh ada yang kosong', 400);
+      }
+
+      $this->user->checkOTP($validator);
+
+      return $this->successResponse([], 'OTP yang anda masukkan sudah sesuai');
     } catch (\Throwable $th) {
       return $this->errorResponse([], $th->getMessage(), $th->getCode() ?? 500);
     }

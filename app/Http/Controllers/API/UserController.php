@@ -50,14 +50,14 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'old_password' => 'required',
-            'password' => 'required|confirmed', // attr: password_confirmation
+            'password' => 'required|confirmed|min:8', // attr: password_confirmation
         ], [
             'required' => 'Input :attribute tidak boleh kosong',
             'confirmed' => 'Input :attribute harus sama',
         ]);
 
         if ($validator->fails()) {
-            return $this->errorResponse($validator->errors(), 'Input tidak boleh ada yang kosong', 422);
+            return $this->errorResponse($validator->errors(), 'Input harus valid', 422);
         }
 
         $user = User::find($id);
@@ -77,29 +77,41 @@ class UserController extends Controller
         return $this->successResponse($user, 'Berhasil mengubah password anda', 200);
     }
 
-    public function editMasyarakatProfile(Request $request, $id)
+    public function getDetailMasyarakat($id)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'username' => 'required',
-            'nik' => 'required',
-            'phoneNumber' => 'required',
-            'category_id' => 'required',
-            'sub_district_id' => 'required',
-            'address' => 'required',
-        ], [
-            'required' => 'Input :attribute tidak boleh kosong',
-            'confirmed' => 'Input :attribute harus sama',
-        ]);
-
-        if ($validator->fails()) {
-            return $this->errorResponse($validator->errors(), 'Input tidak boleh ada yang kosong', 422);
-        }
-
         $user = User::find($id);
 
         if (!$user) {
             return $this->errorResponse([], "User tidak ditemukan", 401);
+        }
+
+        $user = $user->where('id', $id)->first();
+
+        return $this->successResponse(new UserResource($user), 'Berhasil mengambil data', 200);
+    }
+
+    public function editMasyarakatProfile(Request $request, $id)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required',
+                'nik' => 'required',
+                'phoneNumber' => 'required',
+                'categories' => 'required|array',
+            ], [
+                'required' => 'Input :attribute tidak boleh kosong',
+                'confirmed' => 'Input :attribute harus sama',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->errorResponse($validator->errors(), 'Input tidak boleh ada yang kosong', 422);
+            }
+
+            $user = $this->user->updateMasyarakatData($validator, $id);
+
+            return $this->successResponse($user, 'Berhasil mengubah data', 200);
+        } catch (\Throwable $err) {
+            return $this->errorResponse('', $err->getMessage(), 401);
         }
     }
 
