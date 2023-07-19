@@ -34,7 +34,7 @@ class HomeController extends Controller
         // Get Already Deposit and Not Yet Deposited Monthly Categories
         $deposit = $this->pemungut_transaction->getDepositMonthlyDataByDistrictId();
 
-        // Get CASH and NON CASH transctions total price
+        // Get CASH and NON CASH transctions total price in transaction
         $income = $this->transactions->sumTransactionByType();
 
         $users = $this->users->getAllCountOfUsersRole();
@@ -43,7 +43,10 @@ class HomeController extends Controller
         // Retrive Already Deposit and Not Yet Deposited Additional Categories
         $income_tambahan = $this->pemungut_transaction->getDepositAdditionalDataByDistrictId();
 
+        
         $invoice_monthly = $this->invoice->totalAmountUnpaidAndPaidInvoiceMonthly();
+
+        $total_pemasukan_bulan_ini_card_3 = ($income['NONCASH'] ?? 0) + ($deposit['already_deposited']['total'] ?? 0) + ($deposit['not_yet_deposited']['total'] ?? 0) + ($income_tambahan['already_deposited']['total'] ?? 0) + ($income_tambahan['not_yet_deposited']['total'] ?? 0);
 
         // return [
         //     'deposit' => $deposit,
@@ -52,9 +55,10 @@ class HomeController extends Controller
         //     'graph' => $graph,
         //     'income_tambahan' => $income_tambahan,
         //     'invoice_monthly' => $invoice_monthly,
+        //     'total_pemasukan_bulan_ini_card_3' => $total_pemasukan_bulan_ini_card_3,
         // ];
 
-        return view('pages.home', compact('deposit', 'users', 'graph', 'invoice_monthly', 'income_tambahan', 'income'));
+        return view('pages.home', compact('deposit', 'users', 'graph', 'invoice_monthly', 'income_tambahan', 'income', 'total_pemasukan_bulan_ini_card_3'));
     }
 
     public function income()

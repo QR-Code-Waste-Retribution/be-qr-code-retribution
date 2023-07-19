@@ -79,6 +79,7 @@ Route::name('api.')->group(function () {
     
     Route::resource('category', CategoriesController::class);
     Route::get('/category/additional/{district_id}', [CategoriesController::class, 'getCategoriesAdditional'])->name('category.additional.district');
+    Route::get('/category/monthly/{district_id}', [CategoriesController::class, 'getCategoriesMonthly'])->name('category.monthly.district');
     
     Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         return $request->user();

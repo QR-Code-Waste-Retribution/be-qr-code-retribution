@@ -34,7 +34,7 @@
                                         </div>
                                         <div class="ps-3">
                                             <h6 class="fs-4">Rp.
-                                                {{ number_format(($income['noncash'] ?? 0) + ($deposit['already_deposited']['total'] ?? 0), 2) }}
+                                                {{ number_format(($income['NONCASH'] ?? 0) + ($deposit['already_deposited']['total'] ?? 0), 2) }}
                                                 -,</h6>
                                             <span class="text-success small pt-1 fw-bold"></span><span
                                                 class="text-muted small pt-2 ps-1">{{ $invoice_monthly['paid']['date'] ?? '-' }}</span>
@@ -127,7 +127,7 @@
                                         </div>
                                         <div class="ps-3">
                                             <h6 class="fs-4">Rp.
-                                                {{ number_format(($income['noncash'] ?? 0) + ($deposit['already_deposited']['total'] ?? 0) + ($income_tambahan->total_amount ?? 0), 2) }}
+                                                {{ number_format($total_pemasukan_bulan_ini_card_3, 2) }}
                                                 -,</h6>
                                             <span class="text-success small pt-1 fw-bold"></span><span
                                                 class="text-muted small pt-2 ps-1">21 Februari 2023</span>
@@ -185,8 +185,8 @@
                             <div class="card-body">
                                 <div class="d-flex align-items-center">
                                     <div class="p-0">
-                                        @isset($income['noncash'])
-                                            <h6 class="fs-5">Rp. {{ number_format($income['noncash'], 2) }} -,</h6>
+                                        @isset($income['NONCASH'])
+                                            <h6 class="fs-5">Rp. {{ number_format($income['NONCASH'], 2) }} -,</h6>
                                         @else
                                             <h6 class="fs-5">Rp. {{ number_format(0, 2) }} -,</h6>
                                         @endisset

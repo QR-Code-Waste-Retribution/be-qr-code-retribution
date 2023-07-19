@@ -523,9 +523,10 @@ class Transaction extends Model
             ->groupBy('type', 'created_at')
             ->get();
 
-        $income = collect($transactions)->map(function ($item) {
-            return [strtolower($item['type']) => (int)$item['total'] - ($item['count'] * 3500)];
-        })->collapse();
+        $income = $transactions->groupBy('type')
+            ->map(function ($items) {
+                return $items->sum('total');
+            });
 
         return $income;
     }
@@ -573,7 +574,7 @@ class Transaction extends Model
             ->where(DB::raw('MONTH(masyarakat_transactions.created_at)'), '=', DB::raw('MONTH(CURRENT_DATE())'))
             ->get();
     }
-    
+
     public function transactionVirtualAccount()
     {
         return $this->with(['directApi'])

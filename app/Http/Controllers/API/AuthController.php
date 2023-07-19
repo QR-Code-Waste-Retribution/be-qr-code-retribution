@@ -46,7 +46,7 @@ class AuthController extends Controller
 
       return $this->createNewToken($token);
     } catch (Exception $err) {
-      return $this->errorResponse('', $err->getMessage(), 401);
+      return $this->errorResponse('', $err->getMessage(), 500);
     }
   }
 
