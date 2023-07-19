@@ -270,7 +270,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="transaction-noncash-waiting/{{$payment_via = 'virtual_account'}}/payment">
+                            <a href="/transaction-noncash-waiting/{{$payment_via = 'virtual_account'}}/payment">
                                 <i class="bi bi-circle"></i><span>Pembayaran Non-Tunai</span>
                             </a>
                         </li>

@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class NonCashPaymentWaitingController extends Controller
 {
-
+    public $transaction;
     public function __construct()
     {
         $this->transaction = new Transaction();
