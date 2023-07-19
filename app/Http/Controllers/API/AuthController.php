@@ -98,6 +98,10 @@ class AuthController extends Controller
   {
     $user = auth()->user();
 
+    if (!$user->account_status) {
+      return $this->errorResponse([], "Akun anda belum diaktifkan!!", 403);
+    }
+
     if (!$user->verification_status) {
       return $this->errorResponse([], "Akun anda belum teverifikasi!!", 403);
     }

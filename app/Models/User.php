@@ -30,13 +30,15 @@ class User extends Authenticatable
         'uuid',
         'name',
         'email',
+        'nik',
         'username',
         'phoneNumber',
         'password',
         'sub_district_id',
         'district_id',
         'role_id',
-        'address'
+        'address',
+        'verification_status'
     ];
 
     /**

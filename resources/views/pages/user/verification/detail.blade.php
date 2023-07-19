@@ -55,7 +55,7 @@
                 </div>
 
                 <div class="d-flex gap-3 mt-4">
-                    <button class="button-primary text-center" data-bs-toggle="modal"
+                    <button class="button-primary text-center" data-bs-toggle="modal" id="verification_button"
                         data-bs-target="#exampleModal">Verifikasi</button>
                     <a class="button-danger text-center" href="{{ route('masyarakat.verification') }}">Batal</a>
                 </div>

@@ -4,7 +4,7 @@
     <div class="d-flex align-items-center justify-content-between">
         <a href="{{ route('dashboard') }}" class="logo d-flex align-items-center">
             <img src="{{ asset('assets/img/logo-' . strtolower(auth()->user()->district->name) .  '.png') }}" alt="">
-            <span class="d-none d-lg-block fs-6 ">Dinas Lingkungan Hidup Kabupaten Toba</span>
+            <span class="d-none d-lg-block fs-6 ">Dinas Lingkungan Hidup Kabupaten {{ auth()->user()->district->name }}</span>
         </a>
         <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->

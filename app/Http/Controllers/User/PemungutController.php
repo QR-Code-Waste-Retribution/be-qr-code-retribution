@@ -45,7 +45,7 @@ class PemungutController extends Controller
     {
         try {
             $user = User::find($request->user_id);
-            $user->status = !$user->status;
+            $user->account_status = !$user->account_status;
             $user->save();
 
             return $this->successResponse($user, 'Success to change user status');
@@ -53,6 +53,7 @@ class PemungutController extends Controller
             return $this->errorResponse([], 'Something went wrong');
         }
     }
+    
     /**
      * Show the form for creating a new resource.
      *
@@ -86,6 +87,7 @@ class PemungutController extends Controller
                 'gender' => $validated['jenis_kelamin'],
                 'phoneNumber' => $validated['nomor_telepon'],
                 'address' => $validated['alamat'],
+                'verification_status' => 1,
             ]);
 
             return redirect()->back()->with([
