@@ -298,7 +298,7 @@ class PemungutTransaction extends Model
                 ->whereIn('pt.pemungut_id', function ($query) {
                     $query->select('id')
                         ->from('users')
-                        ->where('district_id', 1)
+                        ->where('district_id', auth()->user()->district_id)
                         ->where('role_id', 2);
                 })
                 ->whereBetween('pt.updated_at', [

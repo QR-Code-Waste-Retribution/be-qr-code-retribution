@@ -15,7 +15,7 @@ class InvoiceTobaSeeder extends Seeder
      */
     public function run()
     {
-        $users = User::where('district_id', 1)
+        $users = User::where('district_id', )
             ->where('role_id', 1)
             ->with(['category'])
             ->get();

@@ -3,8 +3,8 @@
 
     <div class="d-flex align-items-center justify-content-between">
         <a href="{{ route('dashboard') }}" class="logo d-flex align-items-center">
-            <img src="{{ asset('assets/img/logo_toba.png') }}" alt="">
-            <span class="d-none d-lg-block">SiPAIAS</span>
+            <img src="{{ asset('assets/img/logo-' . strtolower(auth()->user()->district->name) .  '.png') }}" alt="">
+            <span class="d-none d-lg-block fs-6 ">Dinas Lingkungan Hidup Kabupaten Toba</span>
         </a>
         <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
@@ -169,7 +169,8 @@
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
                     <li class="dropdown-header">
                         <h6>{{ auth()->user()->name }}</h6>
-                        <span class="text-capitalize">{{ implode(' ', explode('_', auth()->user()->role->name)) . ' ' . auth()->user()->district->name }}</span>
+                        <span
+                            class="text-capitalize">{{ implode(' ', explode('_', auth()->user()->role->name)) . ' ' . auth()->user()->district->name }}</span>
                     </li>
                     <li>
                         <hr class="dropdown-divider">
@@ -257,39 +258,39 @@
                     class="bi bi-chevron-down ms-auto"></i>
             </a>
             <ul id="components-nav-transaction" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                <li>
-                    <a class="nav-link collapsed" data-bs-target="#components-nav-non-confirmation" data-bs-toggle="collapse"
-                        href="#">
+                <li class="nav-item">
+                    <a class="nav-link collapsed" data-bs-target="#components-nav-non-confirmation"
+                        data-bs-toggle="collapse" href="#">
                         <i class="bi bi-menu-button-wide"></i><span>Menunggu konfirmasi</span><i
-                            class="bi bi-chevron-down ms-auto"></i>
+                            class="bi bi-chevron-down ms-auto fs-6 me-2"></i>
                     </a>
-                    <ul id="components-nav-non-confirmation" class="nav-content collapse ">
-                        <li>
+                    <ul id="components-nav-non-confirmation" class="nav-content collapse">
+                        <li class="ms-3">
                             <a href="{{ route('transaction-cash.index') }}">
                                 <i class="bi bi-circle"></i><span>Pembayaran Tunai</span>
                             </a>
                         </li>
-                        <li>
-                            <a href="/transaction-noncash-waiting/{{$payment_via = 'virtual_account'}}/payment">
+                        <li class="ms-3">
+                            <a href="/transaction-noncash-waiting/{{ $payment_via = 'virtual_account' }}/payment">
                                 <i class="bi bi-circle"></i><span>Pembayaran Non-Tunai</span>
                             </a>
                         </li>
                     </ul>
                 </li>
 
-                <li>
-                    <a class="nav-link collapsed" data-bs-target="#components-nav-accepted" data-bs-toggle="collapse"
-                        href="#">
+                <li class="nav-item">
+                     <a class="nav-link collapsed" data-bs-target="#components-nav-accepted"
+                        data-bs-toggle="collapse" href="#">
                         <i class="bi bi-menu-button-wide"></i><span>Sudah diterima</span><i
-                            class="bi bi-chevron-down ms-auto"></i>
+                            class="bi bi-chevron-down ms-auto fs-6 me-2"></i>
                     </a>
                     <ul id="components-nav-accepted" class="nav-content collapse ">
-                        <li>
+                        <li class="ms-3">
                             <a href="{{ route('transaction-cash.index') }}">
                                 <i class="bi bi-circle"></i><span>Pembayaran Tunai</span>
                             </a>
                         </li>
-                        <li>
+                        <li class="ms-3">
                             <a href="{{ route('transaction-noncash.index') }}">
                                 <i class="bi bi-circle"></i><span>Pembayaran Non-Tunai</span>
                             </a>
@@ -316,6 +317,6 @@
                 <i class="bi bi-person"></i>
                 <span>Catatan Laporan</span>
             </a>
-        </li>   
+        </li>
     </ul>
 </aside>

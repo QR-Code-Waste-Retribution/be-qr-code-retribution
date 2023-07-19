@@ -483,7 +483,7 @@ class Transaction extends Model
             ->whereIn('sub_district_id', function ($query) {
                 $query->select('id')
                     ->from('sub_districts')
-                    ->where('district_id', 1);
+                    ->where('district_id', auth()->user()->district_id);
             })
             ->where('status', 1)
             ->whereYear('date', $current_year)

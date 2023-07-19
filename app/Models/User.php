@@ -187,12 +187,12 @@ class User extends Authenticatable
             ->where('id', $input['category_id'])
             ->first();
 
-        Invoice::create([
-            'uuid_user' => $user->uuid,
-            'user_id' => $user->id,
-            'category_id' => $input['category_id'],
-            'price' => $category->price,
-        ]);
+        // Invoice::create([
+        //     'uuid_user' => $user->uuid,
+        //     'user_id' => $user->id,
+        //     'category_id' => $input['category_id'],
+        //     'price' => $category->price,
+        // ]);
 
         return new UserResource($user);
     }

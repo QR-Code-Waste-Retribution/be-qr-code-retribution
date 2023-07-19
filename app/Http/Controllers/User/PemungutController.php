@@ -24,7 +24,7 @@ class PemungutController extends Controller
         $sub_district = $request->sub_district ?? null;
 
         $pemungut = User::where('role_id', 2)
-            ->where('district_id', 1)
+            ->where('district_id', auth()->user()->district_id)
             ->where(function (Builder $query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%')
                     ->orWhere('phoneNumber', 'like', '%' . $search . '%');
@@ -37,7 +37,7 @@ class PemungutController extends Controller
 
         $pemungut = $pemungut->paginate(10);
 
-        $sub_districts = SubDistrict::where('district_id', 1)->get();
+        $sub_districts = SubDistrict::where('district_id', auth()->user()->district_id)->get();
         return view('pages.user.pemungut.index', compact('sub_districts', 'pemungut'));
     }
 

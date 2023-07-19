@@ -88,7 +88,7 @@ class UserSimalungunSeeder extends Seeder
             'address' => fake()->address(),
             'phoneNumber' => fake()->phoneNumber(),
             'sub_district_id' => 2,
-            'district_id' => 1,
+            'district_id' => 2,
             'role_id' => 3,
             'account_status' => 1,
             'remember_token' => strval(random_int(100000, 999999)),
