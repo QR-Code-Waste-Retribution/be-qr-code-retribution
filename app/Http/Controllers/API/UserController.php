@@ -95,16 +95,28 @@ class UserController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'name' => 'required',
-                'nik' => 'required',
-                'phoneNumber' => 'required',
-                'categories' => 'required|array',
+                "nik" => "unique:users,nik,$id|max:16|min:16",
+                "phoneNumber" => "required|unique:users,phoneNumber,$id|min:11|max:15",
+                'pemungut_id' => 'required',
+                'categories' => 'required|array|min:1',
             ], [
-                'required' => 'Input :attribute tidak boleh kosong',
-                'confirmed' => 'Input :attribute harus sama',
+                'required' => ':attribute tidak boleh kosong',
+                'phoneNumber.required' => 'nomor telepon tidak boleh kosong',
+                'name.required' => 'nama tidak boleh kosong',
+                'unique' => ':attribute sudah digunakan',
+                'min' => ':attribute harus memiliki minimal :min karakter',
+                'max' => ':attribute harus memiliki maximal :max karakter',
+                'phoneNumber.min' => ':attribute harus memiliki minimal :min karakter',
+                'phoneNumber.max' => ':attribute harus memiliki maximal :max karakter',
+                'phoneNumber.unique' => 'nomor telepon sudah digunakan',
+                'array' => 'pilih setidaknya satu kategori',
             ]);
 
             if ($validator->fails()) {
-                return $this->errorResponse($validator->errors(), 'Input tidak boleh ada yang kosong', 422);
+                $errors = collect($validator->errors())->map(function ($value) {
+                    return $value[0];
+                })->toArray();
+                return $this->errorResponse($errors, 'Input tidak boleh ada yang kosong', 422);
             }
 
             $user = $this->user->updateMasyarakatData($validator, $id);
