@@ -98,6 +98,7 @@ class Transaction extends Model
             ->with(['transactions' => function ($query) {
                 $query->selectRaw('sub_district_id, SUM(price) as total')
                     ->where('type', 'NONCASH')
+                    ->where('verification_status', 1)
                     ->whereRaw('MONTH(created_at) = MONTH(CURRENT_DATE())')
                     ->groupBy('sub_district_id');
             }])
@@ -546,6 +547,7 @@ class Transaction extends Model
     {
         return $this
             ->where('type', 'NONCASH')
+            ->where('verification_status', 1)
             ->with(
                 [
                     'checkout:id,payment_method_types',

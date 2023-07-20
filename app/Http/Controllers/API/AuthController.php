@@ -119,9 +119,10 @@ class AuthController extends Controller
   {
     try {
       $validator = Validator::make($request->all(), [
-        "email" => "required",
+        "email" => "required|email",
       ], [
         'required' => ':attribute tidak boleh kosong',
+        'email' => ':attribute format salah',
       ]);
 
       if ($validator->fails()) {
