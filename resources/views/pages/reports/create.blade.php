@@ -44,8 +44,9 @@
                 <label for="price" class="form-label fs-7">Jumlah Setoran</label>
                 <div class="input-group flex-nowrap">
                     <span class="input-group-text fs-7" id="addon-wrapping">Rp</span>
-                    <input type="number" class="form-control fs-7 @error('price') is-invalid @enderror"
-                        placeholder="Jumlah setoran" id="price" name="price" value="{{ old('price') }}">
+                    <input type="hidden" name="price" id="price-hidden" value="{{ old('price') }}">
+                    <input type="text" class="form-control fs-7 @error('price') is-invalid @enderror"
+                        placeholder="Jumlah setoran" id="price" value="{{ old('price') }}" disabled>
                 </div>
                 @error('price')
                     <div class="text-danger fs-8 mt-1">{{ $message }}</div>
@@ -54,8 +55,8 @@
             <div class="col-12">
                 <label for="inputEmail4" class="form-label fs-7">Nomor STS <span class="text-primary fs-8">(Pembayaran
                         Tunai)</span></label>
-                <input type="text" class="form-control fs-7 @error('sts_no') is-invalid @enderror" name="sts_no"
-                    id="inputEmail4" value="{{ old('sts_no') }}">
+                <input class="form-control fs-7 @error('sts_no') is-invalid @enderror" name="sts_no"
+                    id="inputEmail4" value="{{ old('sts_no') }}" type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==20) return false;">
                 @error('sts_no')
                     <div class="invalid-feedback fs-8">{{ $message }}</div>
                 @enderror

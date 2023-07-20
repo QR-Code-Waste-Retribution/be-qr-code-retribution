@@ -411,6 +411,8 @@ h6 {
 }
 
 .logo img {
+  width: 100px;
+  object-fit: contain;
   max-height: 26px;
   margin-right: 6px;
 }

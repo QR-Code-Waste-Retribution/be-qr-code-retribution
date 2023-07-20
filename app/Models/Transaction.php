@@ -98,6 +98,7 @@ class Transaction extends Model
             ->with(['transactions' => function ($query) {
                 $query->selectRaw('sub_district_id, SUM(price) as total')
                     ->where('type', 'NONCASH')
+                    ->where('verification_status', 1)
                     ->whereRaw('MONTH(created_at) = MONTH(CURRENT_DATE())')
                     ->groupBy('sub_district_id');
             }])
@@ -483,7 +484,7 @@ class Transaction extends Model
             ->whereIn('sub_district_id', function ($query) {
                 $query->select('id')
                     ->from('sub_districts')
-                    ->where('district_id', 1);
+                    ->where('district_id', auth()->user()->district_id);
             })
             ->where('status', 1)
             ->whereYear('date', $current_year)
@@ -523,9 +524,10 @@ class Transaction extends Model
             ->groupBy('type', 'created_at')
             ->get();
 
-        $income = collect($transactions)->map(function ($item) {
-            return [strtolower($item['type']) => (int)$item['total'] - ($item['count'] * 3500)];
-        })->collapse();
+        $income = $transactions->groupBy('type')
+            ->map(function ($items) {
+                return $items->sum('total');
+            });
 
         return $income;
     }
@@ -545,6 +547,7 @@ class Transaction extends Model
     {
         return $this
             ->where('type', 'NONCASH')
+            ->where('verification_status', 1)
             ->with(
                 [
                     'checkout:id,payment_method_types',
@@ -573,7 +576,7 @@ class Transaction extends Model
             ->where(DB::raw('MONTH(masyarakat_transactions.created_at)'), '=', DB::raw('MONTH(CURRENT_DATE())'))
             ->get();
     }
-    
+
     public function transactionVirtualAccount()
     {
         return $this->with(['directApi'])

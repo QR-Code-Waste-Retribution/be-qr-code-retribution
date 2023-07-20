@@ -52,6 +52,13 @@ class Category extends Model
             ->where('price', '!=', 0)->get();
     }
 
+    public function allMonthlyByDistrictId($district_id)
+    {
+        return $this
+            ->whereIn('type', ['month'])
+            ->where('district_id', $district_id)->get();
+    }
+
     public function getTypeTranslationAttribute()
     {
         $translations = [

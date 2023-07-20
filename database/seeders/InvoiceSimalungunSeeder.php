@@ -4,10 +4,9 @@ namespace Database\Seeders;
 
 use App\Models\Invoice;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class InvoiceSeeder extends Seeder
+class InvoiceSimalungunSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -16,7 +15,7 @@ class InvoiceSeeder extends Seeder
      */
     public function run()
     {
-        $users = User::where('district_id', 1)
+        $users = User::where('district_id', 2)
             ->where('role_id', 1)
             ->with(['category'])
             ->get();

@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class CategoryTobaSeeder extends Seeder
@@ -42,13 +41,20 @@ class CategoryTobaSeeder extends Seeder
             array("no" => "24", "name" => "Pembuangan sampah ke TPA oleh pihak ketiga", "price" => "50000", "type" => "hari"),
         );
 
+        $type = [
+            'bulan' => 'MONTH',
+            'hari' => 'DAY',
+            'unit' => 'UNIT',
+            'packet' => 'PACKET',
+        ];
+        
         foreach ($categories as $item) {
             Category::create(
                 [
                     'name' => $item['name'],
                     'description' => fake()->text(),
                     'price' => intval(implode('', explode(',', $item['price']))),
-                    'type' => $item['type'] == 'bulan' ? "MONTH" : "DAY",
+                    'type' => $type[$item['type']],
                     'district_id' => 1,
                 ]
             );

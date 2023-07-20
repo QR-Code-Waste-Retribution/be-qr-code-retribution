@@ -32,6 +32,16 @@ class CategoriesController extends Controller
         }
     }
 
+    public function getCategoriesMonthly($district_id)
+    {
+        try {
+            $categories = CategoryResource::collection($this->category->allMonthlyByDistrictId($district_id));
+            return $this->successResponse(['categories' => $categories], 'Successfully to get all categories');
+        } catch (\Throwable $th) {
+            return $this->errorResponse([], $th->getMessage(), 500);
+        }
+    }
+
     public function getCategoriesAdditional($district_id)
     {
         try {

@@ -25,7 +25,8 @@ class StoreReportRequest extends FormRequest
     {
         return [
             'reports_name' => 'required',
-            'price' => ['required', 'numeric',  function ($attribute, $value, $fail) {
+            'price' => ['required', function ($attribute, $value, $fail) {
+                $value = (int)str_replace(array('.', ','), '', $value);
                 if ($value <= 0) {
                     $fail('Input jumlah setoran tidak boleh kurang dari dan sama dengan Rp. 0');
                 }
@@ -41,10 +42,10 @@ class StoreReportRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'reports_name.required' => 'Input nama setoran tidak boleh kosong',
-            'price.required' => 'Input jumlah setoran tidak boleh kosong',
-            'price.min' => 'Input jumlah setoran tidak boleh kurang dari Rp. 0',
-            'date.required' => 'Input tanggal tidak boleh kosong',
+            'reports_name.required' => 'Nama setoran tidak boleh kosong',
+            'price.required' => 'Jumlah setoran tidak boleh kosong',
+            'price.min' => 'Jumlah setoran tidak boleh kurang dari Rp. 0',
+            'date.required' => 'Tanggal tidak boleh kosong',
             'image.required' => 'Bukti bayar tidak boleh kosong',
             'pemungut_id.required' => 'Pemungut tidak boleh kosong',
             'sts_no.required' => 'Nomor STS tidak boleh kosong',

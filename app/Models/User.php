@@ -30,13 +30,15 @@ class User extends Authenticatable
         'uuid',
         'name',
         'email',
+        'nik',
         'username',
         'phoneNumber',
         'password',
         'sub_district_id',
         'district_id',
         'role_id',
-        'address'
+        'address',
+        'verification_status'
     ];
 
     /**
@@ -187,12 +189,12 @@ class User extends Authenticatable
             ->where('id', $input['category_id'])
             ->first();
 
-        Invoice::create([
-            'uuid_user' => $user->uuid,
-            'user_id' => $user->id,
-            'category_id' => $input['category_id'],
-            'price' => $category->price,
-        ]);
+        // Invoice::create([
+        //     'uuid_user' => $user->uuid,
+        //     'user_id' => $user->id,
+        //     'category_id' => $input['category_id'],
+        //     'price' => $category->price,
+        // ]);
 
         return new UserResource($user);
     }
@@ -253,7 +255,7 @@ class User extends Authenticatable
 
         SendMessageToEmail::sendToUser('email.index', $input['email'], [
             'message' => 'Harap masukkan kode ini dalam waktu [waktu] menit untuk menyelesaikan proses verifikasi.',
-            'subject' => 'Kode OTP untuk Lupa Password SIAPAIAS',
+            'subject' => 'Kode OTP untuk Lupa Password SIPAIAS',
             'data' => [
                 'token' => $user->remember_token,
             ],
@@ -284,27 +286,20 @@ class User extends Authenticatable
         }
 
         $user->name = $input['name'];
-        $user->phone_number = $input['phoneNumber'];
+        $user->phoneNumber = $input['phoneNumber'];
         $user->nik = $input['nik'];
 
-        // $user->save();
+        $user->save();
+        $user->category()->detach();
 
-        $filterCategories = collect($input['categories'])->filter(function ($item) use ($user) {
-            return !collect($user->category)->pluck('id')->contains($item['id']);
-        })->values()->all();
-
-        $arrayCategories = array();
-
-        foreach ($filterCategories as $item) {
-            array_push($arrayCategories, [
-                'user_id' =>  $user->id,
-                'category_id' => $item['id'],
+        $categories = collect($input['categories']['insert'])->mapWithKeys(function ($item) use ($input, $user) {
+            return [$item['id'] => [
                 'sub_district_id' => $user->sub_district_id,
-                'pemungut_id' => $input['pemungut_id'],
-                'address' => $input['address'],
-            ]);
-        }
+                'address' => $item['address'],
+                'pemungut_id' => $input['pemungut_id']
+            ]];
+        })->all();
 
-        UserCategories::insert($arrayCategories);
+        $user->category()->attach($categories);
     }
 }
