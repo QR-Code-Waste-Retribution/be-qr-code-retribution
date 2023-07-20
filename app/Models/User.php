@@ -255,7 +255,7 @@ class User extends Authenticatable
 
         SendMessageToEmail::sendToUser('email.index', $input['email'], [
             'message' => 'Harap masukkan kode ini dalam waktu [waktu] menit untuk menyelesaikan proses verifikasi.',
-            'subject' => 'Kode OTP untuk Lupa Password SIAPAIAS',
+            'subject' => 'Kode OTP untuk Lupa Password SIPAIAS',
             'data' => [
                 'token' => $user->remember_token,
             ],
