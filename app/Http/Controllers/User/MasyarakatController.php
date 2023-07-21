@@ -106,6 +106,7 @@ class MasyarakatController extends Controller
             $users = User::select('id', 'uuid', 'name', 'address')
                 ->where('district_id', auth()->user()->district_id)
                 ->with(['masyarakat_category.pemungut:id,name'])
+                ->whereBetween('id', [422, 637])
                 ->where('role_id', 1)
                 ->get();
             return view('pages.user.masyarakat.qrcode', compact('users'));
