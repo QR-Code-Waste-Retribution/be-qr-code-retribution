@@ -152,7 +152,7 @@
                                             <span class="text-success small pt-1 fw-bold"></span> <span
                                                 class="text-muted small pt-2">Sudah Disetor</span>
                                             <h6 class="fs-5">Rp.
-                                                {{ number_format($income_tambahan['already_deposited']['total'] ?? (0 + $deposit['already_deposited']['total'] ?? 0), 2) }}
+                                                {{ number_format($total_pemasukan_bulan_ini_card_already_deposited, 2) }}
                                                 -,</h6>
                                             <span class="text-success small pt-1 fw-bold"></span> <span
                                                 class="text-muted small pt-2">21
@@ -169,7 +169,7 @@
                                             <span class="text-success small pt-1 fw-bold"></span> <span
                                                 class="text-muted small pt-2">Belum Disetor</span>
                                             <h6 class="fs-5">Rp.
-                                                {{ number_format($income_tambahan['not_yet_deposited']['total'] ?? 0 + $deposit['not_yet_deposited']['total'] ?? 0, 2) }} -,</h6>
+                                                {{ number_format($total_pemasukan_bulan_ini_card_not_yet_deposited, 2) }} -,</h6>
                                             <span class="text-success small pt-1 fw-bold"></span> <span
                                                 class="text-muted small pt-2">21
                                                 Februari 2023</span>

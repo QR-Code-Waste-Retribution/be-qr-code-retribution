@@ -42,23 +42,25 @@ class CashPaymentController extends Controller
 
         return view('pages.transaction.cash.cash-payment', compact('pemungut_transactions', 'invoice_monthly', 'status'));
     }
-    public function indexWait(Request $request, $status)
+    public function indexWait(Request $request)
     {
         $search = $request->search ?? '';
         $month = $request->month ?? '';
         $sub_district = $request->sub_district ?? null;
         $invoice_monthly = $this->invoice->totalAmountUnpaidAndPaidInvoiceMonthly();
-
+        $status = 0;
+        
         $pemungut_transactions = $this->pemungut_transactions->getAllTransaction($sub_district, $search, 0);
 
         return view('pages.transaction.cash.cash-payment', compact('pemungut_transactions', 'invoice_monthly', 'status'));
     }
-    public function indexConfirmed(Request $request, $status)
+    public function indexConfirmed(Request $request)
     {
         $search = $request->search ?? '';
         $month = $request->month ?? '';
         $sub_district = $request->sub_district ?? null;
         $invoice_monthly = $this->invoice->totalAmountUnpaidAndPaidInvoiceMonthly();
+        $status = 1;
 
         $pemungut_transactions = $this->pemungut_transactions->getAllTransaction($sub_district, $search, 1);
 

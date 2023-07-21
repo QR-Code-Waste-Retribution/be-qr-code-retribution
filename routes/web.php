@@ -64,9 +64,9 @@ Route::middleware(['auth', 'role:petugas_kabupaten'])->group(function () {
     // Cash Payment
     Route::put('transaction-cash/change/status', [CashPaymentController::class, 'changeDepositStatus'])->name('cash.payment.change.status');
     Route::get('transaction-cash/export', [CashPaymentController::class, 'export'])->name('transaction-cash.export');
-    Route::get('transaction-cash/status/{status}', [CashPaymentController::class, 'index'])->name('transaction-cash.status.index');
     Route::get('transaction-cash/status/wait', [CashPaymentController::class, 'indexWait'])->name('transaction-cash.status.index.wait');
     Route::get('transaction-cash/status/confirmed', [CashPaymentController::class, 'indexConfirmed'])->name('transaction-cash.status.index.confirmed');
+    Route::get('transaction-cash/status/{status}', [CashPaymentController::class, 'index'])->name('transaction-cash.status.index');
     Route::resource('transaction-cash', CashPaymentController::class)->except(['index']);
 
     // Non Cash Payment
