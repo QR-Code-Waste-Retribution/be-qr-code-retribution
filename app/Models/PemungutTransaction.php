@@ -182,7 +182,7 @@ class PemungutTransaction extends Model
             ->groupBy('pemungut_id', 'status', 'date', 'id');
     }
 
-    public function getAllTransaction($sub_district, $search)
+    public function getAllTransaction($sub_district, $search, $status)
     {
         $pemungut_transactions = User::where('role_id', 2)
             ->with([
@@ -200,9 +200,10 @@ class PemungutTransaction extends Model
             ->where(function (Builder $query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%');
             })
-            ->withCount(['pemungut_transactions' => function ($query) {
-                $query->where('status', 0);
-            }]);
+            ->withCount(['pemungut_transactions' => function ($query) use ($status) {
+                $query->where('status', $status);
+            }])
+            ->having('pemungut_transactions_count', '>', 0);
 
         if ($sub_district && $sub_district != 'all') {
             $pemungut_transactions = $pemungut_transactions->where('sub_district_id', $sub_district);

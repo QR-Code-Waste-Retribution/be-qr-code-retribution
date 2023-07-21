@@ -266,7 +266,7 @@
                     </a>
                     <ul id="components-nav-non-confirmation" class="nav-content collapse">
                         <li class="ms-3">
-                            <a href="{{ route('transaction-cash.index') }}">
+                            <a href="{{ route('transaction-cash.status.index.wait') }}">
                                 <i class="bi bi-circle"></i><span>Pembayaran Tunai</span>
                             </a>
                         </li>
@@ -286,7 +286,7 @@
                     </a>
                     <ul id="components-nav-accepted" class="nav-content collapse ">
                         <li class="ms-3">
-                            <a href="{{ route('transaction-cash.index') }}">
+                            <a href="{{ route('transaction-cash.status.index.confirmed') }}">
                                 <i class="bi bi-circle"></i><span>Pembayaran Tunai</span>
                             </a>
                         </li>

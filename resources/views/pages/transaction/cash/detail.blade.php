@@ -187,7 +187,7 @@
                     </div>
                 </div>
             </div>
-            <a href="{{ route('transaction-cash.index') }}" class="btn btn-danger fs-8 px-3 py-2 my-2">Kembali</a>
+            {{-- <a href="{{ route('transaction-cash.index') }}" class="btn btn-danger fs-8 px-3 py-2 my-2">Kembali</a> --}}
         @endif
     </div>
 @endsection

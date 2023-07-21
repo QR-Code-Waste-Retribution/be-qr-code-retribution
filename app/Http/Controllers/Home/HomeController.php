@@ -43,7 +43,6 @@ class HomeController extends Controller
         // Retrive Already Deposit and Not Yet Deposited Additional Categories
         $income_tambahan = $this->pemungut_transaction->getDepositAdditionalDataByDistrictId();
 
-        
         $invoice_monthly = $this->invoice->totalAmountUnpaidAndPaidInvoiceMonthly();
 
         $total_pemasukan_bulan_ini_card_3 = ($income['NONCASH'] ?? 0) + ($deposit['already_deposited']['total'] ?? 0) + ($deposit['not_yet_deposited']['total'] ?? 0) + ($income_tambahan['already_deposited']['total'] ?? 0) + ($income_tambahan['not_yet_deposited']['total'] ?? 0);

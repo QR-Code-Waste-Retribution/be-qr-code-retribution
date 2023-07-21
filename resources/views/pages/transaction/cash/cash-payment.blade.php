@@ -56,7 +56,7 @@
             <div class="col-md-12">
                 <div class="row">
                     <div class="col-12">
-                        <form method="GET" action="{{ route('transaction-cash.index') }}">
+                        <form method="GET" action="{{ route('transaction-cash.status.index', ['status' => $status]) }}">
                             <div class="d-flex justify-content-between gap-5 align-items-center">
                                 <div class="search-bar">
                                     <div class="search-form d-flex align-items-center mt-4">
