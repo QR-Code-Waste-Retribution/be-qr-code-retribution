@@ -521,6 +521,7 @@ class Transaction extends Model
                     ->where('district_id', auth()->user()->district_id);
             })
             ->whereRaw('MONTH(created_at) = MONTH(CURRENT_DATE())')
+            ->where('verification_status', 1)
             ->groupBy('type', 'created_at')
             ->get();
 
@@ -530,6 +531,36 @@ class Transaction extends Model
             });
 
         return $income;
+    }
+
+    public function sumTransactionByTypeCustom()
+    {
+        $transactions = $this
+            ->select(["type", DB::raw("
+            CASE
+                WHEN masyarakat_transactions.verification_status = 0 THEN 'not_verified'
+                WHEN masyarakat_transactions.verification_status = 1 THEN 'verified'
+            END as verification_status"),])
+            ->selectRaw('SUM(price) as total')
+            ->selectRaw('COUNT(type) as count')
+            ->whereIn('user_id', function ($query) {
+                $query->select('id')
+                    ->from('users')
+                    ->where('role_id', 1)
+                    ->where('district_id', auth()->user()->district_id);
+            })
+            ->where('status', 1)
+            ->whereRaw('MONTH(created_at) = MONTH(CURRENT_DATE())')
+            ->groupBy('type', 'created_at', 'verification_status')
+            ->get();
+
+        return $transactions->groupBy('type')
+        ->map(function ($items) {
+            return $items->groupBy('verification_status')
+                ->map(function ($groupedItems) {
+                    return $groupedItems->sum('total');
+                });
+        });
     }
 
     public function updateTransactionAndInvoiceNonCash($invoice_id, $transaction_id)
