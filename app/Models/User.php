@@ -38,7 +38,8 @@ class User extends Authenticatable
         'district_id',
         'role_id',
         'address',
-        'verification_status'
+        'verification_status',
+        'device_token'
     ];
 
     /**
@@ -146,18 +147,12 @@ class User extends Authenticatable
 
     public function allUserBySubDistrict($pemungut_id)
     {
-        return $this
-            ->with(['category' => function ($query) use ($pemungut_id) {
-                $query->wherePivot('pemungut_id', $pemungut_id);
-            }])
-            ->whereIn('id', function ($query) use ($pemungut_id) {
-                $query->select('user_id')
-                    ->distinct()
-                    ->from('users_categories')
-                    ->where('pemungut_id', $pemungut_id);
-            })
-            ->withCount(['category'])
-            ->paginate(10);
+        $users = User::with(['category'])
+            ->whereHas('category', function ($query) use ($pemungut_id) {
+                $query->where('pemungut_id', $pemungut_id);
+            })->paginate(10);
+
+        return $users;
     }
 
     public function registerUser($validator)
