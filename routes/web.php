@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Category\CategoryController;
 use App\Http\Controllers\Home\HomeController;
+use App\Http\Controllers\Invoice\InvoiceController;
 use App\Http\Controllers\Report\ReportController;
 
 use App\Http\Controllers\Transaction\CashPaymentController;
@@ -64,7 +65,10 @@ Route::middleware(['auth', 'role:petugas_kabupaten'])->group(function () {
     // Cash Payment
     Route::put('transaction-cash/change/status', [CashPaymentController::class, 'changeDepositStatus'])->name('cash.payment.change.status');
     Route::get('transaction-cash/export', [CashPaymentController::class, 'export'])->name('transaction-cash.export');
-    Route::resource('transaction-cash', CashPaymentController::class);
+    Route::get('transaction-cash/status/wait', [CashPaymentController::class, 'indexWait'])->name('transaction-cash.status.index.wait');
+    Route::get('transaction-cash/status/confirmed', [CashPaymentController::class, 'indexConfirmed'])->name('transaction-cash.status.index.confirmed');
+    Route::get('transaction-cash/status/{status}', [CashPaymentController::class, 'index'])->name('transaction-cash.status.index');
+    Route::resource('transaction-cash', CashPaymentController::class)->except(['index']);
 
     // Non Cash Payment
     Route::get('transaction-noncash/export', [NonCashPaymentController::class, 'export'])->name('transaction-noncash.export');
@@ -73,8 +77,11 @@ Route::middleware(['auth', 'role:petugas_kabupaten'])->group(function () {
     Route::resource('transaction-noncash-waiting/{payment_via}/payment', NonCashPaymentWaitingController::class);
     Route::get('/transaction-noncash-waiting/{payment_via}/payment/excel', [NonCashPaymentWaitingController::class, 'excel_export']);
     Route::post('transaction-noncash-waiting/{payment_via}/payment/confirmation/selected', [NonCashPaymentWaitingController::class, 'confirmation_selected']);
-    
 
+
+
+    // Reports 
+    Route::resource('invoice',  InvoiceController::class);
 
     // Reports 
     Route::resource('reports',  ReportController::class);

@@ -86,7 +86,7 @@
                 <input type="hidden" name="pemungut_transaction_id"
                     value="{{ $cash->pemungut_transactions->pluck('id')->implode(',') }}">
                 <button type="submit" class="btn button-search btn-primary fs-8 px-3 py-2 my-2">Sudah Setor</button>
-                <a href="{{ route('transaction-cash.index') }}" class="btn btn-danger fs-8 px-3 py-2 my-2">Batal</a>
+                <a href="{{ route('transaction-cash.status.index.wait') }}" class="btn btn-danger fs-8 px-3 py-2 my-2">Batal</a>
             </form>
             <div class="col-lg-12 detail-transaction">
                 <table class="table fs-7 mt-2">
@@ -187,7 +187,7 @@
                     </div>
                 </div>
             </div>
-            <a href="{{ route('transaction-cash.index') }}" class="btn btn-danger fs-8 px-3 py-2 my-2">Kembali</a>
+            {{-- <a href="{{ route('transaction-cash.index') }}" class="btn btn-danger fs-8 px-3 py-2 my-2">Kembali</a> --}}
         @endif
     </div>
 @endsection

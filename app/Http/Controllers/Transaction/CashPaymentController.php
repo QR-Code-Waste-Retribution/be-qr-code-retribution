@@ -16,7 +16,8 @@ class CashPaymentController extends Controller
     public $pemungut_transactions;
     public $invoice;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->pemungut_transactions = new PemungutTransaction();
         $this->invoice = new Invoice();
     }
@@ -30,16 +31,40 @@ class CashPaymentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request, $status)
     {
         $search = $request->search ?? '';
         $month = $request->month ?? '';
         $sub_district = $request->sub_district ?? null;
         $invoice_monthly = $this->invoice->totalAmountUnpaidAndPaidInvoiceMonthly();
 
-        $pemungut_transactions = $this->pemungut_transactions->getAllTransaction($sub_district, $search);
+        $pemungut_transactions = $this->pemungut_transactions->getAllTransaction($sub_district, $search, $status);
 
-        return view('pages.transaction.cash.cash-payment', compact('pemungut_transactions', 'invoice_monthly'));
+        return view('pages.transaction.cash.cash-payment', compact('pemungut_transactions', 'invoice_monthly', 'status'));
+    }
+    public function indexWait(Request $request)
+    {
+        $search = $request->search ?? '';
+        $month = $request->month ?? '';
+        $sub_district = $request->sub_district ?? null;
+        $invoice_monthly = $this->invoice->totalAmountUnpaidAndPaidInvoiceMonthly();
+        $status = 0;
+        
+        $pemungut_transactions = $this->pemungut_transactions->getAllTransaction($sub_district, $search, 0);
+
+        return view('pages.transaction.cash.cash-payment', compact('pemungut_transactions', 'invoice_monthly', 'status'));
+    }
+    public function indexConfirmed(Request $request)
+    {
+        $search = $request->search ?? '';
+        $month = $request->month ?? '';
+        $sub_district = $request->sub_district ?? null;
+        $invoice_monthly = $this->invoice->totalAmountUnpaidAndPaidInvoiceMonthly();
+        $status = 1;
+
+        $pemungut_transactions = $this->pemungut_transactions->getAllTransaction($sub_district, $search, 1);
+
+        return view('pages.transaction.cash.cash-payment', compact('pemungut_transactions', 'invoice_monthly', 'status'));
     }
 
     public function show($id)
