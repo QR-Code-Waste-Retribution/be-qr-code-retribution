@@ -3,8 +3,10 @@
 
     <div class="d-flex align-items-center justify-content-between">
         <a href="{{ route('dashboard') }}" class="logo d-flex align-items-center">
-            <img src="{{ asset('assets/img/logo-' . strtolower(auth()->user()->district->name) .  '.png') }}" alt="">
-            <span class="d-none d-lg-block fs-6 ">Dinas Lingkungan Hidup Kabupaten {{ auth()->user()->district->name }}</span>
+            <img src="{{ asset('assets/img/logo-' . strtolower(auth()->user()->district->name) . '.png') }}"
+                alt="">
+            <span class="d-none d-lg-block fs-6 ">Dinas Lingkungan Hidup Kabupaten
+                {{ auth()->user()->district->name }}</span>
         </a>
         <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
@@ -93,45 +95,45 @@
         <li class="nav-item">
             <a class="nav-link collapsed" data-bs-target="#components-nav-transaction" data-bs-toggle="collapse"
                 href="#">
-                <i class="bi bi-menu-button-wide"></i><span>Data Transaksi</span><i
+                <i class="bi bi-clipboard2-data-fill"></i></i><span>Data Transaksi</span><i
                     class="bi bi-chevron-down ms-auto"></i>
             </a>
             <ul id="components-nav-transaction" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                 <li class="nav-item">
                     <a class="nav-link collapsed" data-bs-target="#components-nav-non-confirmation"
                         data-bs-toggle="collapse" href="#">
-                        <i class="bi bi-menu-button-wide"></i><span>Menunggu konfirmasi</span><i
+                        <i class="bi bi-hourglass-top fs-7"></i><span>Menunggu konfirmasi</span><i
                             class="bi bi-chevron-down ms-auto fs-6 me-2"></i>
                     </a>
                     <ul id="components-nav-non-confirmation" class="nav-content collapse">
                         <li class="ms-3">
                             <a href="{{ route('transaction-cash.status.index.wait') }}">
-                                <i class="bi bi-circle"></i><span>Pembayaran Tunai</span>
+                                <i class="bi bi-cash fs-7"></i><span class="fs-8">Pembayaran Tunai</span>
                             </a>
                         </li>
                         <li class="ms-3">
                             <a href="/transaction-noncash-waiting/{{ $payment_via = 'virtual_account' }}/payment">
-                                <i class="bi bi-circle"></i><span>Pembayaran Non-Tunai</span>
+                                <i class="bi bi-credit-card fs-7"></i><span class="fs-8">Pembayaran Non-Tunai</span>
                             </a>
                         </li>
                     </ul>
                 </li>
 
                 <li class="nav-item">
-                     <a class="nav-link collapsed" data-bs-target="#components-nav-accepted"
-                        data-bs-toggle="collapse" href="#">
-                        <i class="bi bi-menu-button-wide"></i><span>Sudah diterima</span><i
+                    <a class="nav-link collapsed" data-bs-target="#components-nav-accepted" data-bs-toggle="collapse"
+                        href="#">
+                        <i class="bi bi-receipt fs-7"></i></i><span>Sudah diterima</span><i
                             class="bi bi-chevron-down ms-auto fs-6 me-2"></i>
                     </a>
                     <ul id="components-nav-accepted" class="nav-content collapse ">
                         <li class="ms-3">
                             <a href="{{ route('transaction-cash.status.index.confirmed') }}">
-                                <i class="bi bi-circle"></i><span>Pembayaran Tunai</span>
+                                <i class="bi bi-cash fs-7"></i><span class="fs-8">Pembayaran Tunai</span>
                             </a>
                         </li>
                         <li class="ms-3">
                             <a href="{{ route('transaction-noncash.index') }}">
-                                <i class="bi bi-circle"></i><span>Pembayaran Non-Tunai</span>
+                                <i class="bi bi-credit-card fs-7"></i><span class="fs-8">Pembayaran Non-Tunai</span>
                             </a>
                         </li>
                     </ul>
@@ -139,21 +141,27 @@
             </ul>
 
         </li>
+        {{-- <li class="nav-item">
+            <a class="nav-link collapsed" href="{{ route('invoice.index') }}">
+                <i class="bi bi-receipt"></i>
+                <span>Tagihan</span>
+            </a>
+        </li> --}}
         <li class="nav-item">
             <a class="nav-link collapsed" href="{{ route('category.index') }}">
-                <i class="bi bi-person"></i>
+                <i class="bi bi-kanban-fill"></i>
                 <span>Management Kategori</span>
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link collapsed" href="{{ route('masyarakat.verification') }}">
-                <i class="bi bi-person"></i>
+                <i class="bi bi-person-check"></i>
                 <span>Verifikasi Akun Masyarakat Baru</span>
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link collapsed" href="{{ route('reports.index') }}">
-                <i class="bi bi-person"></i>
+                <i class="bi bi-file-earmark-binary-fill"></i>
                 <span>Catatan Laporan</span>
             </a>
         </li>

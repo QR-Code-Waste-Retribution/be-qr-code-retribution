@@ -111,7 +111,7 @@ class User extends Authenticatable
     public function category()
     {
         return $this->belongsToMany(Category::class, 'users_categories')
-            ->withPivot(['address', 'sub_district_id', 'pemungut_id']);
+            ->withPivot(['id', 'address', 'sub_district_id', 'pemungut_id']);
     }
 
     public function pemungut_category()

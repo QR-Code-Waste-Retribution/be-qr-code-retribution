@@ -21,13 +21,14 @@ class InvoiceTobaSeeder extends Seeder
             ->get();
 
         foreach ($users as $user) {
-            foreach ($user->category as $category) {
+            foreach ($user->category as $category) {          
                 Invoice::create([
                     'category_id' => $category->pivot->category_id,
                     'price' => $category->price,
                     'user_id' => $user->id,
                     'uuid_user' => $user->uuid,
                     'masyarakat_transaction_id' => null,
+                    'users_categories_id' => $category->pivot->id,
                     'status' => 0,
                 ]);
             }

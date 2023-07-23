@@ -49,7 +49,7 @@
 
                     <!-- Revenue Card -->
                     <div class="col-xxl-3 col-md-5">
-                        <a href="{{ route('dashboard.income') }}">
+                        <a href="{{ route('invoice.index') }}">
                             <div class="card info-card revenue-card">
                                 <div class="card-body">
                                     <h5 class="card-title">Total yang harus tercapai di Bulan Ini</h5>

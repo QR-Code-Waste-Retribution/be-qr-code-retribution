@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Category\CategoryController;
 use App\Http\Controllers\Home\HomeController;
+use App\Http\Controllers\Invoice\InvoiceController;
 use App\Http\Controllers\Report\ReportController;
 
 use App\Http\Controllers\Transaction\CashPaymentController;
@@ -77,6 +78,9 @@ Route::middleware(['auth', 'role:petugas_kabupaten'])->group(function () {
     Route::post('transaction-noncash-waiting/{payment_via}/payment/confirmation/selected', [NonCashPaymentWaitingController::class, 'confirmation_selected']);
 
 
+
+    // Reports 
+    Route::resource('invoice',  InvoiceController::class);
 
     // Reports 
     Route::resource('reports',  ReportController::class);

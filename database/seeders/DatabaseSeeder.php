@@ -25,13 +25,13 @@ class DatabaseSeeder extends Seeder
             CategorySamosirSeeder::class,
         ]);
 
-        // $this->call([
-        //     UserTobaSeeder::class,
-        //     UserSimalungunSeeder::class,
-        //     UserSamosirSeeder::class,
+        $this->call([
+            UserTobaSeeder::class,
+            UserSimalungunSeeder::class,
+            UserSamosirSeeder::class,
 
-        //     InvoiceTobaSeeder::class,
-        // ]);
+            InvoiceTobaSeeder::class,
+        ]);
 
         // UserCategorySeeder::class,
         // TestUserCategorySeeder::class,

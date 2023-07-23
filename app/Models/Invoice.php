@@ -26,6 +26,11 @@ class Invoice extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function users_categories()
+    {
+        return $this->belongsTo(UserCategories::class, 'users_categories_id');
+    }
+
 
     public function totalAmountUnpaidAndPaidInvoiceMonthly()
     {
