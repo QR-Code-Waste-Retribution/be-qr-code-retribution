@@ -8,7 +8,7 @@
 
 @section('page_title', 'TAGIHAN WAJIB RETRIBUSI')
 @section('page_subtitle', 'Periksa kesesuaian data dengan tagihan yang akan di dibayarkan oleh masyarakat.')
-@section('breadcrumb_title', 'User')
+@section('breadcrumb_title', 'Tagihan')
 
 @section('body')
     <div class="col-lg-12">
