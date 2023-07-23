@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Transaction;
 
 use App\Http\Controllers\Controller;
 use App\Models\Transaction;
+use App\Exports\NonCashPaymentWaitingExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 
 class NonCashPaymentWaitingController extends Controller
@@ -85,5 +87,18 @@ class NonCashPaymentWaitingController extends Controller
         }
 
         return back()->with('success', 'Seluruh pembayaran telah berhasil dikonfirmasi');
+    }
+
+    public function export_excel($payment_via){
+
+        if ($payment_via == "virtual_account") {
+            $transactions =  $this->transaction->transactionVirtualAccount();
+        }elseif ($payment_via == "qris"){
+            $transactions =  $this->transaction->transactionQRIS();
+        }else {
+            return abort(404);
+        }
+
+        return NonCashPaymentWaiting($transaction);
     }
 }

@@ -71,6 +71,7 @@ Route::middleware(['auth', 'role:petugas_kabupaten'])->group(function () {
     Route::get('transaction-noncash/{sub_district_id}', [NonCashPaymentController::class, 'showNonCashTransactionBySubDistrictId'])->name('transaction-noncash.sub_district_id');
     Route::resource('transaction-noncash', NonCashPaymentController::class)->only(['index']);
     Route::resource('transaction-noncash-waiting/{payment_via}/payment', NonCashPaymentWaitingController::class);
+    Route::get('/transaction-noncash-waiting/{payment_via}/payment/excel', [NonCashPaymentWaitingController::class, 'excel_export']);
     Route::post('transaction-noncash-waiting/{payment_via}/payment/confirmation/selected', [NonCashPaymentWaitingController::class, 'confirmation_selected']);
     
 
