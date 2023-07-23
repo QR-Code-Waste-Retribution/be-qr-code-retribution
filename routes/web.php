@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Notification\NotificationController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Category\CategoryController;
 use App\Http\Controllers\Home\HomeController;
@@ -84,6 +85,12 @@ Route::middleware(['auth', 'role:petugas_kabupaten'])->group(function () {
 
     // Reports 
     Route::resource('reports',  ReportController::class);
+
+    // Notification
+    Route::prefix('notification')->group(function () {
+        Route::post('/send/token', [NotificationController::class, 'sendNotification'])->name('notification.send.token');
+    });
+
 });
 
 

@@ -82,12 +82,12 @@
             <ul id="components-nav-user" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                 <li>
                     <a href="{{ route('masyarakat.index') }}">
-                        <i class="bi bi-circle"></i><span>Masyarakat</span>
+                        <i class="bi bi-person-badge-fill fs-7"></i><span>Masyarakat</span>
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('pemungut.index') }}">
-                        <i class="bi bi-circle"></i><span>Petugas Pemungut</span>
+                        <i class="bi bi-person-badge-fill fs-7"></i><span>Petugas Pemungut</span>
                     </a>
                 </li>
             </ul>

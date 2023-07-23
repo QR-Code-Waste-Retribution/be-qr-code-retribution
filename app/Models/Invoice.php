@@ -31,6 +31,27 @@ class Invoice extends Model
         return $this->belongsTo(UserCategories::class, 'users_categories_id');
     }
 
+    public function generate(){
+        $users = User::where('district_id', auth()->user()->district_id)
+            ->where('role_id', 1)
+            ->with(['category'])
+            ->get();
+
+        foreach ($users as $user) {
+            foreach ($user->category as $category) {          
+                $this->create([
+                    'category_id' => $category->pivot->category_id,
+                    'price' => $category->price,
+                    'user_id' => $user->id,
+                    'uuid_user' => $user->uuid,
+                    'masyarakat_transaction_id' => null,
+                    'users_categories_id' => $category->pivot->id,
+                    'status' => 0,
+                ]);
+            }
+        }
+    }
+
 
     public function totalAmountUnpaidAndPaidInvoiceMonthly()
     {
