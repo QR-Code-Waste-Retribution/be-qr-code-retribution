@@ -39,6 +39,9 @@ Route::middleware(['auth', 'role:petugas_kabupaten'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/pemasukan', [HomeController::class, 'income'])->name('dashboard.income');
+    Route::get('/profile', [HomeController::class, 'profile'])->name('user.profile');
+    Route::get('/change-password', [HomeController::class, 'changePasswordView'])->name('user.change.password');
+    Route::post('/change-password', [HomeController::class, 'changePassword'])->name('user.change.password.put');
 
     // User Management
     Route::prefix('user')->group(function () {
