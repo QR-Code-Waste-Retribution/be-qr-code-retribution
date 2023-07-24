@@ -4,7 +4,7 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CategoriesController;
 use App\Http\Controllers\API\DokuController;
 use App\Http\Controllers\API\InvoiceController;
-use App\Http\Controllers\API\Notification\NotificationController;
+use App\Http\Controllers\Notification\NotificationController;
 use App\Http\Controllers\API\PemungutTransactionController;
 use App\Http\Controllers\API\SubDistrictController;
 use App\Http\Controllers\API\TransactionController;

@@ -38,9 +38,9 @@
                     </li>
 
                     <li>
-                        <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+                        <a class="dropdown-item d-flex align-items-center" href="{{ route('user.profile') }}">
                             <i class="bi bi-person"></i>
-                            <span>My Profile</span>
+                            <span>Akun</span>
                         </a>
                     </li>
                     <li>
@@ -50,7 +50,7 @@
                     <li>
                         <a class="dropdown-item d-flex align-items-center" href="{{ route('logout') }}">
                             <i class="bi bi-box-arrow-right"></i>
-                            <span>Sign Out</span>
+                            <span>Keluar</span>
                         </a>
                     </li>
 
@@ -82,12 +82,12 @@
             <ul id="components-nav-user" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                 <li>
                     <a href="{{ route('masyarakat.index') }}">
-                        <i class="bi bi-circle"></i><span>Masyarakat</span>
+                        <i class="bi bi-person-badge-fill fs-7"></i><span>Masyarakat</span>
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('pemungut.index') }}">
-                        <i class="bi bi-circle"></i><span>Petugas Pemungut</span>
+                        <i class="bi bi-person-badge-fill fs-7"></i><span>Petugas Pemungut</span>
                     </a>
                 </li>
             </ul>

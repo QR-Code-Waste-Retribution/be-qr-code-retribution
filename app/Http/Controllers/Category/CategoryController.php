@@ -74,8 +74,6 @@ class CategoryController extends Controller
                 ->withInput();
         }
 
-        return;
-
         Category::create([
             'name' => $request->nama_kategori,
             'description' => fake()->text(),

@@ -263,6 +263,7 @@ class Transaction extends Model
             'uuid_user' => null,
             'masyarakat_transaction_id' => $transaction->id,
             'status' => 1,
+            'users_categories_id' => null,
         ]);
 
         return [

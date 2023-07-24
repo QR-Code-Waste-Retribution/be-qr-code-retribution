@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Notification\NotificationController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Category\CategoryController;
 use App\Http\Controllers\Home\HomeController;
@@ -38,6 +39,9 @@ Route::middleware(['auth', 'role:petugas_kabupaten'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/pemasukan', [HomeController::class, 'income'])->name('dashboard.income');
+    Route::get('/profile', [HomeController::class, 'profile'])->name('user.profile');
+    Route::get('/change-password', [HomeController::class, 'changePasswordView'])->name('user.change.password');
+    Route::post('/change-password', [HomeController::class, 'changePassword'])->name('user.change.password.put');
 
     // User Management
     Route::prefix('user')->group(function () {
@@ -88,6 +92,12 @@ Route::middleware(['auth', 'role:petugas_kabupaten'])->group(function () {
 
     // Reports 
     Route::resource('reports',  ReportController::class);
+
+    // Notification
+    Route::prefix('notification')->group(function () {
+        Route::post('/send/token', [NotificationController::class, 'sendNotification'])->name('notification.send.token');
+    });
+
 });
 
 
