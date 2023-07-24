@@ -624,7 +624,7 @@ class Transaction extends Model
         return $this->with(['checkout'])
             ->with(['invoice.category'])
             ->whereHas('checkout')
-            ->where('status', 0)
+            ->where('status', 1)
             ->where('verification_status', 0)
             ->get();
     }
