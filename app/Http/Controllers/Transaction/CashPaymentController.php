@@ -52,7 +52,7 @@ class CashPaymentController extends Controller
         
         $pemungut_transactions = $this->pemungut_transactions->getAllTransaction($sub_district, $search, 0);
 
-        return view('pages.transaction.cash.cash-payment', compact('pemungut_transactions', 'invoice_monthly', 'status'));
+        return view('pages.transaction.cash.index-waiting', compact('pemungut_transactions', 'invoice_monthly', 'status'));
     }
     public function indexConfirmed(Request $request)
     {
@@ -119,7 +119,6 @@ class CashPaymentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
     }
 
     /**
@@ -160,4 +159,36 @@ class CashPaymentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
+     public function confirmation_selected(Request $request){
+        // return $request;
+        $data = [
+            'input_count' => 'required'
+        ];
+
+        $validasi = $request->validate($data);
+
+        $arr_item = explode(",", $request->input_count);
+
+        for($i = 0; $i < count($arr_item); $i++){
+           
+            $transaction = Transaction::find( $arr_item[$i]);
+            $transaction->update([
+                'verification_status' => 1
+            ]);
+        }
+
+        return back()->with('success', 'Seluruh pembayaran telah berhasil dikonfirmasi');
+    }
+
+    public function update_waiting(Request $request, $id)
+    {
+        return $id;
+        $transaction = Transaction::where('pemungut_transaction_id',$id)->get();
+        $transaction->update([
+            'verification_status' => 1
+        ]);
+
+        return back()->with('success', 'Transaksi telah berhasil diverifikasi');
+    }
 }

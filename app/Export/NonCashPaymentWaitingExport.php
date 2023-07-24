@@ -1,14 +1,16 @@
 <?php
-use App\Models\Transaction;
+
+namespace App\Export;
+
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 
 
 class NonCashPaymentWaitingExport implements FromView{
     protected $transaction;
-    protected $penilaian;
 
-    public function __construct(Transaction $transaction)
+    public function __construct(Collection $transaction)
     {
         $this->transaction = $transaction;
     }
@@ -16,7 +18,7 @@ class NonCashPaymentWaitingExport implements FromView{
     public function view(): View
     {
         return view('pages.transaction.noncash-waiting.data_table_format', [
-            'transactions' => $transactions,
+            'transactions' => $this->transaction,
         ]);
     }
 }
