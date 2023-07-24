@@ -16,7 +16,9 @@ class Report extends Model
 
     public function showAll()
     {
-        return $this->with(['user:id,name,phoneNumber'])->paginate(10);
+        return $this->with(['user:id,name,phoneNumber'])
+            ->where('district_id', auth()->user()->district_id)
+            ->paginate(10);
     }
 
     public function user()
@@ -32,15 +34,18 @@ class Report extends Model
             $file = $request->file('image');
 
             $fileFormatPath = new FileFormatPath('reports', $file);
+            $priceWithoutDecimals = str_replace(array(',', '.00'), '', $input['price']);
+            $price = (int)$priceWithoutDecimals;
 
-            $report = $this->create([
+            $this->create([
                 'name' => $input['reports_name'],
-                'price' => $input['price'],
+                'price' => $price,
                 'notes' => $input['notes'],
                 'payment_file' => $fileFormatPath->storeFile(),
                 'reports_date' => $input['date'],
                 'sts_no' => $input['sts_no'],
                 'pemungut_id' => $input['pemungut_id'],
+                'district_id' => auth()->user()->district_id,
             ]);
         } catch (Throwable $e) {
             return response()->json(['error' => $e->getMessage()], 500);

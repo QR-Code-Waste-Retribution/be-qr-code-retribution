@@ -37,7 +37,7 @@ class MasyarakatController extends Controller
         $sub_district = $request->sub_district ?? null;
 
         $masyarakat = User::where('role_id', 1)
-            ->where('district_id', 1)
+            ->where('district_id', auth()->user()->district_id)
             ->where(function (Builder $query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%')
                     ->orWhere('phoneNumber', 'like', '%' . $search . '%');
@@ -51,7 +51,7 @@ class MasyarakatController extends Controller
         $masyarakat = $masyarakat->with('sub_district')
             ->paginate(10);
 
-        $sub_districts = SubDistrict::where('district_id', 1)->get();
+        $sub_districts = SubDistrict::where('district_id', auth()->user()->district_id)->get();
 
         return view('pages.user.masyarakat.index', compact('masyarakat', 'sub_districts'));
     }

@@ -50,7 +50,7 @@
                         <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
 
                             <div class="d-flex justify-content-center py-4 flex-column align-items-center">
-                                <img src="{{ asset('assets/img/logo_toba.png') }}" alt="" style="width: 150px">
+                                <img src="{{ asset('assets/img/logo.png') }}" alt="" style="width: 150px">
                                 <br>
                                 <a href="index.html" class="logo d-flex align-items-center w-auto">
                                     <span class="d-none d-lg-block">Sistem Retribusi Sampah</span>

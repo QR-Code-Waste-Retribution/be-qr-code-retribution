@@ -19,35 +19,42 @@
 
 @section('body')
     <div class="col-lg-12 detail-transaction">
-        <table>
-            <tbody class="fs-7">
-                <tr>
-                    <td>Nama Petugas</td>
-                    <td>:</td>
-                    <td>{{ $user->name }}</td>
-                </tr>
-                <tr>
-                    <td>Jenis Kelamin</td>
-                    <td>:</td>
-                    <td>{{ $user->gender }}</td>
-                </tr>
-                <tr>
-                    <td>Nomor Telepon</td>
-                    <td>:</td>
-                    <td>{{ $user->phoneNumber }}</td>
-                </tr>
-                <tr>
-                    <td>Kecamatan</td>
-                    <td>:</td>
-                    <td>{{ $user->sub_district->name }}</td>
-                </tr>
-                <tr>
-                    <td>Kabupaten</td>
-                    <td>:</td>
-                    <td>{{ $user->district->name }}</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="row">
+            <div class="col-md-4">
+                <table>
+                    <tbody class="fs-7">
+                        <tr>
+                            <td>Nama Petugas</td>
+                            <td>:</td>
+                            <td>{{ $user->name }}</td>
+                        </tr>
+                        <tr>
+                            <td>Jenis Kelamin</td>
+                            <td>:</td>
+                            <td>{{ $user->gender }}</td>
+                        </tr>
+                        <tr>
+                            <td>Nomor Telepon</td>
+                            <td>:</td>
+                            <td>{{ $user->phoneNumber }}</td>
+                        </tr>
+                        <tr>
+                            <td>Kecamatan</td>
+                            <td>:</td>
+                            <td>{{ $user->sub_district->name }}</td>
+                        </tr>
+                        <tr>
+                            <td>Kabupaten</td>
+                            <td>:</td>
+                            <td>{{ $user->district->name }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-6">
+                {!! QrCode::size(150)->generate($user->uuid) !!}
+            </div>
+        </div>
 
         <table class="mt-4 table table-striped table-hover table-bordered">
             <thead class="fs-7">

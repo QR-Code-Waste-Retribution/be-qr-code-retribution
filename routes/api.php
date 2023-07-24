@@ -4,6 +4,7 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CategoriesController;
 use App\Http\Controllers\API\DokuController;
 use App\Http\Controllers\API\InvoiceController;
+use App\Http\Controllers\Notification\NotificationController;
 use App\Http\Controllers\API\PemungutTransactionController;
 use App\Http\Controllers\API\SubDistrictController;
 use App\Http\Controllers\API\TransactionController;
@@ -22,12 +23,13 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
 Route::name('api.')->group(function () {
-    
+
     Route::post('login', [AuthController::class, 'login']);
-    
+
     // User
-    
+
     Route::prefix('user')->group(function () {
         Route::post('/otp/check', [AuthController::class, 'checkOTP'])->name('user.check.otp');
         Route::post('/forget-password', [AuthController::class, 'forgetPassword']);
@@ -36,24 +38,23 @@ Route::name('api.')->group(function () {
         Route::get('/{user_id}', [UserController::class, 'getDetailMasyarakat']);
         Route::put('/edit/{user_id}', [UserController::class, 'editMasyarakatProfile']);
         Route::put('/status/change', [MasyarakatController::class, 'changeStatusUser']);
-        
+
         Route::put('/change/{id}/password', [UserController::class, 'changePassword']);
         Route::put('/edit/{id}/profile', [UserController::class, 'editProfile']);
-        
+
         Route::get('/all/{pemungut_id}', [UserController::class, 'getAllUserBySubDistrict']);
         Route::post('/add', [AuthController::class, 'register']);
-        
     });
-    
-    
+
+
     // Invoice
     Route::get('/invoice/users/all/{pemungut_id}', [InvoiceController::class, 'getAllUserForInvoicePaidAndUnpaid']);
     Route::get('/invoice/total/compensated/', [InvoiceController::class, 'getTotalAmountUnpaidAndPaidInvoice']);
     Route::post('people/{uuid}/invoice', [InvoiceController::class, 'getInvoiceOfUserByUUID']);
     Route::resource('invoice', InvoiceController::class);
-    
+
     // Transaction
-    
+
     Route::prefix('transaction')->group(function () {
         Route::get('/pemungut/{id}', [TransactionController::class, 'historyTransactionPemungut'])->name('transaction.history.pemungut');
         Route::get('/masyarakat/{id}', [TransactionController::class, 'getHistoryTransactionMasyarakat'])->name('transaction.history.masyarakat');
@@ -63,23 +64,28 @@ Route::name('api.')->group(function () {
         Route::post('/store/additional', [TransactionController::class, 'storeAddtionalRetribution'])->name('transaction.store.additional');
         Route::put('/update/non-cash/status/{transaction_id}', [TransactionController::class, 'updateNonCashStatusAfterPayment'])->name('transaction.store.update.non-cash');
     });
-    
+
     Route::resource('transaction', TransactionController::class);
-    
+
     // Pemungut Transaction
     Route::resource('pemungut_transaction', PemungutTransactionController::class);
-    
+
     // SubDistrict
     Route::resource('sub_district', SubDistrictController::class);
-    
+
     // Notification Payment Doku
     Route::post('/payments/notifications', [DokuController::class, 'notifications'])->name('doku.notification');
-    
+
     // Category
-    
     Route::resource('category', CategoriesController::class);
     Route::get('/category/additional/{district_id}', [CategoriesController::class, 'getCategoriesAdditional'])->name('category.additional.district');
-    
+    Route::get('/category/monthly/{district_id}', [CategoriesController::class, 'getCategoriesMonthly'])->name('category.monthly.district');
+
+    // Notification
+    Route::prefix('notification')->group(function () {
+        Route::put('/token/{id}', [NotificationController::class, 'saveToken'])->name('notification.save.token');
+    });
+
     Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         return $request->user();
     });

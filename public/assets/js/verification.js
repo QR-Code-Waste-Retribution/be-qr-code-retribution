@@ -11,6 +11,9 @@ window.addEventListener("load", function () {
     const button_save = document.getElementById(
         "button_save"
     );
+    const verification_button = document.getElementById(
+        "verification_button"
+    );
 
     checkMasyarakat.forEach((el) => {
         el.addEventListener("change", function () {

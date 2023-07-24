@@ -83,7 +83,7 @@
                                 <td>
                                     <input type="checkbox" class="form-check select-items" onclick="check_item(event)" value="{{$item->id}}">
                                 </td>
-                                <td data-bs-toggle="modal" data-bs-target="#modal_detail_{{$item->id}}"><a class="fw-semibold link-dark" href="#"> {{$item->pemungut->name}} </a></td>
+                                <td data-bs-toggle="modal" data-bs-target="#modal_detail_{{$item->id}}"><a class="fw-semibold link-dark" href="#"> {{$item->user->name}} </a></td>
                                 <td>
                                     @if ($item->invoice)
                                         @foreach ($item->invoice as $invoice)
@@ -106,7 +106,7 @@
                                     <div class="modal-content">
                                         <div class="modal-body text-center">
                                         <div class="p-4">
-                                            <h5 class="fw-semibold text-secondary">Apakah Pembayaran {{$item->pemungut->name}} senilai Rp.{{number_format($item->price, 0)}}  akan dikonfirmasi?</h5>
+                                            <h5 class="fw-semibold text-secondary">Apakah Pembayaran {{$item->user->name}} senilai Rp.{{number_format($item->price, 0)}}  akan dikonfirmasi?</h5>
                                         </div>
                                             <img src="{{asset('/assets/img/konfirmasiii 1.png')}}" alt="">
                                         </div>
@@ -188,7 +188,7 @@
                                                 :
                                             </div>
                                             <div class="col-md-7">
-                                                {{$item->pemungut->name}}
+                                                {{$item->user->name}}
                                             </div>
                                         </div>
                                         <div class="row py-1 text-center">

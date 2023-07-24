@@ -108,7 +108,7 @@ class PemungutTransaction extends Model
 
         foreach ($deposit as $item) {
             $response[$item['status_deposit']] = [
-                'total' => $item['total_amount'],
+                'total' => (int)$item['total_amount'],
                 'date' =>  date('d F Y', strtotime($item['updated_at']))
             ];
         }
@@ -144,15 +144,24 @@ class PemungutTransaction extends Model
             ->whereRaw('MONTH(pemungut_transactions.updated_at) = MONTH(CURRENT_DATE())')
             ->groupBy('pemungut_transactions.status')
             ->get();
+        $response = [
+            'already_deposited' => [
+                'total' => 0,
+                'date' =>  null,
+            ],
+            'not_yet_deposited' => [
+                'total' => 0,
+                'date' =>  null,
+            ],
+        ];
 
-        return collect($deposit)->mapWithKeys(function ($item) {
-            return [
-                $item['status_deposit'] => [
-                    'total' => $item['total_amount'],
-                    'date' =>  date('d F Y', strtotime($item['updated_at']))
-                ]
+        foreach ($deposit as $item) {
+            $response[$item['status_deposit']] = [
+                'total' => (int)$item['total_amount'],
+                'date' =>  date('d F Y', strtotime($item['updated_at']))
             ];
-        })->toArray();
+        }
+        return $response;
     }
 
     public function getDepositPemungutById($pemungut_id)
@@ -182,7 +191,7 @@ class PemungutTransaction extends Model
             ->groupBy('pemungut_id', 'status', 'date', 'id');
     }
 
-    public function getAllTransaction($sub_district, $search)
+    public function getAllTransaction($sub_district, $search, $status)
     {
         $pemungut_transactions = User::where('role_id', 2)
             ->with([
@@ -200,9 +209,10 @@ class PemungutTransaction extends Model
             ->where(function (Builder $query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%');
             })
-            ->withCount(['pemungut_transactions' => function ($query) {
-                $query->where('status', 0);
-            }]);
+            ->withCount(['pemungut_transactions' => function ($query) use ($status) {
+                $query->where('status', $status);
+            }])
+            ->having('pemungut_transactions_count', '>', 0);
 
         if ($sub_district && $sub_district != 'all') {
             $pemungut_transactions = $pemungut_transactions->where('sub_district_id', $sub_district);
@@ -298,7 +308,7 @@ class PemungutTransaction extends Model
                 ->whereIn('pt.pemungut_id', function ($query) {
                     $query->select('id')
                         ->from('users')
-                        ->where('district_id', 1)
+                        ->where('district_id', auth()->user()->district_id)
                         ->where('role_id', 2);
                 })
                 ->whereBetween('pt.updated_at', [

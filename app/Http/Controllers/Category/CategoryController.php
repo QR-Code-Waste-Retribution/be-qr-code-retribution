@@ -38,7 +38,8 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        return view('pages.category.add');
+        $types = config('types_categories');
+        return view('pages.category.add', compact('types'));
     }
 
     /**
@@ -50,13 +51,21 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nama_kategori' => 'required',
+            'nama_kategori' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $existingCategory = Category::whereRaw('LOWER(name) = ?', [strtolower($value)])->first();
+                    if ($existingCategory) {
+                        $fail('kategori sudah ada');
+                    }
+                }
+            ],
             'harga_tarif' => 'required',
             'tipe_pembayaran_kategori' => 'required',
         ], [
-            'required' => 'Input :attribute tidak boleh kosong',
+            'required' => ':attribute tidak boleh kosong',
         ]);
-
+        
 
         if ($validator->fails()) {
             return redirect()

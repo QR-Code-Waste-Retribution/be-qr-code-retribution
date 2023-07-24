@@ -46,7 +46,7 @@ class AuthController extends Controller
 
       return $this->createNewToken($token);
     } catch (Exception $err) {
-      return $this->errorResponse('', $err->getMessage(), 401);
+      return $this->errorResponse('', $err->getMessage(), 500);
     }
   }
 
@@ -56,15 +56,15 @@ class AuthController extends Controller
     try {
       $validator = Validator::make($request->all(), [
         "name" => "required",
-        "nik" => "unique:users",
+        "nik" => "unique:users|max:16|min:16",
         "username" => "required|unique:users",
-        "email" => "required|unique:users",
+        "email" => "required|email|unique:users",
         "gender" => "required",
-        "phoneNumber" => "required|unique:users",
+        "phoneNumber" => "required|unique:users|min:11|max:15",
         "district_id" => "required",
         "sub_district_id" => "required",
         "category_id" => "required",
-        "address" => "required",
+        "address" => "required|min:3",
         "pemungut_id" => "required",
       ], [
         'required' => ':attribute tidak boleh kosong',
@@ -72,6 +72,10 @@ class AuthController extends Controller
         'name.required' => 'nama tidak boleh kosong',
         'required' => ':attribute tidak boleh kosong',
         'unique' => ':attribute sudah digunakan',
+        'min' => ':attribute harus memiliki minimal :min karakter',
+        'max' => ':attribute harus memiliki maximal :max karakter',
+        'phoneNumber.min' => ':attribute harus memiliki minimal :min karakter',
+        'phoneNumber.max' => ':attribute harus memiliki maximal :max karakter',
         'phoneNumber.unique' => 'nomor telepon sudah digunakan',
       ]);
 
@@ -94,6 +98,10 @@ class AuthController extends Controller
   {
     $user = auth()->user();
 
+    if (!$user->account_status) {
+      return $this->errorResponse([], "Akun anda belum diaktifkan!!", 403);
+    }
+
     if (!$user->verification_status) {
       return $this->errorResponse([], "Akun anda belum teverifikasi!!", 403);
     }
@@ -111,9 +119,10 @@ class AuthController extends Controller
   {
     try {
       $validator = Validator::make($request->all(), [
-        "email" => "required",
+        "email" => "required|email",
       ], [
         'required' => ':attribute tidak boleh kosong',
+        'email' => ':attribute format salah',
       ]);
 
       if ($validator->fails()) {

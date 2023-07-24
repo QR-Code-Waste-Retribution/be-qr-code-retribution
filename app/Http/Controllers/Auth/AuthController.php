@@ -28,7 +28,7 @@ class AuthController extends Controller
         }
 
         return redirect()->back()->withErrors([
-            'messages' => 'Username dan password yang anda masukkan tidak ada',
+            'messages' => 'Username atau password yang anda masukkan salah',
         ])->withInput();
     }
 

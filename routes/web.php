@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\Notification\NotificationController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Category\CategoryController;
 use App\Http\Controllers\Home\HomeController;
+use App\Http\Controllers\Invoice\InvoiceController;
 use App\Http\Controllers\Report\ReportController;
 
 use App\Http\Controllers\Transaction\CashPaymentController;
@@ -37,6 +39,9 @@ Route::middleware(['auth', 'role:petugas_kabupaten'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/pemasukan', [HomeController::class, 'income'])->name('dashboard.income');
+    Route::get('/profile', [HomeController::class, 'profile'])->name('user.profile');
+    Route::get('/change-password', [HomeController::class, 'changePasswordView'])->name('user.change.password');
+    Route::post('/change-password', [HomeController::class, 'changePassword'])->name('user.change.password.put');
 
     // User Management
     Route::prefix('user')->group(function () {
@@ -64,7 +69,10 @@ Route::middleware(['auth', 'role:petugas_kabupaten'])->group(function () {
     // Cash Payment
     Route::put('transaction-cash/change/status', [CashPaymentController::class, 'changeDepositStatus'])->name('cash.payment.change.status');
     Route::get('transaction-cash/export', [CashPaymentController::class, 'export'])->name('transaction-cash.export');
-    Route::resource('transaction-cash', CashPaymentController::class);
+    Route::get('transaction-cash/status/wait', [CashPaymentController::class, 'indexWait'])->name('transaction-cash.status.index.wait');
+    Route::get('transaction-cash/status/confirmed', [CashPaymentController::class, 'indexConfirmed'])->name('transaction-cash.status.index.confirmed');
+    Route::get('transaction-cash/status/{status}', [CashPaymentController::class, 'index'])->name('transaction-cash.status.index');
+    Route::resource('transaction-cash', CashPaymentController::class)->except(['index']);
 
     // Non Cash Payment
     Route::get('transaction-noncash/export', [NonCashPaymentController::class, 'export'])->name('transaction-noncash.export');
@@ -72,11 +80,20 @@ Route::middleware(['auth', 'role:petugas_kabupaten'])->group(function () {
     Route::resource('transaction-noncash', NonCashPaymentController::class)->only(['index']);
     Route::resource('transaction-noncash-waiting/{payment_via}/payment', NonCashPaymentWaitingController::class);
     Route::post('transaction-noncash-waiting/{payment_via}/payment/confirmation/selected', [NonCashPaymentWaitingController::class, 'confirmation_selected']);
-    
+
 
 
     // Reports 
+    Route::resource('invoice',  InvoiceController::class);
+
+    // Reports 
     Route::resource('reports',  ReportController::class);
+
+    // Notification
+    Route::prefix('notification')->group(function () {
+        Route::post('/send/token', [NotificationController::class, 'sendNotification'])->name('notification.send.token');
+    });
+
 });
 
 

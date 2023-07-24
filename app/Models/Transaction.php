@@ -98,6 +98,7 @@ class Transaction extends Model
             ->with(['transactions' => function ($query) {
                 $query->selectRaw('sub_district_id, SUM(price) as total')
                     ->where('type', 'NONCASH')
+                    ->where('verification_status', 1)
                     ->whereRaw('MONTH(created_at) = MONTH(CURRENT_DATE())')
                     ->groupBy('sub_district_id');
             }])
@@ -262,6 +263,7 @@ class Transaction extends Model
             'uuid_user' => null,
             'masyarakat_transaction_id' => $transaction->id,
             'status' => 1,
+            'users_categories_id' => null,
         ]);
 
         return [
@@ -353,23 +355,23 @@ class Transaction extends Model
             ]);
         }
 
-        // if ($data['method']['payments'] == 'CHECKOUT') {
-        //     $order = $token['data']['response']['order'];
-        //     $payment = $token['data']['response']['payment'];
-        //     $uuid = $token['data']['response']['uuid'];
+        if ($data['method']['payments'] == 'CHECKOUT') {
+            $order = $token['data']['response']['order'];
+            $payment = $token['data']['response']['payment'];
+            $uuid = $token['data']['response']['uuid'];
 
-        //     DokuCheckout::create([
-        //         'currency' => $order['currency'],
-        //         'session_id' => $order['session_id'],
-        //         'payment_method_types' => json_encode($payment['payment_method_types']),
-        //         'payment_due_date' => $payment['payment_due_date'],
-        //         'payment_token_id' => $payment['token_id'],
-        //         'payment_url' => $payment['url'],
-        //         'payment_expired_date' => $payment['expired_date'],
-        //         'uuid' => $uuid,
-        //         'masyarakat_transaction_id' => $transactions->id
-        //     ]);
-        // }
+            DokuCheckout::create([
+                'currency' => $order['currency'],
+                'session_id' => $order['session_id'],
+                'payment_method_types' => json_encode($payment['payment_method_types']),
+                'payment_due_date' => $payment['payment_due_date'],
+                'payment_token_id' => $payment['token_id'],
+                'payment_url' => $payment['url'],
+                'payment_expired_date' => $payment['expired_date'],
+                'uuid' => $uuid,
+                'masyarakat_transaction_id' => $transactions->id
+            ]);
+        }
 
         $token['data']['merchant.transaction_id'] = $transactions['id'];
 
@@ -483,7 +485,7 @@ class Transaction extends Model
             ->whereIn('sub_district_id', function ($query) {
                 $query->select('id')
                     ->from('sub_districts')
-                    ->where('district_id', 1);
+                    ->where('district_id', auth()->user()->district_id);
             })
             ->where('status', 1)
             ->whereYear('date', $current_year)
@@ -520,14 +522,46 @@ class Transaction extends Model
                     ->where('district_id', auth()->user()->district_id);
             })
             ->whereRaw('MONTH(created_at) = MONTH(CURRENT_DATE())')
+            ->where('verification_status', 1)
             ->groupBy('type', 'created_at')
             ->get();
 
-        $income = collect($transactions)->map(function ($item) {
-            return [strtolower($item['type']) => (int)$item['total'] - ($item['count'] * 3500)];
-        })->collapse();
+        $income = $transactions->groupBy('type')
+            ->map(function ($items) {
+                return $items->sum('total');
+            });
 
         return $income;
+    }
+
+    public function sumTransactionByTypeCustom()
+    {
+        $transactions = $this
+            ->select(["type", DB::raw("
+            CASE
+                WHEN masyarakat_transactions.verification_status = 0 THEN 'not_verified'
+                WHEN masyarakat_transactions.verification_status = 1 THEN 'verified'
+            END as verification_status"),])
+            ->selectRaw('SUM(price) as total')
+            ->selectRaw('COUNT(type) as count')
+            ->whereIn('user_id', function ($query) {
+                $query->select('id')
+                    ->from('users')
+                    ->where('role_id', 1)
+                    ->where('district_id', auth()->user()->district_id);
+            })
+            ->where('status', 1)
+            ->whereRaw('MONTH(created_at) = MONTH(CURRENT_DATE())')
+            ->groupBy('type', 'created_at', 'verification_status')
+            ->get();
+
+        return $transactions->groupBy('type')
+        ->map(function ($items) {
+            return $items->groupBy('verification_status')
+                ->map(function ($groupedItems) {
+                    return $groupedItems->sum('total');
+                });
+        });
     }
 
     public function updateTransactionAndInvoiceNonCash($invoice_id, $transaction_id)
@@ -545,6 +579,7 @@ class Transaction extends Model
     {
         return $this
             ->where('type', 'NONCASH')
+            ->where('verification_status', 1)
             ->with(
                 [
                     'checkout:id,payment_method_types',
@@ -573,7 +608,7 @@ class Transaction extends Model
             ->where(DB::raw('MONTH(masyarakat_transactions.created_at)'), '=', DB::raw('MONTH(CURRENT_DATE())'))
             ->get();
     }
-    
+
     public function transactionVirtualAccount()
     {
         return $this->with(['directApi'])

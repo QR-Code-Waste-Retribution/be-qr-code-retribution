@@ -17,7 +17,7 @@
             @csrf
             <div class="col-12">
                 <label for="inputNanme4" class="form-label fs-7">Nama<span class="text-danger">*</span></label>
-                <input type="text" class="form-control fs-7 @error('name') is-invalid @enderror" name="name"
+                <input type="text" value="{{ @old('name') }}" class="form-control fs-7 @error('name') is-invalid @enderror" name="name"
                     id="inputNanme4" placeholder="Nama">
                 @error('name')
                     <div class="invalid-feedback fs-8">{{ $message }}</div>
@@ -25,7 +25,7 @@
             </div>
             <div class="col-12">
                 <label for="inputEmail4" class="form-label fs-7">Username<span class="text-danger">*</span></label>
-                <input type="text" class="form-control fs-7  @error('name') is-invalid @enderror" id="inputEmail4"
+                <input type="text" value="{{ @old('username') }}" class="form-control fs-7  @error('username') is-invalid @enderror" id="inputEmail4"
                     name="username" placeholder="Username">
                 @error('username')
                     <div class="invalid-feedback fs-8">{{ $message }}</div>
@@ -36,7 +36,11 @@
                 <select class="form-select fs-7 @error('kecamatan') is-invalid @enderror" name="kecamatan" aria-label="Default select example">
                     <option disabled selected>Pilih Kecamatan</option>
                     @foreach ($sub_districts as $item)
-                        <option value="{{$item->id}}">{{ $item->name }}</option>
+                        <option value="{{$item->id}}" 
+                            @if (@old('kecamatan') == $item->id)
+                                selected
+                            @endif
+                            >{{ $item->name }}</option>
                     @endforeach
                 </select>
                 @error('kecamatan')
@@ -63,14 +67,14 @@
             </div>
             <div class="col-12">
                 <label for="inputAddress" class="form-label fs-7">No. Telepon<span class="text-danger">*</span></label>
-                <input type="text" class="form-control fs-7 @error('nomor_telepon') is-invalid @enderror" id="inputAddress" name="nomor_telepon" placeholder="No. Telepon">
+                <input value="{{ @old('nomor_telepon') }}" class="form-control fs-7 @error('nomor_telepon') is-invalid @enderror" id="inputAddress" name="nomor_telepon" placeholder="No. Telepon" type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==13) return false;">
                 @error('nomor_telepon')
                     <div class="invalid-feedback fs-8">{{ $message }}</div>
                 @enderror
             </div>
             <div class="col-12">
                 <label for="inputAddress" class="form-label fs-7">Alamat</label>
-                <input type="text" class="form-control fs-7  @error('alamat') is-invalid @enderror" id="inputAddress" name="alamat" placeholder="Alamat">
+                <input type="text" value="{{ @old('address') }}" class="form-control fs-7  @error('alamat') is-invalid @enderror" id="inputAddress" name="alamat" placeholder="Alamat">
                 @error('alamat')
                     <div class="invalid-feedback fs-8">{{ $message }}</div>
                 @enderror

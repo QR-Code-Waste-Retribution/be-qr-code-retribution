@@ -30,13 +30,16 @@ class User extends Authenticatable
         'uuid',
         'name',
         'email',
+        'nik',
         'username',
         'phoneNumber',
         'password',
         'sub_district_id',
         'district_id',
         'role_id',
-        'address'
+        'address',
+        'verification_status',
+        'device_token'
     ];
 
     /**
@@ -108,7 +111,7 @@ class User extends Authenticatable
     public function category()
     {
         return $this->belongsToMany(Category::class, 'users_categories')
-            ->withPivot(['address', 'sub_district_id', 'pemungut_id']);
+            ->withPivot(['id', 'address', 'sub_district_id', 'pemungut_id']);
     }
 
     public function pemungut_category()
@@ -144,18 +147,12 @@ class User extends Authenticatable
 
     public function allUserBySubDistrict($pemungut_id)
     {
-        return $this
-            ->with(['category' => function ($query) use ($pemungut_id) {
-                $query->wherePivot('pemungut_id', $pemungut_id);
-            }])
-            ->whereIn('id', function ($query) use ($pemungut_id) {
-                $query->select('user_id')
-                    ->distinct()
-                    ->from('users_categories')
-                    ->where('pemungut_id', $pemungut_id);
-            })
-            ->withCount(['category'])
-            ->paginate(10);
+        $users = User::with(['category'])
+            ->whereHas('category', function ($query) use ($pemungut_id) {
+                $query->where('pemungut_id', $pemungut_id);
+            })->paginate(10);
+
+        return $users;
     }
 
     public function registerUser($validator)
@@ -187,12 +184,12 @@ class User extends Authenticatable
             ->where('id', $input['category_id'])
             ->first();
 
-        Invoice::create([
-            'uuid_user' => $user->uuid,
-            'user_id' => $user->id,
-            'category_id' => $input['category_id'],
-            'price' => $category->price,
-        ]);
+        // Invoice::create([
+        //     'uuid_user' => $user->uuid,
+        //     'user_id' => $user->id,
+        //     'category_id' => $input['category_id'],
+        //     'price' => $category->price,
+        // ]);
 
         return new UserResource($user);
     }
@@ -253,7 +250,7 @@ class User extends Authenticatable
 
         SendMessageToEmail::sendToUser('email.index', $input['email'], [
             'message' => 'Harap masukkan kode ini dalam waktu [waktu] menit untuk menyelesaikan proses verifikasi.',
-            'subject' => 'Kode OTP untuk Lupa Password SIAPAIAS',
+            'subject' => 'Kode OTP untuk Lupa Password SIPAIAS',
             'data' => [
                 'token' => $user->remember_token,
             ],
@@ -284,27 +281,20 @@ class User extends Authenticatable
         }
 
         $user->name = $input['name'];
-        $user->phone_number = $input['phoneNumber'];
+        $user->phoneNumber = $input['phoneNumber'];
         $user->nik = $input['nik'];
 
-        // $user->save();
+        $user->save();
+        $user->category()->detach();
 
-        $filterCategories = collect($input['categories'])->filter(function ($item) use ($user) {
-            return !collect($user->category)->pluck('id')->contains($item['id']);
-        })->values()->all();
-
-        $arrayCategories = array();
-
-        foreach ($filterCategories as $item) {
-            array_push($arrayCategories, [
-                'user_id' =>  $user->id,
-                'category_id' => $item['id'],
+        $categories = collect($input['categories']['insert'])->mapWithKeys(function ($item) use ($input, $user) {
+            return [$item['id'] => [
                 'sub_district_id' => $user->sub_district_id,
-                'pemungut_id' => $input['pemungut_id'],
-                'address' => $input['address'],
-            ]);
-        }
+                'address' => $item['address'],
+                'pemungut_id' => $input['pemungut_id']
+            ]];
+        })->all();
 
-        UserCategories::insert($arrayCategories);
+        $user->category()->attach($categories);
     }
 }
