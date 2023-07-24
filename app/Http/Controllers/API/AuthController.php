@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class AuthController extends Controller
 {
@@ -19,7 +20,7 @@ class AuthController extends Controller
 
   public function __construct()
   {
-    $this->middleware('auth:api', ['except' => ['login', 'register', 'forgetPassword', 'checkOTP', 'changePassword']]);
+    $this->middleware('auth:api', ['except' => ['login', 'register', 'forgetPassword', 'checkOTP', 'changePassword', 'downloadQRCode']]);
     $this->user = new User();
   }
 
@@ -186,4 +187,11 @@ class AuthController extends Controller
       return $this->errorResponse([], $th->getMessage(), $th->getCode() ?? 500);
     }
   }
+
+  public function downloadQRCode()
+  {
+    $uuid = '00417a79-262a-3556-90da-a3b20465c5a8';
+    return base64_encode(QrCode::format('png')->size(120)->generate($uuid));
+  }
 }
+  

@@ -31,6 +31,8 @@ Route::name('api.')->group(function () {
     // User
 
     Route::prefix('user')->group(function () {
+        Route::post('/qrcode/download', [AuthController::class, 'downloadQRCode'])->name('user.qrcode.download');
+
         Route::post('/otp/check', [AuthController::class, 'checkOTP'])->name('user.check.otp');
         Route::post('/forget-password', [AuthController::class, 'forgetPassword']);
         Route::put('/forget-password/change', [AuthController::class, 'changePassword']);
