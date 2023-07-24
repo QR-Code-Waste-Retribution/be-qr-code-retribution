@@ -83,7 +83,7 @@
                                 <td>
                                     <input type="checkbox" class="form-check select-items" onclick="check_item(event)" value="{{$item->id}}">
                                 </td>
-                                <td data-bs-toggle="modal" data-bs-target="#modal_detail_{{$item->id}}"><a class="fw-semibold link-dark" href="#"> {{$item->masyarakat->name}} </a></td>
+                                <td data-bs-toggle="modal" data-bs-target="#modal_detail_{{$item->id}}"><a class="fw-semibold link-dark" href="#"> {{$item->user->name}} </a></td>
                                 <td>
                                     @if ($item->invoice)
                                         @foreach ($item->invoice as $invoice)
