@@ -101,6 +101,7 @@ class InvoiceController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 "sub_district_id" => "required",
+                "pemungut_id" => "required",
             ], [
                 'required' => 'The :attribute is required.',
             ]);
@@ -109,12 +110,23 @@ class InvoiceController extends Controller
                 return $this->errorResponse($validator->errors(), 'Missing id of sub district id', 422);
             }
 
+            $user = User::where('uuid', $uuid)->with('role')->first();
+
+            if (!$user) {
+                return $this->errorResponse($validator->errors(), 'Kode tidak valid', 404);
+            }
+
+            $pemungut = User::where('id', $request->pemungut_id)->first();
+
+            if ($user->district_id != $pemungut->district_id) {
+                return $this->errorResponse([], 'Masyarakat ini tidak ada terdaftar di kabupaten anda', 401);
+            }
+
             $sub_district_id = $request->sub_district_id;
             $invoice_user = $this->invoice->getInvoiceById($uuid, $sub_district_id);
             $invoice_resource = InvoiceResource::collection($invoice_user);
             $result = $this->invoice->formatUserInvoice($invoice_resource);
 
-            $user = User::where('uuid', $uuid)->with('role')->first();
 
             $response = [
                 'invoice' => $result,
