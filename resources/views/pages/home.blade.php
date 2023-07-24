@@ -92,15 +92,14 @@
                                         </div>
                                         <div class="ps-3">
                                             <h6 class="fs-4">Rp.
-                                                {{ number_format($income_tambahan['already_deposited']['total'] ?? 0, 2) }}
+                                                {{ number_format($total_pemasukan_bulan_ini_addtional_card_already_deposited, 2) }}
                                                 -,</h6>
                                             <span class="text-success small pt-1 fw-bold"></span><span
                                                 class="text-muted small pt-2 ps-1">
-                                                @if (isset($income_tambahan['already_deposited']['total']))
+                                                @if ($income_tambahan['already_deposited']['total'] != null)
                                                     {{ date('d F Y', strtotime($income_tambahan['already_deposited']['date'])) }}
                                                 @endif
                                             </span>
-
                                         </div>
                                     </div>
                                 </div>

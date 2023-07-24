@@ -45,19 +45,17 @@ class HomeController extends Controller
         $income_tambahan = $this->pemungut_transaction->getDepositAdditionalDataByDistrictId();
 
         $invoice_monthly = $this->invoice->totalAmountUnpaidAndPaidInvoiceMonthly();
-        
+
         $total_pemasukan_bulan_ini_top_card = ($income_custom['NONCASH']['verified'] ?? 0) + ($deposit['already_deposited']['total'] ?? 0);
         $total_pemasukan_bulan_ini_non_cash_card = ($income_custom['NONCASH']['verified'] ?? 0) + ($income_custom['NONCASH']['not_verified'] ?? 0);
-        $total_pemasukan_bulan_ini_card_3 = ($income['NONCASH'] ?? 0) + ($deposit['already_deposited']['total'] ?? 0) + ($deposit['not_yet_deposited']['total'] ?? 0) + ($income_tambahan['already_deposited']['total'] ?? 0) + ($income_tambahan['not_yet_deposited']['total'] ?? 0);
-
+        $total_pemasukan_bulan_ini_card_3 = ($income_custom['NONCASH']['verified'] ?? 0) + ($deposit['already_deposited']['total'] ?? 0) + ($deposit['not_yet_deposited']['total'] ?? 0) + ($income_tambahan['already_deposited']['total'] ?? 0) + ($income_tambahan['not_yet_deposited']['total'] ?? 0);
 
         $total_pemasukan_bulan_ini_card_not_yet_deposited = 0;
-        if(isset($income_tambahan['not_yet_deposited']['total']) && isset($deposit['not_yet_deposited']['total'])){
-            $total_pemasukan_bulan_ini_card_not_yet_deposited = $income_tambahan['not_yet_deposited']['total'] + $deposit['not_yet_deposited']['total'];
-        }
-        
+        $total_pemasukan_bulan_ini_card_not_yet_deposited = $income_tambahan['not_yet_deposited']['total'] + $deposit['not_yet_deposited']['total'] ?? 0;
+
         $total_pemasukan_bulan_ini_card_already_deposited = 0;
-        if(isset($income_tambahan['already_deposited']['total']) && isset($deposit['already_deposited']['total'])){
+        $total_pemasukan_bulan_ini_addtional_card_already_deposited = $income_tambahan['already_deposited']['total'] ?? 0;
+        if (isset($income_tambahan['already_deposited']['total']) && isset($deposit['already_deposited']['total'])) {
             $total_pemasukan_bulan_ini_card_already_deposited = $income_tambahan['already_deposited']['total'] + $deposit['already_deposited']['total'];
         }
 
@@ -74,7 +72,21 @@ class HomeController extends Controller
         //     'total_pemasukan_bulan_ini_card_already_deposited' => $total_pemasukan_bulan_ini_card_already_deposited,
         // ];
 
-        return view('pages.home', compact('deposit', 'users', 'graph', 'invoice_monthly', 'income_tambahan', 'income', 'income_custom', 'total_pemasukan_bulan_ini_card_3', 'total_pemasukan_bulan_ini_top_card', 'total_pemasukan_bulan_ini_non_cash_card', 'total_pemasukan_bulan_ini_card_not_yet_deposited', 'total_pemasukan_bulan_ini_card_already_deposited'));
+        return view('pages.home', compact(
+            'deposit',
+            'users',
+            'graph',
+            'invoice_monthly',
+            'income_tambahan',
+            'income',
+            'income_custom',
+            'total_pemasukan_bulan_ini_card_3',
+            'total_pemasukan_bulan_ini_top_card',
+            'total_pemasukan_bulan_ini_non_cash_card',
+            'total_pemasukan_bulan_ini_card_not_yet_deposited',
+            'total_pemasukan_bulan_ini_card_already_deposited',
+            'total_pemasukan_bulan_ini_addtional_card_already_deposited'
+        ));
     }
 
     public function income()

@@ -108,7 +108,7 @@ class PemungutTransaction extends Model
 
         foreach ($deposit as $item) {
             $response[$item['status_deposit']] = [
-                'total' => $item['total_amount'],
+                'total' => (int)$item['total_amount'],
                 'date' =>  date('d F Y', strtotime($item['updated_at']))
             ];
         }
@@ -144,15 +144,24 @@ class PemungutTransaction extends Model
             ->whereRaw('MONTH(pemungut_transactions.updated_at) = MONTH(CURRENT_DATE())')
             ->groupBy('pemungut_transactions.status')
             ->get();
+        $response = [
+            'already_deposited' => [
+                'total' => 0,
+                'date' =>  null,
+            ],
+            'not_yet_deposited' => [
+                'total' => 0,
+                'date' =>  null,
+            ],
+        ];
 
-        return collect($deposit)->mapWithKeys(function ($item) {
-            return [
-                $item['status_deposit'] => [
-                    'total' => $item['total_amount'],
-                    'date' =>  date('d F Y', strtotime($item['updated_at']))
-                ]
+        foreach ($deposit as $item) {
+            $response[$item['status_deposit']] = [
+                'total' => (int)$item['total_amount'],
+                'date' =>  date('d F Y', strtotime($item['updated_at']))
             ];
-        })->toArray();
+        }
+        return $response;
     }
 
     public function getDepositPemungutById($pemungut_id)
