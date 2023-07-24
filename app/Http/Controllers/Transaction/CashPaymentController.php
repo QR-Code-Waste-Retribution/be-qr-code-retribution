@@ -6,6 +6,7 @@ use App\Export\PaymentExport;
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use App\Models\PemungutTransaction;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
@@ -172,10 +173,19 @@ class CashPaymentController extends Controller
 
         for($i = 0; $i < count($arr_item); $i++){
            
-            $transaction = Transaction::find( $arr_item[$i]);
-            $transaction->update([
-                'verification_status' => 1
+            $pemungut_transactions =  PemungutTransaction::find( $arr_item[$i]);
+            $pemungut_transactions->update([
+                'status' => 1
             ]);
+
+            $transactions = Transaction::where('pemungut_transaction_id',$arr_item[$i])->get();
+            // return $transactions;
+            foreach($transactions as $m_transaction){
+                // return $m_transaction;
+                $m_transaction->update([
+                    'verification_status' => 1
+                ]);
+            }
         }
 
         return back()->with('success', 'Seluruh pembayaran telah berhasil dikonfirmasi');
@@ -183,11 +193,17 @@ class CashPaymentController extends Controller
 
     public function update_waiting(Request $request, $id)
     {
-        return $id;
-        $transaction = Transaction::where('pemungut_transaction_id',$id)->get();
-        $transaction->update([
-            'verification_status' => 1
-        ]);
+        // return $id;
+        $pemungut_transactions =  PemungutTransaction::find($id)->update(['status' => 1]);
+        $transactions = Transaction::where('pemungut_transaction_id',$id)->get();
+        // return $transactions;
+        foreach($transactions as $m_transaction){
+            // return $m_transaction;
+            $m_transaction->update([
+                'verification_status' => 1
+            ]);
+        }
+        
 
         return back()->with('success', 'Transaksi telah berhasil diverifikasi');
     }

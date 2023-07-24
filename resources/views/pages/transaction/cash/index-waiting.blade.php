@@ -55,14 +55,12 @@
                 <span class="fw-semibold"> &#9888; Anda belum memilih pembayaran!</span>
             </div>
             @enderror
+            @if (session()->has('success'))
+                <div class="alert alert-success">
+                    <span>{{session('success')}}</span>
+                </div>
+            @endif
             <div class="py-3 d-flex align-items-center" id="selected-item-confirmation-container">
-                
-                @if (session()->has('success'))
-                    <div class="alert alert-success">
-                        <span>{{session('success')}}</span>
-                    </div>
-                @endif
-    
                 <div class="w-100 bg-warning p-2 rounded text-center me-2">
                     <span class=""><strong id="select-items-count">0</strong> Pembayaran telah dipilih</span>
                 </div>
@@ -121,7 +119,7 @@
                     @forelse ($pemungut_transactions as $item)
                         <tr>
                             <td>
-                                <input type="checkbox" class="form-check select-items" onclick="check_item(event)" value="{{$item->id}}">
+                                <input type="checkbox" class="form-check select-items" onclick="check_item(event)" value="{{$item->pemungut_transactions->first()->id}}">
                             </td>
                             <td>
                                 <a class="" href="{{ route('transaction-cash.show', $item->id) }}">
