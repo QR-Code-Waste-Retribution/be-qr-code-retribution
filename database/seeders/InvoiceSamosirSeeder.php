@@ -29,6 +29,7 @@ class InvoiceSamosirSeeder extends Seeder
                     'user_id' => $user->id,
                     'uuid_user' => $user->uuid,
                     'masyarakat_transaction_id' => null,
+                    'users_categories_id' => $category->pivot->id,
                     'status' => 0,
                 ]);
             }
