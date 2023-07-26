@@ -18,7 +18,8 @@
                     data-bs-target="#notificationModal">
                     <i class="bi bi-bell-fill"></i>
                     &nbsp;
-                    Kirim Notifikasi</button>
+                    Generate Tagihan
+                </button>
             </div>
 
             <div class="col-12">
@@ -41,7 +42,7 @@
                     </div>
                 </form>
             </div>
-            <div class="col-12 mt-4">
+            <div class="col-12 mt-4 table-responsive">
                 <table class="table fs-7">
                     <thead>
                         <tr>
@@ -64,9 +65,12 @@
                             <tr>
                                 <td colspan="5">
                                     <div class="container">
-                                        <div class="row gap-3">
+                                        <div class="d-flex gap-3 overflow-scroll">
                                             @foreach ($item->invoices as $invoice)
                                                 <div class="col-3 h-100 p-3 rounded-3 shadow">
+                                                    <p class="m-0 mb-1 fs-8">
+                                                        {{ date('d F Y', strtotime($invoice->created_at)) }}
+                                                    </p>
                                                     <p class="m-0 mb-1 fw-bold">{{ $invoice->category->name }}
                                                     </p>
 
@@ -87,7 +91,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td class="text-danger text-center">Data Tagihan tidak ada</td>
+                                <td class="text-danger text-center" colspan="5">Data Tagihan tidak ada</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -102,7 +106,7 @@
             <div class="modal-content">
                 <form method="post" action="{{ route('notification.send.token') }}">
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Konfigurasi Notifikasi</h1>
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Generate tagihan retribusi</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body pt-2">
@@ -118,7 +122,7 @@
                             @enderror
                         </div>
                         <div class="col-12 mt-3">
-                            <label for="inputEmail4" class="form-label fs-8">Deskripsi</label>
+                            <label for="inputEmail4" class="form-label fs-8">Deskripsi Notifikasi</label>
                             <textarea name="description_notification" id="" cols="30" rows="10"
                                 class="form-control fs-8 @error('description_notification') is-invalid @enderror" name="description_notification"
                                 id="inputEmail4" placeholder="Deskripsi">Halo Wajib Retribusi, jangan lupa untuk melakukan pembayaran tagihan retribusi sampah anda bulan ini</textarea>

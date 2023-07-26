@@ -16,10 +16,13 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             DistrictSeeder::class,
+            
             SubDistrictSeeder::class,
             SamosirSubDistrictSeeder::class,
             SimalungunSubDistrictSeeder::class,
+            
             RolesSeeder::class,
+
             CategoryTobaSeeder::class,
             CategorySimalungunSeeder::class,
             CategorySamosirSeeder::class,
@@ -29,8 +32,10 @@ class DatabaseSeeder extends Seeder
             UserTobaSeeder::class,
             UserSimalungunSeeder::class,
             UserSamosirSeeder::class,
-
+            UserTobaSeederStepTwo::class,
             InvoiceTobaSeeder::class,
+            InvoiceSimalungunSeeder::class,
+            InvoiceSamosirSeeder::class,
         ]);
 
         // UserCategorySeeder::class,

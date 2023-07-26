@@ -127,10 +127,11 @@ class UserController extends Controller
         }
     }
 
-    public function getAllUserBySubDistrict($pemungut_id)
+    public function getAllUserBySubDistrict(Request $request, $pemungut_id)
     {
         try {
-            $users = new UserCollection($this->user->allUserBySubDistrict($pemungut_id));
+            $search = $request->search ?? '';
+            $users = new UserCollection($this->user->allUserBySubDistrict($pemungut_id, $search));
             return $this->successResponse($users->response()->getData(), "Successfully to get all users");
         } catch (\Throwable $th) {
             return $this->errorResponse([], $th->getMessage(), 500);

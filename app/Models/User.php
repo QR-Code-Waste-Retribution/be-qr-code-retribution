@@ -145,12 +145,14 @@ class User extends Authenticatable
             ->first();
     }
 
-    public function allUserBySubDistrict($pemungut_id)
+    public function allUserBySubDistrict($pemungut_id, $search)
     {
         $users = User::with(['category'])
             ->whereHas('category', function ($query) use ($pemungut_id) {
                 $query->where('pemungut_id', $pemungut_id);
-            })->paginate(10);
+            })
+            ->where('name', 'like', '%' . $search . '%')
+            ->paginate(10);
 
         return $users;
     }

@@ -69,14 +69,6 @@ class UserSimalungunSeeder extends Seeder
             ],
         ]);
 
-        Invoice::create([
-            'category_id' => 25,
-            'price' => 3000,
-            'user_id' => $masyarakat->id,
-            'uuid_user' => $masyarakat->uuid,
-            'masyarakat_transaction_id' => null,
-            'status' => 0,
-        ]);
 
         $petugas_simalungun = [
             'uuid' => fake()->uuid(),

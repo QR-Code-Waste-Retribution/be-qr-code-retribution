@@ -4,12 +4,20 @@ namespace App\Http\Controllers\Notification;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Invoice;
 use App\Utils\Firebase\FirebaseCloudMessaging;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class NotificationController extends Controller
 {
+    public $invoice;
+
+    public function __construct()
+    {
+        $this->invoice = new Invoice();
+    }
+
     public function saveToken(Request $request, $id)
     {
         try {
@@ -43,7 +51,6 @@ class NotificationController extends Controller
             'required' => ':attribute tidak boleh kosong',
         ]);
         
-
         if ($validator->fails()) {
             return redirect()
                 ->back()
@@ -56,6 +63,8 @@ class NotificationController extends Controller
             ->where('role_id', 1)
             ->where('district_id', auth()->user()->district_id)
             ->pluck('device_token')->all();
+
+        $this->invoice->generate();
 
         FirebaseCloudMessaging::send([
             'devices_token' => $firebaseToken,
