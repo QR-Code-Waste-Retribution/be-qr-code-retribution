@@ -7,6 +7,7 @@ use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\UserResource;
 use App\Models\Invoice;
 use App\Models\User;
+use App\Models\UserCategories;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -115,12 +116,19 @@ class InvoiceController extends Controller
             if (!$user) {
                 return $this->errorResponse($validator->errors(), 'Kode tidak valid', 404);
             }
-
+            
             $pemungut = User::where('id', $request->pemungut_id)->first();
-
+            
             if ($user->district_id != $pemungut->district_id) {
                 return $this->errorResponse([], 'Masyarakat ini tidak ada terdaftar di kabupaten anda', 401);
             }
+            
+            // $users_categories = UserCategories::where('user_id', $user->id)
+            // ->where('pemungut_id', $pemungut->id)->first();
+            
+            // if (!$users_categories) {
+            //     return $this->errorResponse($validator->errors(), 'Masyarakat tidak terdaftar sebagai wajib retribusi anda', 404);
+            // }
 
             $sub_district_id = $request->sub_district_id;
             $invoice_user = $this->invoice->getInvoiceById($uuid, $sub_district_id);
