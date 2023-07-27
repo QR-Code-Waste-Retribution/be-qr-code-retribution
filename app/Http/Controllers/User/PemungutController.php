@@ -7,6 +7,7 @@ use App\Http\Requests\PemungutRequest;
 use App\Models\SubDistrict;
 use App\Models\User;
 use Exception;
+use Validator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Throwable;
@@ -73,6 +74,10 @@ class PemungutController extends Controller
      */
     public function store(PemungutRequest $request)
     {
+        $rules = [
+            'name' => 'required|regex:/^[A-Za-z\s]+$/',
+        ];
+
         $validated = $request->validated();
 
         try {

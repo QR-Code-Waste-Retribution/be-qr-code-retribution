@@ -70,6 +70,9 @@ Route::middleware(['auth', 'role:petugas_kabupaten'])->group(function () {
     Route::put('transaction-cash/change/status', [CashPaymentController::class, 'changeDepositStatus'])->name('cash.payment.change.status');
     Route::get('transaction-cash/export', [CashPaymentController::class, 'export'])->name('transaction-cash.export');
     Route::get('transaction-cash/status/wait', [CashPaymentController::class, 'indexWait'])->name('transaction-cash.status.index.wait');
+    Route::post('transaction-cash-waiting/payment/confirmation/selected', [CashPaymentController::class, 'confirmation_selected']);
+    Route::post('transaction-cash-waiting/payment/confirmation/{id}', [CashPaymentController::class, 'update_waiting']);
+    Route::get('transaction-cash-waiting/payment/excel/export', [CashPaymentController::class, 'excel_export']);
     Route::get('transaction-cash/status/confirmed', [CashPaymentController::class, 'indexConfirmed'])->name('transaction-cash.status.index.confirmed');
     Route::get('transaction-cash/status/{status}', [CashPaymentController::class, 'index'])->name('transaction-cash.status.index');
     Route::resource('transaction-cash', CashPaymentController::class)->except(['index']);
@@ -79,6 +82,7 @@ Route::middleware(['auth', 'role:petugas_kabupaten'])->group(function () {
     Route::get('transaction-noncash/{sub_district_id}', [NonCashPaymentController::class, 'showNonCashTransactionBySubDistrictId'])->name('transaction-noncash.sub_district_id');
     Route::resource('transaction-noncash', NonCashPaymentController::class)->only(['index']);
     Route::resource('transaction-noncash-waiting/{payment_via}/payment', NonCashPaymentWaitingController::class);
+    Route::get('transaction-noncash-waiting/{payment_via}/payment/excel/export', [NonCashPaymentWaitingController::class, 'excel_export']);
     Route::post('transaction-noncash-waiting/{payment_via}/payment/confirmation/selected', [NonCashPaymentWaitingController::class, 'confirmation_selected']);
 
 

@@ -85,6 +85,20 @@
             </div>
         </form>
     </div>
+
+    <script>
+        const inputField = document.getElementById('inputNanme4');
+
+        inputField.addEventListener('input', function(event) {
+            const value = event.target.value;
+            const regex = /[^\p{L}]/gu;
+            const cleanedValue = value.replace(regex, '');
+
+            if (cleanedValue !== value) {
+                event.target.value = cleanedValue;
+            }
+        });
+    </script>
 @endsection
 @section('javascript')
 @endsection
