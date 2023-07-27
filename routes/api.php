@@ -24,71 +24,76 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
 Route::name('api.')->group(function () {
-
     Route::post('login', [AuthController::class, 'login']);
-
-    // User
-
     Route::prefix('user')->group(function () {
-        Route::post('/qrcode/download', [AuthController::class, 'downloadQRCode'])->name('user.qrcode.download');
-
-        Route::post('/otp/check', [AuthController::class, 'checkOTP'])->name('user.check.otp');
         Route::post('/forget-password', [AuthController::class, 'forgetPassword']);
+        Route::post('/otp/check', [AuthController::class, 'checkOTP'])->name('user.check.otp');
         Route::put('/forget-password/change', [AuthController::class, 'changePassword']);
-
-        Route::get('/{user_id}', [UserController::class, 'getDetailMasyarakat']);
-        Route::put('/edit/{user_id}', [UserController::class, 'editMasyarakatProfile']);
-        Route::put('/status/change', [MasyarakatController::class, 'changeStatusUser']);
-
-        Route::put('/change/{id}/password', [UserController::class, 'changePassword']);
-        Route::put('/edit/{id}/profile', [UserController::class, 'editProfile']);
-
-        Route::get('/all/{pemungut_id}', [UserController::class, 'getAllUserBySubDistrict']);
-        Route::post('/add', [AuthController::class, 'register']);
     });
-
-
-    // Invoice
-    Route::get('/invoice/users/all/{pemungut_id}', [InvoiceController::class, 'getAllUserForInvoicePaidAndUnpaid']);
-    Route::get('/invoice/total/compensated/', [InvoiceController::class, 'getTotalAmountUnpaidAndPaidInvoice']);
-    Route::post('people/{uuid}/invoice', [InvoiceController::class, 'getInvoiceOfUserByUUID']);
-    Route::resource('invoice', InvoiceController::class);
-
-    // Transaction
-
-    Route::prefix('transaction')->group(function () {
-        Route::get('/pemungut/{id}', [TransactionController::class, 'historyTransactionPemungut'])->name('transaction.history.pemungut');
-        Route::get('/masyarakat/{id}', [TransactionController::class, 'getHistoryTransactionMasyarakat'])->name('transaction.history.masyarakat');
-        Route::post('/store/non-cash', [TransactionController::class, 'storeNonCash'])->name('transaction.store.non-cash');
-        Route::post('/store/non-cash/checkout', [TransactionController::class, 'storeNonCashCheckout'])->name('transaction.store.checkout');
-        Route::post('/store/non-cash/directapi', [TransactionController::class, 'storeNonCashDirectApi'])->name('transaction.store.direct-api');
-        Route::post('/store/additional', [TransactionController::class, 'storeAddtionalRetribution'])->name('transaction.store.additional');
-        Route::put('/update/non-cash/status/{transaction_id}', [TransactionController::class, 'updateNonCashStatusAfterPayment'])->name('transaction.store.update.non-cash');
-    });
-
-    Route::resource('transaction', TransactionController::class);
-
-    // Pemungut Transaction
-    Route::resource('pemungut_transaction', PemungutTransactionController::class);
-
-    // SubDistrict
-    Route::resource('sub_district', SubDistrictController::class);
-
-    // Notification Payment Doku
+    
     Route::post('/payments/notifications', [DokuController::class, 'notifications'])->name('doku.notification');
 
-    // Category
-    Route::resource('category', CategoriesController::class);
-    Route::get('/category/additional/{district_id}', [CategoriesController::class, 'getCategoriesAdditional'])->name('category.additional.district');
-    Route::get('/category/monthly/{district_id}', [CategoriesController::class, 'getCategoriesMonthly'])->name('category.monthly.district');
-
-    // Notification
     Route::prefix('notification')->group(function () {
         Route::put('/token/{id}', [NotificationController::class, 'saveToken'])->name('notification.save.token');
     });
 
-    Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-        return $request->user();
+    // [ Authorization with Passport ]
+
+    // User
+    Route::middleware(['auth:api'])->group(function () {
+        Route::prefix('user')->group(function () {
+            Route::post('/qrcode/download', [AuthController::class, 'downloadQRCode'])->name('user.qrcode.download');
+
+            Route::get('/{user_id}', [UserController::class, 'getDetailMasyarakat']);
+            Route::put('/edit/{user_id}', [UserController::class, 'editMasyarakatProfile']);
+            Route::put('/status/change', [MasyarakatController::class, 'changeStatusUser']);
+
+            Route::put('/change/{id}/password', [UserController::class, 'changePassword']);
+            Route::put('/edit/{id}/profile', [UserController::class, 'editProfile']);
+
+            Route::get('/all/{pemungut_id}', [UserController::class, 'getAllUserBySubDistrict']);
+            Route::post('/add', [AuthController::class, 'register']);
+        });
+        Route::prefix('user')->group(function () {
+            Route::get('/all/{pemungut_id}', [UserController::class, 'getAllUserBySubDistrict']);
+        });
+
+        // Invoice
+        Route::get('/invoice/users/all/{pemungut_id}', [InvoiceController::class, 'getAllUserForInvoicePaidAndUnpaid']);
+        Route::get('/invoice/total/compensated/', [InvoiceController::class, 'getTotalAmountUnpaidAndPaidInvoice']);
+        Route::post('people/{uuid}/invoice', [InvoiceController::class, 'getInvoiceOfUserByUUID']);
+        Route::resource('invoice', InvoiceController::class);
+
+        // Transaction
+        Route::prefix('transaction')->group(function () {
+            Route::get('/pemungut/{id}', [TransactionController::class, 'historyTransactionPemungut'])->name('transaction.history.pemungut');
+            Route::get('/masyarakat/{id}', [TransactionController::class, 'getHistoryTransactionMasyarakat'])->name('transaction.history.masyarakat');
+            Route::post('/store/non-cash', [TransactionController::class, 'storeNonCash'])->name('transaction.store.non-cash');
+            Route::post('/store/non-cash/checkout', [TransactionController::class, 'storeNonCashCheckout'])->name('transaction.store.checkout');
+            Route::post('/store/non-cash/directapi', [TransactionController::class, 'storeNonCashDirectApi'])->name('transaction.store.direct-api');
+            Route::post('/store/additional', [TransactionController::class, 'storeAddtionalRetribution'])->name('transaction.store.additional');
+            Route::put('/update/non-cash/status/{transaction_id}', [TransactionController::class, 'updateNonCashStatusAfterPayment'])->name('transaction.store.update.non-cash');
+        });
+        Route::resource('transaction', TransactionController::class);
+
+        // Pemungut Transaction
+        Route::resource('pemungut_transaction', PemungutTransactionController::class);
+
+        // SubDistrict
+        Route::resource('sub_district', SubDistrictController::class);
+
+        // Notification Payment Doku
+
+        // Category
+        Route::resource('category', CategoriesController::class);
+        Route::get('/category/additional/{district_id}', [CategoriesController::class, 'getCategoriesAdditional'])->name('category.additional.district');
+        Route::get('/category/monthly/{district_id}', [CategoriesController::class, 'getCategoriesMonthly'])->name('category.monthly.district');
+
+        // Notification
+        Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+            return $request->user();
+        });
     });
 });

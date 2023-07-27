@@ -20,7 +20,7 @@ class AuthController extends Controller
 
   public function __construct()
   {
-    $this->middleware('auth:api', ['except' => ['login', 'register', 'forgetPassword', 'checkOTP', 'changePassword', 'downloadQRCode']]);
+    // $this->middleware('auth:api', ['except' => ['login', 'register', 'forgetPassword', 'checkOTP', 'changePassword', 'downloadQRCode']]);
     $this->user = new User();
   }
 
@@ -123,11 +123,14 @@ class AuthController extends Controller
         "email" => "required|email",
       ], [
         'required' => ':attribute tidak boleh kosong',
-        'email' => ':attribute format salah',
+        'email' => 'format :attribute salah',
       ]);
 
       if ($validator->fails()) {
-        return $this->errorResponse($validator->errors(), 'Input tidak boleh ada yang kosong', 422);
+        $errors = collect($validator->errors())->map(function ($value) {
+          return $value[0];
+        })->toArray();
+        return $this->errorResponse($errors, 'Input harus valid', 422);
       }
 
       $this->user->forgetPassword($validator);
@@ -194,4 +197,3 @@ class AuthController extends Controller
     return base64_encode(QrCode::format('png')->size(120)->generate($uuid));
   }
 }
-  
