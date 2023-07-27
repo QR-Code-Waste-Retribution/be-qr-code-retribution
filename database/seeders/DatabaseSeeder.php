@@ -2,13 +2,6 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-
-use App\Models\Category;
-use App\Models\PemungutTransaction;
-use App\Models\Transaction;
-use App\Models\UrbanVillage;
-use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -23,22 +16,33 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             DistrictSeeder::class,
+            
             SubDistrictSeeder::class,
+            SamosirSubDistrictSeeder::class,
+            SimalungunSubDistrictSeeder::class,
+            
             RolesSeeder::class,
+
+            CategoryTobaSeeder::class,
+            CategorySimalungunSeeder::class,
+            CategorySamosirSeeder::class,
         ]);
 
-        User::factory(300)->create();
         $this->call([
-            UserSeeder::class,
-            CategorySeeder::class,
+            UserTobaSeeder::class,
+            UserSimalungunSeeder::class,
+            UserSamosirSeeder::class,
+            UserTobaSeederStepTwo::class,
+            InvoiceTobaSeeder::class,
+            InvoiceSimalungunSeeder::class,
+            InvoiceSamosirSeeder::class,
         ]);
-        Transaction::factory(300)->create();
 
-        $this->call([
-            PemungutTransactionsSeeder::class,
-            UserCategorySeeder::class,
-            InvoiceSeeder::class,
-        ]);
+        // UserCategorySeeder::class,
+        // TestUserCategorySeeder::class,
+        // TestSeeder::class,
+        // TransactionInvoiceSeeder::class,
+        // PemungutTransactionsSeeder::class,
 
     }
 }

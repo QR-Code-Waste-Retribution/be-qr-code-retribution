@@ -2,6 +2,8 @@
 
 namespace App\Utils;
 
+use App\Models\DokuCheckout;
+use App\Models\DokuDirectApi;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 
@@ -29,6 +31,7 @@ class DokuGenerateToken
         $this->method = $method;
         $this->uuid = $uuid;
         $this->dokuMode = env('DOKU_MODE');
+        // die($this->dokuMode);
         $this->config = config('doku');
     }
 
@@ -49,7 +52,7 @@ class DokuGenerateToken
         $secretKey = env("DOKU_SECRET_KEY");
 
         $requestBody = $this->createRequestBody($lineItems, $customer, $total_amount);
-        
+
         $digestValue = base64_encode(hash('sha256', json_encode($requestBody), true));
 
         $componentSignature = "Client-Id:" . $clientId . "\n" .
@@ -57,7 +60,6 @@ class DokuGenerateToken
             "Request-Timestamp:" . $requestDate . "\n" .
             "Request-Target:" . $targetPath . "\n" .
             "Digest:" . $digestValue;
-
 
         $signature = base64_encode(hash_hmac('sha256', $componentSignature, $secretKey, true));
 
@@ -71,6 +73,8 @@ class DokuGenerateToken
 
         $responseJson = json_decode($response->body(), true);
         $httpCode = $response->status();
+
+        $responseJson['bank'] = $this->config['PAYMENTS'][$methodPayments][$typePayments];
 
         return [
             'data' => $responseJson,
@@ -94,7 +98,7 @@ class DokuGenerateToken
     {
 
         $tax = [
-            "name" => 'Pajak Pembayaran',
+            "name" => 'Biaya Layanan',
             "quantity" => 1,
             "price" => 3500,
         ];

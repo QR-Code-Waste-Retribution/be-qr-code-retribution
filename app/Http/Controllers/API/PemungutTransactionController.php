@@ -54,7 +54,7 @@ class PemungutTransactionController extends Controller
     public function show($id)
     {
         try {
-            $pemungut_transaction = $this->pemungut_transaction->getDepositPemungutById($id);
+            $pemungut_transaction = $this->pemungut_transaction->getHistoryTransactionOfPemungut($id);
             return $this->successResponse($pemungut_transaction, "Berhasil mengambil data pendapatan pemungut");
         } catch (\Throwable $th) {
             return $this->errorResponse([], $th->getMessage(), 500);

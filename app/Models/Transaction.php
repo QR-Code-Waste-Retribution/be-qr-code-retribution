@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
-use App\Http\Resources\DokuFormat\LineItemOrderDokuResource;
+use App\Http\Resources\DokuFormat\DokuCheckoutResource;
+use App\Http\Resources\DokuFormat\DokuDirectApiResource;
 use App\Http\Resources\FInvoiceResource;
 use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\TransactionResource;
 use App\Utils\DokuGenerateToken;
+use App\Utils\TimeCheck;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -15,6 +18,7 @@ class Transaction extends Model
 {
     use HasFactory;
 
+    protected $table = "masyarakat_transactions";
 
     protected $guarded = [];
 
@@ -26,6 +30,11 @@ class Transaction extends Model
     public function pemungut()
     {
         return $this->belongsTo(User::class, 'pemungut_id', 'id');
+    }
+
+    public function invoice()
+    {
+        return $this->hasMany(Invoice::class, 'masyarakat_transaction_id', 'id');
     }
 
     public function category()
@@ -41,6 +50,16 @@ class Transaction extends Model
     public static function getAllById($id)
     {
         return self::all()->where('user_id', $id);
+    }
+
+    public function checkout()
+    {
+        return $this->hasOne(DokuCheckout::class, 'masyarakat_transaction_id', 'id');
+    }
+
+    public function directApi()
+    {
+        return $this->hasOne(DokuDirectApi::class, 'masyarakat_transaction_id', 'id');
     }
 
     public static function getHistoryTransactionOfPemungut($pemungut_id)
@@ -62,18 +81,28 @@ class Transaction extends Model
         return self::where('user_id', $masyarakat_id)->orderBy('created_at', "DESC")->get();
     }
 
+    public function getTransactionWithInvoiceByMasyarakat($id)
+    {
+        $transaction = $this->where('id', $id)->with(['invoice'])->first();
+
+        if (!$transaction) {
+            throw new Exception("Transaksi anda tidak ditemukan", 404);
+        }
+
+        return $transaction;
+    }
+
     public function getAllNonCashTransaction()
     {
-        return $this
-            ->selectRaw('sub_district_id, SUM(price) as total')
-            ->with(['sub_district:id,name'])
-            ->whereIn('sub_district_id', function ($query) {
-                $query->select('id')
-                    ->from('sub_districts')
-                    ->where('district_id', auth()->user()->district_id);
-            })
-            ->where('type', 'NONCASH')
-            ->groupBy('sub_district_id')
+        return SubDistrict::select(['id', 'name'])
+            ->with(['transactions' => function ($query) {
+                $query->selectRaw('sub_district_id, SUM(price) as total')
+                    ->where('type', 'NONCASH')
+                    ->where('verification_status', 1)
+                    ->whereRaw('MONTH(created_at) = MONTH(CURRENT_DATE())')
+                    ->groupBy('sub_district_id');
+            }])
+            ->where('district_id', auth()->user()->district_id)
             ->get();
     }
 
@@ -87,6 +116,7 @@ class Transaction extends Model
                     ->from('sub_districts')
                     ->where('district_id', auth()->user()->district_id);
             })
+            ->whereRaw('MONTH(date) = MONTH(CURRENT_DATE())')
             ->groupBy('sub_district_id', 'type')
             ->get();
 
@@ -123,7 +153,6 @@ class Transaction extends Model
         return $paginatedCollection;
     }
 
-
     public function generateReferenceAndTransactionNumber()
     {
         $reference_number = 'REF-' . date('Ymd') . '-' . substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 4) . '-' . substr(str_shuffle('1234567890'), 0, 7);
@@ -157,8 +186,6 @@ class Transaction extends Model
         $masyarakat_id = $data['masyarakat_id'];
         $numberRefAndTran = $this->generateReferenceAndTransactionNumber();
 
-        $invoice = Invoice::whereIn('id', $invoices_id);
-        $invoice->update(['status' => 1]);
 
         $invoice_parents = Invoice::whereIn('id', $parentsArray)->get();
 
@@ -166,6 +193,15 @@ class Transaction extends Model
             $item['price'] *= $variantsCount[$item->id];
             $item['variants_count'] = $variantsCount[$item->id];
         }
+
+        $pemungutTransaction = PemungutTransaction::updateOrCreate([
+            'pemungut_id' => $data['pemungut_id'],
+            'status' => 0,
+            'date' => date('F Y', strtotime(now())),
+        ], [
+            'status' => 0,
+        ]);
+
 
         $transactions = $this->create([
             'price' => $data['total_amount'],
@@ -177,26 +213,12 @@ class Transaction extends Model
             'transaction_number' => $numberRefAndTran['transaction_number'],
             'user_id' => $masyarakat_id,
             'pemungut_id' => $data['pemungut_id'],
-            'category_id' => 1,
+            'pemungut_transaction_id' => $pemungutTransaction->id,
             'sub_district_id' => $data['sub_district_id'],
         ]);
 
-        $pemungutTransaction = PemungutTransaction::where('pemungut_id', $data['pemungut_id'])
-            ->where('status', 0)
-            ->whereMonth('created_at', '=', now()->month)
-            ->first();
-
-        if ($pemungutTransaction) {
-            $pemungutTransaction->total += $data['total_amount'];
-            $pemungutTransaction->save();
-        } else {
-            PemungutTransaction::create([
-                'status' => 0,
-                'pemungut_id' => $data['pemungut_id'],
-                'total' => $data['total_amount'],
-                'date' => now(),
-            ]);
-        }
+        $invoice = Invoice::whereIn('id', $invoices_id);
+        $invoice->update(['status' => 1, 'masyarakat_transaction_id' => $transactions->id]);
 
         return [
             'transaction' => new TransactionResource($transactions),
@@ -206,27 +228,47 @@ class Transaction extends Model
         ];
     }
 
-
     public function storeTransactionAdditionalCash($data)
     {
         $category_id = $data['category_id'];
         $numberRefAndTran = $this->generateReferenceAndTransactionNumber();
 
-        $transactions = $this->create([
+        $pemungutTransaction = PemungutTransaction::updateOrCreate([
+            'pemungut_id' => $data['pemungut_id'],
+            'status' => 0,
+            'date' => date('F Y', strtotime(now())),
+        ], [
+            'status' => 0,
+        ]);
+
+
+        $transaction = $this->create([
             'price' => $data['total_amount'],
             'date' => now(),
             'status' => '1',
             'type' => 'CASH',
+            'invoice_number' => 'INV-' . time(),
             'reference_number' => $numberRefAndTran['reference_number'],
             'transaction_number' => $numberRefAndTran['transaction_number'],
             'user_id' => $data['pemungut_id'],
             'pemungut_id' => $data['pemungut_id'],
-            'category_id' => $category_id,
             'sub_district_id' => $data['sub_district_id'],
+            'pemungut_transaction_id' => $pemungutTransaction->id,
+        ]);
+
+        $invoice = Invoice::create([
+            'category_id' => $category_id,
+            'price' => $data['total_amount'],
+            'user_id' => null,
+            'uuid_user' => null,
+            'masyarakat_transaction_id' => $transaction->id,
+            'status' => 1,
+            'users_categories_id' => null,
         ]);
 
         return [
-            'transaction' => new TransactionResource($transactions),
+            'transaction' => new TransactionResource($transaction),
+            'invoice' => InvoiceResource::collection(collect([$invoice])),
         ];
     }
 
@@ -236,6 +278,41 @@ class Transaction extends Model
         $masyarakat_id = $data['masyarakat_id'];
 
         $masyarakat = User::find($masyarakat_id);
+
+        $checkTransaction = $this->where('user_id', $masyarakat_id)
+            ->where('status', 0)
+            ->where('type', "NONCASH")
+            ->orderBy('created_at', 'DESC')
+            ->first();
+
+        if ($checkTransaction) {
+            if ($data['method']['payments'] == "CHECKOUT") {
+                if ($checkout = $checkTransaction->checkout) {
+                    $expired_date = $checkout->payment_expired_date;
+
+                    if (TimeCheck::checkExpiredDate($expired_date)) {
+                        return [
+                            'transaction' => new DokuCheckoutResource($checkTransaction),
+                            'message' => 'Silahkan lanjutkan pembayaran sesuai metode yang anda pilih!!',
+                            'code' => 200,
+                        ];
+                    }
+                }
+            }
+            if ($data['method']['payments'] == "VIRTUAL_ACCOUNT") {
+                if ($direct_api = $checkTransaction->directApi) {
+                    $expired_date = $direct_api->expired_date;
+
+                    if (TimeCheck::checkExpiredDate($expired_date)) {
+                        return [
+                            'transaction' => new DokuDirectApiResource($checkTransaction),
+                            'message' => 'Silahkan lanjutkan pembayaran sesuai metode yang anda pilih!!',
+                            'code' => 200,
+                        ];
+                    }
+                }
+            }
+        }
 
         $numberRefAndTran = $this->generateReferenceAndTransactionNumber();
 
@@ -252,12 +329,51 @@ class Transaction extends Model
             'transaction_number' => $numberRefAndTran['transaction_number'],
             'user_id' => $masyarakat_id,
             'pemungut_id' => $data['pemungut_id'],
-            'category_id' => 1,
             'sub_district_id' => $data['sub_district_id'],
         ]);
 
-        $token['data']['merchant.transaction_id'] = $transactions['id'];
+        $invoices_id = collect($line_items)->pluck('invoice_id');
 
+        Invoice::whereIn('id', $invoices_id)->update(['masyarakat_transaction_id' =>  $transactions->id]);
+
+        if ($data['method']['payments'] == 'VIRTUAL_ACCOUNT') {
+            $virtual_account_info = $token['data']['virtual_account_info'];
+            $order = $token['data']['order'];
+
+            DokuDirectApi::create([
+                'invoice_number' => $order['invoice_number'],
+                'bank_name' => $token['data']['bank']['bank_name']['full_name'],
+                'bank_name_short' => $token['data']['bank']['bank_name']['short_name'],
+                'virtual_account_number' => $virtual_account_info['virtual_account_number'],
+                'how_to_pay_page' => $virtual_account_info['how_to_pay_page'],
+                'how_to_pay_api' => $virtual_account_info['how_to_pay_api'],
+                'created_date' => $virtual_account_info['created_date'],
+                'expired_date' => $virtual_account_info['created_date'],
+                'created_date_utc' => $virtual_account_info['created_date_utc'],
+                'expired_date_utc' => $virtual_account_info['expired_date_utc'],
+                'masyarakat_transaction_id' => $transactions->id
+            ]);
+        }
+
+        if ($data['method']['payments'] == 'CHECKOUT') {
+            $order = $token['data']['response']['order'];
+            $payment = $token['data']['response']['payment'];
+            $uuid = $token['data']['response']['uuid'];
+
+            DokuCheckout::create([
+                'currency' => $order['currency'],
+                'session_id' => $order['session_id'],
+                'payment_method_types' => json_encode($payment['payment_method_types']),
+                'payment_due_date' => $payment['payment_due_date'],
+                'payment_token_id' => $payment['token_id'],
+                'payment_url' => $payment['url'],
+                'payment_expired_date' => $payment['expired_date'],
+                'uuid' => $uuid,
+                'masyarakat_transaction_id' => $transactions->id
+            ]);
+        }
+
+        $token['data']['merchant.transaction_id'] = $transactions['id'];
 
         return [
             'transaction' => $token['data'],
@@ -266,7 +382,85 @@ class Transaction extends Model
         ];
     }
 
+    public function storeTransactionInvoiceNonCashDirectApi($data)
+    {
+        $line_items = $data['line_items'];
+        $masyarakat_id = $data['masyarakat_id'];
 
+        $masyarakat = User::find($masyarakat_id);
+
+        $checkTransaction = $this->where('user_id', $masyarakat_id)
+            ->where('status', 0)
+            ->where('type', "NONCASH")
+            ->orderBy('created_at', 'DESC')
+            ->first();
+
+        if ($checkTransaction) {
+            if ($direct_api = $checkTransaction->directApi) {
+                $expired_date = $direct_api->expired_date;
+
+                if (TimeCheck::checkExpiredDate($expired_date)) {
+                    return [
+                        'transaction' => new DokuDirectApiResource($checkTransaction),
+                        'message' => 'Silahkan lanjutkan pembayaran sesuai metode yang anda pilih!!',
+                        'code' => 200,
+                    ];
+                }
+
+                $checkTransaction->status = 3;
+                $checkTransaction->save();
+            }
+        }
+
+
+        $numberRefAndTran = $this->generateReferenceAndTransactionNumber();
+
+        $doku = new DokuGenerateToken($data['method'], $data['uuid']);
+        $token = $doku->generateToken($line_items, $masyarakat, $data['total_amount']);
+
+        $transactions = $this->create([
+            'price' => $token['transaction']['total_amount'],
+            'date' => now(),
+            'status' => '0',
+            'type' => 'NONCASH',
+            'invoice_number' => $token['transaction']['invoice_number'],
+            'reference_number' => $numberRefAndTran['reference_number'],
+            'transaction_number' => $numberRefAndTran['transaction_number'],
+            'user_id' => $masyarakat_id,
+            'pemungut_id' => $data['pemungut_id'],
+            'sub_district_id' => $data['sub_district_id'],
+        ]);
+
+        $invoices_id = collect($line_items)->pluck('invoice_id');
+
+        Invoice::whereIn('id', $invoices_id)->update(['masyarakat_transaction_id' =>  $transactions->id]);
+
+        $virtual_account_info = $token['data']['virtual_account_info'];
+        $order = $token['data']['order'];
+
+        DokuDirectApi::create([
+            'invoice_number' => $order['invoice_number'],
+            'bank_name' => $order['bank']['full_name'],
+            'bank_name_short' => $order['bank']['short_name'],
+            'virtual_account_number' => $virtual_account_info['virtual_account_number'],
+            'how_to_pay_page' => $virtual_account_info['how_to_pay_page'],
+            'how_to_pay_api' => $virtual_account_info['how_to_pay_api'],
+            'created_date' => $virtual_account_info['created_date'],
+            'expired_date' => $virtual_account_info['created_date'],
+            'created_date_utc' => $virtual_account_info['created_date_utc'],
+            'expired_date_utc' => $virtual_account_info['expired_date_utc'],
+            'masyarakat_transaction_id' => $transactions->id
+        ]);
+
+
+        $token['data']['merchant.transaction_id'] = $transactions['id'];
+
+        return [
+            'transaction' => $token['data'],
+            'message' => 'Silahkan lanjutkan pembayaran sesuai metode yang anda pilih!!',
+            'code' => $token['code'],
+        ];
+    }
 
     public function getMonthName($number_of_month)
     {
@@ -276,7 +470,7 @@ class Transaction extends Model
     public function getMonth()
     {
         $month_array = array();
-        for ($i = 4; $i >= 0; $i--) {
+        for ($i = 11; $i >= 0; $i--) {
             $month_no = date('m', strtotime("-{$i} months"));
             $month_name = $this->getMonthName($month_no);
             $month_array[$month_no] = $month_name;
@@ -287,7 +481,15 @@ class Transaction extends Model
     public function getMonthlyIncomeCountPayment($month)
     {
         $current_year = date('Y');
-        $incomes = $this->whereMonth('date', $month)->whereYear('date', $current_year)->sum('price');
+        $incomes = $this->whereMonth('date', $month)
+            ->whereIn('sub_district_id', function ($query) {
+                $query->select('id')
+                    ->from('sub_districts')
+                    ->where('district_id', auth()->user()->district_id);
+            })
+            ->where('status', 1)
+            ->whereYear('date', $current_year)
+            ->sum('price');
         return $incomes;
     }
 
@@ -310,18 +512,57 @@ class Transaction extends Model
 
     public function sumTransactionByType()
     {
-        $transactions = $this->selectRaw('type, SUM(price) as total')
-            ->where(DB::raw('MONTH(transactions.date)'), '=', DB::raw('MONTH(CURRENT_DATE())'))
-            ->groupBy('type', 'date')->get();
+        $transactions = $this->select('type')
+            ->selectRaw('SUM(price) as total')
+            ->selectRaw('COUNT(type) as count')
+            ->whereIn('user_id', function ($query) {
+                $query->select('id')
+                    ->from('users')
+                    ->where('role_id', 1)
+                    ->where('district_id', auth()->user()->district_id);
+            })
+            ->whereRaw('MONTH(created_at) = MONTH(CURRENT_DATE())')
+            ->where('verification_status', 1)
+            ->groupBy('type', 'created_at')
+            ->get();
 
-        $income = collect($transactions)->map(function ($item) {
-            return [strtolower($item['type']) => (int)$item['total']];
-        })->collapse();
+        $income = $transactions->groupBy('type')
+            ->map(function ($items) {
+                return $items->sum('total');
+            });
 
         return $income;
     }
 
+    public function sumTransactionByTypeCustom()
+    {
+        $transactions = $this
+            ->select(["type", DB::raw("
+            CASE
+                WHEN masyarakat_transactions.verification_status = 0 THEN 'not_verified'
+                WHEN masyarakat_transactions.verification_status = 1 THEN 'verified'
+            END as verification_status"),])
+            ->selectRaw('SUM(price) as total')
+            ->selectRaw('COUNT(type) as count')
+            ->whereIn('user_id', function ($query) {
+                $query->select('id')
+                    ->from('users')
+                    ->where('role_id', 1)
+                    ->where('district_id', auth()->user()->district_id);
+            })
+            ->where('status', 1)
+            ->whereRaw('MONTH(created_at) = MONTH(CURRENT_DATE())')
+            ->groupBy('type', 'created_at', 'verification_status')
+            ->get();
 
+        return $transactions->groupBy('type')
+        ->map(function ($items) {
+            return $items->groupBy('verification_status')
+                ->map(function ($groupedItems) {
+                    return $groupedItems->sum('total');
+                });
+        });
+    }
 
     public function updateTransactionAndInvoiceNonCash($invoice_id, $transaction_id)
     {
@@ -334,19 +575,57 @@ class Transaction extends Model
         return $transaction;
     }
 
-    public function getIncomeTambahanDataByDistrictId()
+    public function nonCashTransactionBySubDistrictId($id)
     {
-        return $this->select(
-            DB::raw('SUM(transactions.price) as total_amount'),
-            DB::raw('MAX(created_at) as updated_at'),
-        )
-            ->whereIn('category_id', function ($query) {
-                $query->select('id')
-                    ->from('categories')
-                    ->whereIn('type', ['packet', 'unit', 'day'])
-                    ->where('district_id', auth()->user()->district_id);
-            })
+        return $this
+            ->where('type', 'NONCASH')
+            ->where('verification_status', 1)
+            ->with(
+                [
+                    'checkout:id,payment_method_types',
+                    'directApi:masyarakat_transaction_id,bank_name,bank_name_short',
+                    'user:id,name'
+                ]
+            )
+            ->where('sub_district_id', $id)
+            ->paginate(10);
+    }
+
+    public function transactionQRISByDistrict()
+    {
+        return $this->with(['checkout'])
+            ->whereHas('checkout')
             ->where('status', 1)
-            ->first();
+            ->where(DB::raw('MONTH(masyarakat_transactions.created_at)'), '=', DB::raw('MONTH(CURRENT_DATE())'))
+            ->get();
+    }
+
+    public function transactionVirtualAccountByDistrict()
+    {
+        return $this->with(['directApi'])
+            ->whereHas('directApi')
+            ->where('status', 1)
+            ->where(DB::raw('MONTH(masyarakat_transactions.created_at)'), '=', DB::raw('MONTH(CURRENT_DATE())'))
+            ->get();
+    }
+
+    public function transactionVirtualAccount()
+    {
+        return $this->with(['directApi'])
+            ->with(['invoice.category'])
+            ->whereHas('directApi')
+            ->where('status', 1)
+            ->where('verification_status', 0)
+            ->get();
+    }
+
+    public function transactionQRIS()
+    {
+        return $this->with(['checkout'])
+            ->with(['invoice.category'])
+            ->whereHas('checkout')
+            ->where('status', 1)
+            ->where('verification_status', 0)
+            ->get();
     }
 }

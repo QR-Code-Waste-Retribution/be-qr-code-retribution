@@ -7,6 +7,7 @@ use App\Http\Requests\PemungutRequest;
 use App\Models\SubDistrict;
 use App\Models\User;
 use Exception;
+use Validator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Throwable;
@@ -24,7 +25,7 @@ class PemungutController extends Controller
         $sub_district = $request->sub_district ?? null;
 
         $pemungut = User::where('role_id', 2)
-            ->where('district_id', 1)
+            ->where('district_id', auth()->user()->district_id)
             ->where(function (Builder $query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%')
                     ->orWhere('phoneNumber', 'like', '%' . $search . '%');
@@ -37,7 +38,7 @@ class PemungutController extends Controller
 
         $pemungut = $pemungut->paginate(10);
 
-        $sub_districts = SubDistrict::where('district_id', 1)->get();
+        $sub_districts = SubDistrict::where('district_id', auth()->user()->district_id)->get();
         return view('pages.user.pemungut.index', compact('sub_districts', 'pemungut'));
     }
 
@@ -45,7 +46,7 @@ class PemungutController extends Controller
     {
         try {
             $user = User::find($request->user_id);
-            $user->status = !$user->status;
+            $user->account_status = !$user->account_status;
             $user->save();
 
             return $this->successResponse($user, 'Success to change user status');
@@ -53,6 +54,7 @@ class PemungutController extends Controller
             return $this->errorResponse([], 'Something went wrong');
         }
     }
+    
     /**
      * Show the form for creating a new resource.
      *
@@ -72,6 +74,10 @@ class PemungutController extends Controller
      */
     public function store(PemungutRequest $request)
     {
+        $rules = [
+            'name' => 'required|regex:/^[A-Za-z\s]+$/',
+        ];
+
         $validated = $request->validated();
 
         try {
@@ -86,6 +92,7 @@ class PemungutController extends Controller
                 'gender' => $validated['jenis_kelamin'],
                 'phoneNumber' => $validated['nomor_telepon'],
                 'address' => $validated['alamat'],
+                'verification_status' => 1,
             ]);
 
             return redirect()->back()->with([

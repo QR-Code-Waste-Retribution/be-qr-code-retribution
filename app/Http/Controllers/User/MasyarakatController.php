@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\VerificationForm;
 use App\Models\SubDistrict;
 use App\Models\User;
 use Exception;
@@ -16,13 +17,27 @@ class MasyarakatController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+    public $user;
+
+    public function __construct()
+    {
+        $this->user = new User();
+    }
+
+    public function show($id)
+    {
+        $user = $this->user->show($id);
+        return view('pages.user.masyarakat.detail', compact('user'));
+    }
+
     public function index(Request $request)
     {
         $search = $request->search ?? '';
         $sub_district = $request->sub_district ?? null;
 
         $masyarakat = User::where('role_id', 1)
-            ->where('district_id', 1)
+            ->where('district_id', auth()->user()->district_id)
             ->where(function (Builder $query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%')
                     ->orWhere('phoneNumber', 'like', '%' . $search . '%');
@@ -36,83 +51,70 @@ class MasyarakatController extends Controller
         $masyarakat = $masyarakat->with('sub_district')
             ->paginate(10);
 
-        $sub_districts = SubDistrict::where('district_id', 1)->get();
+        $sub_districts = SubDistrict::where('district_id', auth()->user()->district_id)->get();
 
         return view('pages.user.masyarakat.index', compact('masyarakat', 'sub_districts'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function verificationDetail($pemungut_id)
     {
-        //
+        $pemungut = $this->user->allMasyarakatByPemungut($pemungut_id);
+
+
+        return view('pages.user.verification.detail', compact('pemungut'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function verificationCreate()
     {
-        // $validator = Validator::make($request->all(), [
-        //     'query' => 'required',
-        //     'sub_district' => 'required|integer',
-        // ], [
-        //     'required' => 'Input :attribute tidak boleh kosong',
-        // ]);
+        $pemunguts = $this->user->allMasyarakatByPemungut();
+
+        return view('pages.user.verification.index', compact('pemunguts'));
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    public function changeStatusVerificationUser(VerificationForm $request)
     {
-        //
-    }
+        try {
+            $input = $request->validated();
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
+            $this->user->changeVerficationStatusSelectedMasyarakat($input['selected_masyarakat_id']);
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
+            return redirect()->route('masyarakat.verification')->with([
+                'type' => 'success',
+                'status' => 'Berhasil mengubah status verifikasi masyarakat',
+            ]);
+        } catch (Exception $err) {
+            return $this->errorResponse([], 'Something went wrong');
+        }
     }
 
     public function changeStatusUser(Request $request)
     {
         try {
             $user = User::find($request->user_id);
-            $user->status = !$user->status;
+            $user->account_status = $user->account_status == 1 ? 0 : 1;
             $user->save();
 
-            return $this->successResponse($user, 'Success to change user status');
+            return $this->successResponse($user, 'Berhasil mengubah status ' . $user->name);
         } catch (Exception $err) {
-            return $this->errorResponse([], 'Something went wrong');
+            return $this->errorResponse($err->getMessage(), 'Something went wrong', 500);
         }
     }
+
+    public function exportAllQRCodeImage()
+    {
+        try {
+            $users = User::select('id', 'uuid', 'name', 'address')
+                ->where('district_id', auth()->user()->district_id)
+                ->with(['masyarakat_category.pemungut:id,name'])
+                ->where('role_id', 1)
+                ->get();
+            return view('pages.user.masyarakat.qrcode', compact('users'));
+        } catch (Exception $err) {
+            return $this->errorResponse($err->getMessage(), 'Something went wrong');
+        }
+    }
+
+
 
     /**
      * Remove the specified resource from storage.

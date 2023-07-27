@@ -6,10 +6,8 @@ use App\Export\PaymentExport;
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use App\Models\PemungutTransaction;
-use App\Models\User;
-use Illuminate\Database\Eloquent\Builder;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -19,37 +17,61 @@ class CashPaymentController extends Controller
     public $pemungut_transactions;
     public $invoice;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->pemungut_transactions = new PemungutTransaction();
         $this->invoice = new Invoice();
     }
 
     public function export()
     {
-        return Excel::download(new PaymentExport('CASH'), 'cash.xlsx');
+        return Excel::download(new PaymentExport('CASH'), 'PEMBAYARAN TUNAI.xlsx');
     }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request, $status)
     {
         $search = $request->search ?? '';
         $month = $request->month ?? '';
         $sub_district = $request->sub_district ?? null;
         $invoice_monthly = $this->invoice->totalAmountUnpaidAndPaidInvoiceMonthly();
 
-        $pemungut_transactions = $this->pemungut_transactions->getAllTransaction($sub_district, $search);
-        // $targetIncome = $this->pemungut_transactions->getIncomeData();
+        $pemungut_transactions = $this->pemungut_transactions->getAllTransaction($sub_district, $search, $status);
 
-        // return $targetIncome;
-        return view('pages.transaction.cash.cash-payment', compact('pemungut_transactions', 'invoice_monthly'));
+        return view('pages.transaction.cash.cash-payment', compact('pemungut_transactions', 'invoice_monthly', 'status'));
+    }
+    public function indexWait(Request $request)
+    {
+        $search = $request->search ?? '';
+        $month = $request->month ?? '';
+        $sub_district = $request->sub_district ?? null;
+        $invoice_monthly = $this->invoice->totalAmountUnpaidAndPaidInvoiceMonthly();
+        $status = 0;
+        
+        $pemungut_transactions = $this->pemungut_transactions->getAllTransaction($sub_district, $search, 0);
+
+        return view('pages.transaction.cash.index-waiting', compact('pemungut_transactions', 'invoice_monthly', 'status'));
+    }
+    public function indexConfirmed(Request $request)
+    {
+        $search = $request->search ?? '';
+        $month = $request->month ?? '';
+        $sub_district = $request->sub_district ?? null;
+        $invoice_monthly = $this->invoice->totalAmountUnpaidAndPaidInvoiceMonthly();
+        $status = 1;
+
+        $pemungut_transactions = $this->pemungut_transactions->getAllTransaction($sub_district, $search, 1);
+
+        return view('pages.transaction.cash.cash-payment', compact('pemungut_transactions', 'invoice_monthly', 'status'));
     }
 
     public function show($id)
     {
         $cash = $this->pemungut_transactions->show($id);
+        // return $cash;
         return view('pages.transaction.cash.detail', compact('cash'));
     }
 
@@ -98,7 +120,6 @@ class CashPaymentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
     }
 
     /**
@@ -139,4 +160,51 @@ class CashPaymentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
+     public function confirmation_selected(Request $request){
+        // return $request;
+        $data = [
+            'input_count' => 'required'
+        ];
+
+        $validasi = $request->validate($data);
+
+        $arr_item = explode(",", $request->input_count);
+
+        for($i = 0; $i < count($arr_item); $i++){
+           
+            $pemungut_transactions =  PemungutTransaction::find( $arr_item[$i]);
+            $pemungut_transactions->update([
+                'status' => 1
+            ]);
+
+            $transactions = Transaction::where('pemungut_transaction_id',$arr_item[$i])->get();
+            // return $transactions;
+            foreach($transactions as $m_transaction){
+                // return $m_transaction;
+                $m_transaction->update([
+                    'verification_status' => 1
+                ]);
+            }
+        }
+
+        return back()->with('success', 'Seluruh pembayaran telah berhasil dikonfirmasi');
+    }
+
+    public function update_waiting(Request $request, $id)
+    {
+        // return $id;
+        $pemungut_transactions =  PemungutTransaction::find($id)->update(['status' => 1]);
+        $transactions = Transaction::where('pemungut_transaction_id',$id)->get();
+        // return $transactions;
+        foreach($transactions as $m_transaction){
+            // return $m_transaction;
+            $m_transaction->update([
+                'verification_status' => 1
+            ]);
+        }
+        
+
+        return back()->with('success', 'Transaksi telah berhasil diverifikasi');
+    }
 }

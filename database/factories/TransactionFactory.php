@@ -29,6 +29,7 @@ class TransactionFactory extends Factory
         $transaction_number = 'TRAN-' . date('Ymd') . '-' . substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 5) . '-' . substr(str_shuffle('1234567890'), 0, 7);
         $masyarakat = User::inRandomOrder()->first();
         $pemungut = User::inRandomOrder()->where('role_id', 2)->where('district_id', $masyarakat->district_id)->first();
+        
         return [
             'price' => fake()->randomElement([10000, 20000, 30000, 40000, 50000]),
             'status' => fake()->randomElement([0, 1]),

@@ -12,6 +12,9 @@
         <div class="row">
             <div class="col-8 d-flex justify-content-start align-items-start flex-column">
                 <h1>@yield('page_title')</h1>
+                @if ($transaction_page_title ?? false)
+                    <p class="mt-1 fs-2 fw-semibold text-success">@yield('transaction_page_title')</p>
+                @endif
                 @if ($page_subtitle ?? false)
                     <p class="mt-1 fs-7">@yield('page_subtitle')</p>
                 @endif
@@ -28,7 +31,7 @@
     <section class="section dashboard">
         @if (session('status'))
             <div class="alert alert-{{ session('type') }} alert-dismissible fade show" role="alert">
-                <h4 class="alert-heading text-capitalize">{{ session('type') }}</h4>
+                <h4 class="alert-heading text-capitalize">{{ session('type') == "danger" ? "Error" : session('type') }}</h4>
                 <p class="fs-7">{{ session('status') }}</p>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>

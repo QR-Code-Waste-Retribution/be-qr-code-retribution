@@ -34,9 +34,10 @@
                                         </div>
                                         <div class="ps-3">
                                             <h6 class="fs-4">Rp.
-                                                {{ number_format($invoice_monthly['paid']['total'] ?? 0, 2) }} -,</h6>
+                                                {{ number_format($total_pemasukan_bulan_ini_top_card, 2) }}
+                                                -,</h6>
                                             <span class="text-success small pt-1 fw-bold"></span><span
-                                                class="text-muted small pt-2 ps-1">{{ $invoice_monthly['paid']['date'] ?? "-" }}</span>
+                                                class="text-muted small pt-2 ps-1">{{ $invoice_monthly['paid']['date'] ?? '-' }}</span>
 
                                         </div>
                                     </div>
@@ -48,10 +49,8 @@
 
                     <!-- Revenue Card -->
                     <div class="col-xxl-3 col-md-5">
-                        <a href="{{ route('dashboard.income') }}">
-                            <div class="card info-card revenue-card" data-bs-toggle="tooltip" data-bs-placement="right"
-                                data-bs-custom-class="custom-tooltip"
-                                data-bs-title="Klik untuk melihat lebih detail pemasukan">
+                        <a href="{{ route('invoice.index') }}">
+                            <div class="card info-card revenue-card">
                                 <div class="card-body">
                                     <h5 class="card-title">Total yang harus tercapai di Bulan Ini</h5>
 
@@ -64,7 +63,7 @@
                                             <h6 class="fs-4">Rp.
                                                 {{ number_format($invoice_monthly['unpaid']['total'] ?? 0, 2) }} -,</h6>
                                             <span class="text-success small pt-1 fw-bold"></span><span
-                                                class="text-muted small pt-2 ps-1">{{ $invoice_monthly['unpaid']['date'] }}</span>
+                                                class="text-muted small pt-2 ps-1">{{ $invoice_monthly['unpaid']['date'] ?? '-' }}</span>
 
                                         </div>
                                     </div>
@@ -82,9 +81,7 @@
                     <!-- Revenue Card -->
                     <div class="col-xxl-3 col-md-5">
                         <a href="{{ route('dashboard.income') }}">
-                            <div class="card info-card revenue-card" data-bs-toggle="tooltip" data-bs-placement="right"
-                                data-bs-custom-class="custom-tooltip"
-                                data-bs-title="Klik untuk melihat lebih detail pemasukan">
+                            <div class="card info-card revenue-card">
                                 <div class="card-body">
                                     <h5 class="card-title">Pemasukan <span>| Bulan Ini</span></h5>
 
@@ -95,10 +92,14 @@
                                         </div>
                                         <div class="ps-3">
                                             <h6 class="fs-4">Rp.
-                                                {{ number_format($income_tambahan->total_amount, 2) }} -,</h6>
+                                                {{ number_format($total_pemasukan_bulan_ini_addtional_card_already_deposited, 2) }}
+                                                -,</h6>
                                             <span class="text-success small pt-1 fw-bold"></span><span
-                                                class="text-muted small pt-2 ps-1">{{ date('d F Y', strtotime($income_tambahan->updated_at)) }}</span>
-
+                                                class="text-muted small pt-2 ps-1">
+                                                @if ($income_tambahan['already_deposited']['total'] != null)
+                                                    {{ date('d F Y', strtotime($income_tambahan['already_deposited']['date'])) }}
+                                                @endif
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -114,9 +115,7 @@
                     <!-- Revenue Card -->
                     <div class="col-xxl-3 col-md-4">
                         <a href="{{ route('dashboard.income') }}">
-                            <div class="card info-card revenue-card" data-bs-toggle="tooltip" data-bs-placement="right"
-                                data-bs-custom-class="custom-tooltip"
-                                data-bs-title="Klik untuk melihat lebih detail pemasukan">
+                            <div class="card info-card revenue-card">
                                 <div class="card-body">
                                     <h5 class="card-title">Pemasukan <span>| Bulan Ini</span></h5>
 
@@ -127,7 +126,8 @@
                                         </div>
                                         <div class="ps-3">
                                             <h6 class="fs-4">Rp.
-                                                {{ number_format(($invoice_monthly['paid']['total'] ?? 0)  + $income_tambahan->total_amount, 2) }} -,</h6>
+                                                {{ number_format($total_pemasukan_bulan_ini_card_3, 2) }}
+                                                -,</h6>
                                             <span class="text-success small pt-1 fw-bold"></span><span
                                                 class="text-muted small pt-2 ps-1">21 Februari 2023</span>
 
@@ -150,7 +150,9 @@
                                         <div class="p-0">
                                             <span class="text-success small pt-1 fw-bold"></span> <span
                                                 class="text-muted small pt-2">Sudah Disetor</span>
-                                            <h6 class="fs-5">Rp. {{ number_format($deposit['already_deposited']['total'], 2) }} -,</h6>
+                                            <h6 class="fs-5">Rp.
+                                                {{ number_format($total_pemasukan_bulan_ini_card_already_deposited, 2) }}
+                                                -,</h6>
                                             <span class="text-success small pt-1 fw-bold"></span> <span
                                                 class="text-muted small pt-2">21
                                                 Februari 2023</span>
@@ -165,7 +167,8 @@
                                         <div class="p-0">
                                             <span class="text-success small pt-1 fw-bold"></span> <span
                                                 class="text-muted small pt-2">Belum Disetor</span>
-                                            <h6 class="fs-5">Rp. {{ number_format($deposit['not_yet_deposited']['total'], 2) }} -,</h6>
+                                            <h6 class="fs-5">Rp.
+                                                {{ number_format($total_pemasukan_bulan_ini_card_not_yet_deposited, 2) }} -,</h6>
                                             <span class="text-success small pt-1 fw-bold"></span> <span
                                                 class="text-muted small pt-2">21
                                                 Februari 2023</span>
@@ -181,7 +184,11 @@
                             <div class="card-body">
                                 <div class="d-flex align-items-center">
                                     <div class="p-0">
-                                        <h6 class="fs-5">Rp. {{ number_format($income['noncash'], 2) }} -,</h6>
+                                        @isset($total_pemasukan_bulan_ini_non_cash_card)
+                                            <h6 class="fs-5">Rp. {{ number_format($total_pemasukan_bulan_ini_non_cash_card, 2) }} -,</h6>
+                                        @else
+                                            <h6 class="fs-5">Rp. {{ number_format(0, 2) }} -,</h6>
+                                        @endisset
                                         <span class="text-success small pt-1 fw-bold"></span> <span
                                             class="text-muted small pt-2 ps-1">21 Februari 2023</span>
                                     </div>

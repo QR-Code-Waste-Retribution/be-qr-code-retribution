@@ -35,7 +35,7 @@ class InvoiceResource extends JsonResource
             "updated_at" => [
                 'date' => $this->updated_at,
                 'formated_date' => date('d F Y', strtotime($this->updated_at)),
-            ]
+            ],
         ];
     }
 }

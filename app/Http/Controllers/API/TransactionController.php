@@ -4,9 +4,11 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\TransactionResource;
+use App\Http\Resources\TransactionWithInvoiceResource;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Throwable;
 
 class TransactionController extends Controller
 {
@@ -19,32 +21,6 @@ class TransactionController extends Controller
         $this->middleware('uuid')->only('storeNonCash');
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         try {
@@ -95,12 +71,40 @@ class TransactionController extends Controller
 
             return $this->successResponse($transaction, "Pembayaran retribusi tambahan berhasil!!", 203);
         } catch (\Throwable $th) {
-            return $this->errorResponse($th->getMessage(), 'Something Went error');
+            return $this->errorResponse($th->getMessage(), 'Something Went error', 500);
         }
     }
 
 
     public function storeNonCash(Request $request)
+    {
+        // try {
+            $validator = Validator::make($request->all(), [
+                "line_items" => 'required',
+                "total_amount" =>  'required',
+                "masyarakat_id" =>  'required',
+                "pemungut_id" =>  'nullable',
+                "category_id" =>  'nullable',
+                "sub_district_id" =>  'required',
+                "type" => 'required',
+                "method" => 'nullable',
+            ], [
+                'required' => 'Input :attribute tidak boleh kosong',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->errorResponse($validator->errors(), 'Input tidak boleh ada yang kosong', 422);
+            }
+
+            $transaction = $this->transaction->storeTransactionInvoiceNonCash($request->all());
+            return $this->successResponse($transaction['transaction'], $transaction['message'], $transaction['code']);
+        // } catch (\Throwable $th) {
+        //     return $this->errorResponse($th->getMessage(), 'Something Went error');
+        // }
+    }
+
+
+    public function storeNonCashCheckout(Request $request)
     {
         try {
             $validator = Validator::make($request->all(), [
@@ -126,6 +130,37 @@ class TransactionController extends Controller
             return $this->errorResponse($th->getMessage(), 'Something Went error');
         }
     }
+
+
+    public function storeNonCashDirectApi(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                "line_items" => 'required',
+                "total_amount" =>  'required',
+                "masyarakat_id" =>  'required',
+                "pemungut_id" =>  'nullable',
+                "category_id" =>  'nullable',
+                "sub_district_id" =>  'required',
+                "type" => 'required',
+                "method" => 'nullable',
+            ], [
+                'required' => 'Input :attribute tidak boleh kosong',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->errorResponse($validator->errors(), 'Input tidak boleh ada yang kosong', 422);
+            }
+
+            $transaction = $this->transaction->storeTransactionInvoiceNonCashDirectApi($request->all());
+            return $this->successResponse($transaction['transaction'], $transaction['message'], $transaction['code']);
+        } catch (\Throwable $th) {
+            return $this->errorResponse($th->getMessage(), 'Something Went error');
+        }
+    }
+
+
+    
 
 
     public function historyTransactionPemungut($id)
@@ -172,49 +207,18 @@ class TransactionController extends Controller
             return $this->errorResponse($th->getMessage(), 'Something Went error');
         }
     }
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+
     public function show($id)
     {
-        //
-    }
+        try {
+            $transactions = $this->transaction->getTransactionWithInvoiceByMasyarakat($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+            return $this->successResponse(
+                new TransactionWithInvoiceResource($transactions),
+                'Berhasil mengambil data transaksi'
+            );
+        } catch (Throwable $th) {
+            return $this->errorResponse([], $th->getMessage(), $th->getCode());
+        }
     }
 }

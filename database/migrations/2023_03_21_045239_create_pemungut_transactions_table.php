@@ -15,16 +15,16 @@ return new class extends Migration
     {
         Schema::create('pemungut_transactions', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('status')->default(1);
+            $table->bigInteger('status')->default(0);
             $table->unsignedBigInteger('pemungut_id');
-            $table->bigInteger('total');
-            $table->dateTime('date');
+            $table->string('date');
             $table->timestamps();
 
             
             $table->foreign('pemungut_id')
                 ->references('id')
                 ->on('users');
+
         });
     }
 

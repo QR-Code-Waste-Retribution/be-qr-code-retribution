@@ -12,6 +12,8 @@ class Invoice extends Model
 
     protected $table = 'invoice';
 
+    protected $guarded = [];
+
     public $invoices_formatted = array();
 
     public function user()
@@ -22,6 +24,32 @@ class Invoice extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function users_categories()
+    {
+        return $this->belongsTo(UserCategories::class, 'users_categories_id');
+    }
+
+    public function generate(){
+        $users = User::where('district_id', auth()->user()->district_id)
+            ->where('role_id', 1)
+            ->with(['category'])
+            ->get();
+
+        foreach ($users as $user) {
+            foreach ($user->category as $category) {          
+                $this->create([
+                    'category_id' => $category->pivot->category_id,
+                    'price' => $category->price,
+                    'user_id' => $user->id,
+                    'uuid_user' => $user->uuid,
+                    'masyarakat_transaction_id' => null,
+                    'users_categories_id' => $category->pivot->id,
+                    'status' => 0,
+                ]);
+            }
+        }
     }
 
 
@@ -38,7 +66,7 @@ class Invoice extends Model
             DB::raw('SUM(price) as total_amount'),
             DB::raw('MAX(updated_at) as updated_at')
         )
-            ->whereIn('user_id', function ($query){
+            ->whereIn('user_id', function ($query) {
                 $query->select('id')
                     ->from('users')
                     ->where('district_id', auth()->user()->district_id);
@@ -94,7 +122,6 @@ class Invoice extends Model
         }
 
         $invoice['date'] = date('d F Y', strtotime($invoice['created_at']));
-        // $invoice['variants'] .= $invoice['id'] . ",";
         array_push($this->invoices_formatted, $invoice);
     }
 
@@ -173,12 +200,17 @@ class Invoice extends Model
         return $invoice;
     }
 
-    public function allUserForInvoicePaidAndUnpaid($sub_district_id)
+    public function allUserForInvoicePaidAndUnpaid($pemungut_id)
     {
         $usersPaid = User::withCount(['invoices as invoiceCount' => function ($query) {
             $query->where('status', 1);
         }])
-            ->where('sub_district_id', $sub_district_id)
+            ->whereIn('id', function ($query) use ($pemungut_id) {
+                $query->select('user_id')
+                    ->distinct()
+                    ->from('users_categories')
+                    ->where('pemungut_id', $pemungut_id);
+            })
             ->groupBy('id')
             ->having('invoiceCount', '>', 0)
             ->get();
@@ -187,11 +219,15 @@ class Invoice extends Model
         $usersUnpaid = User::withCount(['invoices as invoiceCount' => function ($query) {
             $query->where('status', 0);
         }])
-            ->where('sub_district_id', $sub_district_id)
+            ->whereIn('id', function ($query) use ($pemungut_id) {
+                $query->select('user_id')
+                    ->distinct()
+                    ->from('users_categories')
+                    ->where('pemungut_id', $pemungut_id);
+            })
             ->groupBy('id')
             ->having('invoiceCount', '>', 0)
             ->get();
-
 
         return [
             'users.paid' => [

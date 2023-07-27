@@ -28,7 +28,8 @@ return new class extends Migration
             $table->unsignedBigInteger('sub_district_id');
             $table->unsignedBigInteger('district_id');
             $table->unsignedBigInteger('role_id')->default(1);
-            $table->integer('status')->default(1);
+            $table->integer('account_status')->default(1);
+            $table->integer('verification_status')->default(0);
             $table->rememberToken();
             $table->timestamps();
 

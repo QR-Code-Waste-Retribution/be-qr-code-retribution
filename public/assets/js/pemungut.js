@@ -10,6 +10,7 @@ statusCheckChecked.forEach((el) => {
         el.parentElement.classList.add('d-none');
         text.classList.add('d-none');
         spinner.classList.remove('d-none');
+        console.log("TEST");
         fetch(url, {
                 headers: {
                     "Content-Type": "application/json",

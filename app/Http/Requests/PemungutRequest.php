@@ -24,19 +24,23 @@ class PemungutRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required',
-            'username' => 'required',
+            'name' => 'required|string|regex:/^[^0-9]+$/',
+            'username' => 'required|unique:users',
             'kecamatan' => 'required',
             'jenis_kelamin' => 'required',
-            'nomor_telepon' => 'required',
+            'nomor_telepon' => 'required|max:13',
             'alamat' => 'required',
         ];
     }
 
+
     public function messages()
     {
         return [
-            'required' => 'Input :attribute tidak boleh kosong'
+            'required' => ':attribute tidak boleh kosong',
+            'name.required' => 'nama tidak boleh kosong',
+            'unique' => ':attribute sudah digunakan',
+            'regex' => 'nama tidak boleh memiliki angka',
         ];
     }
 }
